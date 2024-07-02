@@ -65,7 +65,7 @@ export const loginAdmin = async (req, res) => {
         }
 
         const token = createToken(admin._id,admin.role);
-        res.status(200).json({ response_code: 200, success: true, message: 'Admin  login successfully!' });
+        res.status(200).json({ response_code: 200, success: true, message: 'Admin  login successfully!',token });
 
 
     } catch (error) {

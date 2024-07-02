@@ -3,6 +3,8 @@ import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser";
 import adminRoutes from "./routes/adminRoute.js"
+import staffRoutes from "./routes/staffRoute.js"
+import clientRoutes from "./routes/clientRoute.js"
 import dotenv from 'dotenv';
 const app = express();
 
@@ -22,6 +24,8 @@ app.use(express.json());
 mongoose.set("strictQuery", true);
 
 app.use("/admin",adminRoutes)
+app.use("/staff",staffRoutes)
+app.use("/client",clientRoutes)
 
 
 
