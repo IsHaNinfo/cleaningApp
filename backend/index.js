@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import adminRoutes from "./routes/adminRoute.js"
 import staffRoutes from "./routes/staffRoute.js"
 import clientRoutes from "./routes/clientRoute.js"
+import jobRoutes from "./routes/jobRoute.js"
 import dotenv from 'dotenv';
 const app = express();
 
@@ -26,7 +27,7 @@ mongoose.set("strictQuery", true);
 app.use("/admin",adminRoutes)
 app.use("/staff",staffRoutes)
 app.use("/client",clientRoutes)
-
+app.use("/job",jobRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)
