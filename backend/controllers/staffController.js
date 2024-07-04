@@ -1,5 +1,12 @@
 import Staff from "../models/staffModel.js"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+
+const createToken = (_id,role) => {
+    return jwt.sign({ _id ,role}, process.env.SECRET, { expiresIn: 259200 });
+};
+
+
 export const addStaffMember = async (req, res) => {
 
     try {
@@ -162,6 +169,163 @@ export const getAllActiveStaff = async (req, res) => {
     }
 };
 
+export const loginStaff = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        if (!email || !password) {
+            throw Error("Email and password are required");
+        }
+
+        const staff = await Staff.findOne({ email: email });
+        if (!staff) {
+            throw Error("Invalid email");
+        }
+
+        const isPasswordValid = bcrypt.compareSync(password, staff.password);
+        if (!isPasswordValid) {
+            throw Error("Invalid password");
+        }
+
+        const stafftoken = createToken(staff._id,staff.role);
+        res.status(200).json({ response_code: 200, success: true,message  :"Staff fetched successfully",staff,stafftoken });
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false,error: error.message });
+    }
+};
+
+
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+};
+
+const sendEmail = (email, subject, text) => {
+    // Use a nodemailer or any email service to send email
+    // For simplicity, here is a basic example using nodemailer
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'hasthiyatalentoc@gmail.com',
+            pass: 'jaokcskonjeshdvl'
+        }
+    });
+
+    const mailOptions = {
+        from: 'hasthiyatalentoc@gmail.com',
+        to: email,
+        subject: subject,
+        text: text
+    };
+
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+};
+
+export const requestPasswordReset = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        if (!email) {
+            throw Error("Email is required");
+        }
+        if (!validator.isEmail(email)) {
+            throw Error("Email not valid");
+        }
+
+        const user = await Staff.findOne({ email: email });
+        if (!user) {
+            throw Error("User not found");
+        }
+
+        const otp = generateOTP();
+        const otpExpiry = Date.now() + 3600000; // OTP valid for 1 hour
+
+        user.resetPasswordOTP = otp;
+        user.resetPasswordOTPExpiry = otpExpiry;
+
+        await user.save();
+
+         sendEmail(email, 'Password Reset OTP', `Your OTP is ${otp}. It is valid for 1 hour.`);
+
+        res.status(200).json({ response_code: 200, success: true, message: 'OTP sent successfully!' });
+
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
+export const verifyOTP = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        if (!email || !otp) {
+            throw Error("Email and OTP are required");
+        }
+
+        const user = await Staff.findOne({ email: email });
+        if (!user) {
+            throw Error("User not found");
+        }
+
+        if (user.resetPasswordOTP !== otp) {
+            throw Error("Invalid OTP");
+        }
+
+        if (user.resetPasswordOTPExpiry < Date.now()) {
+            throw Error("OTP expired");
+        }
+
+        res.status(200).json({ response_code: 200, success: true, message: 'OTP verified successfully!' });
+
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    try {
+        if (!email || !otp || !newPassword) {
+            throw Error("Email, OTP, and new password are required");
+        }
+
+        if (!validator.isLength(newPassword, { min: 8 })) {
+            throw new Error("Password must be at least 8 characters long");
+        }
+        if (!validator.isStrongPassword(newPassword)) {
+            throw Error("Password not strong enough");
+        }
+
+        const user = await PassangerModel.findOne({ email: email });
+        if (!user) {
+            throw Error("User not found");
+        }
+
+        if (user.resetPasswordOTP !== otp) {
+            throw Error("Invalid OTP");
+        }
+
+        if (user.resetPasswordOTPExpiry < Date.now()) {
+            throw Error("OTP expired");
+        }
+
+        const hashedPassword = bcrypt.hashSync(newPassword, 12);
+        user.password = hashedPassword;
+        user.resetPasswordOTP = undefined;
+        user.resetPasswordOTPExpiry = undefined;
+
+        await user.save();
+
+        res.status(200).json({ response_code: 200, success: true, message: 'Password reset successfully!' });
+
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
  export const getAllStaffsPagination = async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
 

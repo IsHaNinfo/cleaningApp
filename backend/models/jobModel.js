@@ -35,6 +35,11 @@ const jobSchema = new Schema(
             type: Date,
             required: false,
         },
+        isSignOff: {
+            type: Boolean,
+            default:false,
+            required: false,
+        },
         noOfhours: {
             type: Number,
             required: false,
@@ -50,6 +55,10 @@ const jobSchema = new Schema(
         },
         notes: {
             type: String,
+            required: false,
+        },
+        payment: {
+            type: Number,
             required: false,
         },
         jobStatus:{

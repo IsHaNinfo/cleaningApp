@@ -102,7 +102,7 @@ export const deleteJobById = async (req, res) => {
 export const getJobById = async (req, res) => {
     const { id } = req.params;
     try {
-        const job = await Job.findById(id);
+        const job = await Job.findById(id).populate('assignedStaff').populate('client');
 
         if (!job) {
             return  res.status(404).json({ response_code: 404, success: false,message :"Job not found" });
@@ -195,3 +195,105 @@ export const updateStatus = async (req, res) => {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 }
+
+export const getAllCompletedJobs = async (req, res) => {
+    try {
+        const jobs = await Job.find({ jobStatus: 'Completed' });
+        if (!jobs.length) {
+            return  res.status(404).json({ response_code: 404, success: false,message :"jobs not found" });
+        }
+        res.status(200).json({ response_code: 200, success: true,message :"jobs fetched successfully" ,jobs});
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
+
+export const signInJob = async (req, res) => {
+    const { jobId } = req.params;
+    const { staffId } = req.body; // Ensure you pass the staffId in the request body
+
+    try {
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
+        }
+
+        job.signInTime = new Date();
+        job.assignedStaff = staffId;
+        await job.save();
+
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed in successfully', job });
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, message: error.message });
+    }
+};
+
+
+export const signOffJob = async (req, res) => {
+    const { jobId } = req.params;
+
+    try {
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
+        }
+
+        if(!job.isSignOff == true){
+            return res.status(404).json({ response_code: 404, success: false, message: 'This Job is already sign off' });
+        }
+
+        job.signOffTime = new Date();
+
+        // Calculate the number of hours worked
+        const signInTime = new Date(job.signInTime);
+        const signOffTime = new Date(job.signOffTime);
+        const noOfHours = (signOffTime - signInTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+
+        job.noOfhours = noOfHours;
+        job.isSignOff = true;
+        job.payment = noOfHours * job.hourRate;
+
+        await job.save();
+
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed off successfully', job });
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, message: error.message });
+    }
+};
+
+
+export const getInvoice = async (req, res) => {
+    const { jobId } = req.params;
+
+    try {
+        const job = await Job.findById(jobId)
+            .populate('client', 'name')
+            .populate('assignedStaff', 'firstName lastName');
+
+        if (!job) {
+            return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
+        }
+
+        if (job.jobStatus !== 'Completed') {
+            return res.status(400).json({ response_code: 400, success: false, message: 'Job is not completed yet' });
+        }
+
+        const invoice = {
+            jobName: job.jobName,
+            description: job.description,
+            client: job.client.name,
+            assignedStaff: `${job.assignedStaff.firstName} ${job.assignedStaff.lastName}`,
+            startTime: job.startTime,
+            signInTime: job.signInTime,
+            signOffTime: job.signOffTime,
+            noOfhours: job.noOfhours,
+            hourRate: job.hourRate,
+            payment: job.payment,
+            notes: job.notes,
+        };
+
+        res.status(200).json({ response_code: 200, success: true, invoice });
+    } catch (error) {
+        res.status(500).json({ response_code: 500, success: false, message: error.message });
+    }
+};
