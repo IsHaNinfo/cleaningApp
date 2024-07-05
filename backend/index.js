@@ -6,6 +6,7 @@ import adminRoutes from "./routes/adminRoute.js"
 import staffRoutes from "./routes/staffRoute.js"
 import clientRoutes from "./routes/clientRoute.js"
 import jobRoutes from "./routes/jobRoute.js"
+import userRoutes from "./routes/userRoute.js"
 import dotenv from 'dotenv';
 const app = express();
 
@@ -28,7 +29,7 @@ app.use("/admin",adminRoutes)
 app.use("/staff",staffRoutes)
 app.use("/client",clientRoutes)
 app.use("/job",jobRoutes);
-
+app.use("/user",userRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
