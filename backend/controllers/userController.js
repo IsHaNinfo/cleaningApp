@@ -11,28 +11,31 @@ const createToken = (_id,role) => {
     return jwt.sign({ _id,role }, process.env.SECRET, { expiresIn: 259200 });
 };
 export const addUser = async (req, res) => {
-    const { email, password, userName,role } = req.body;
+    const { email, password, userName, role, staffDetails } = req.body;
 
-    try{
-        if ( !email || !password || !role || !userName) {
-            return  res.status(404).json({ response_code: 404, success: false,message :"All fields must be filled" });
+    try {
+        if (!email || !password || !role || !userName) {
+            return res.status(404).json({ response_code: 404, success: false, message: "All fields must be filled" });
         }
         if (!validator.isEmail(email)) {
-            return  res.status(404).json({ response_code: 404, success: false,message :"Email not valid" });
-
+            return res.status(404).json({ response_code: 404, success: false, message: "Email not valid" });
         }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
             userName,
-            password:hashedPassword,
+            password: hashedPassword,
             email,
             role
         });
 
+        await user.save();
+
         if (role === "admin") {
             const admin = new Admin({ user: user._id });
             await admin.save();
-        }else if (role === "staff") {
+            user.adminDetails = admin._id;
+        } else if (role === "staff") {
             if (req.userRole !== "superAdmin" && req.userRole !== "admin") {
                 return res.status(404).json({ error: "Access denied" });
             }
@@ -52,22 +55,37 @@ export const addUser = async (req, res) => {
             </div>
           `;
 
-          sendEmail(email,htmlMessage)
-          const staff = new Staff({ user: user._id });
-          await staff.save();
-          user.staffDetails = staff._id
-        }else {
+            await sendEmail(email, htmlMessage);
+            const staff = new Staff({
+                user: user._id,
+                firstName: staffDetails.firstName,
+                lastName: staffDetails.lastName,
+                address: staffDetails.address,
+                phoneNumber: staffDetails.phoneNumber,
+                position: staffDetails.position,
+                dateOfBirth: staffDetails.dateOfBirth,
+                dateOfHire: staffDetails.dateOfHire,
+                empContactName: staffDetails.empContactName,
+                empPhoneNumber: staffDetails.empPhoneNumber,
+                bankAcNo: staffDetails.bankAcNo,
+                bankName: staffDetails.bankName,
+                bankAcBranch: staffDetails.bankAcBranch,
+                notes: staffDetails.notes,
+                workStatus: staffDetails.workStatus
+            });
+            await staff.save();
+            user.staffDetails = staff._id;
+        }  else {
             return res.status(404).json({ error: "This role not found" });
         }
+
         await user.save();
 
         res.status(200).json({ response_code: 200, success: true, message: 'User registered successfully!' });
-
-    }catch (error){
+    } catch (error) {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
-
     }
-}
+};
 
 
 export const addsuperAdmin = async (req, res) => {
@@ -231,6 +249,56 @@ export const updateUserPassword = async (req, res) => {
         await user.save();
         res.status(200).json({ response_code: 200, success: true, message: 'Password updated successfully'});
 
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
+
+
+export const updateStaff = async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, address, phoneNumber, position, dateOfBirth, dateOfHire, empContactName, empPhoneNumber, bankAcNo, bankName, bankAcBranch, notes, workStatus, email, userName } = req.body;
+
+    try {
+        // Find the staff member by ID
+        const staff = await Staff.findById(id).populate('user');
+        if (!staff) {
+            return res.status(404).json({ response_code: 404, success: false, message: "Staff not found" });
+        }
+
+        // Update staff details
+        staff.firstName = firstName || staff.firstName;
+        staff.lastName = lastName || staff.lastName;
+        staff.address = address || staff.address;
+        staff.phoneNumber = phoneNumber || staff.phoneNumber;
+        staff.position = position || staff.position;
+        staff.dateOfBirth = dateOfBirth || staff.dateOfBirth;
+        staff.dateOfHire = dateOfHire || staff.dateOfHire;
+        staff.empContactName = empContactName || staff.empContactName;
+        staff.empPhoneNumber = empPhoneNumber || staff.empPhoneNumber;
+        staff.bankAcNo = bankAcNo || staff.bankAcNo;
+        staff.bankName = bankName || staff.bankName;
+        staff.bankAcBranch = bankAcBranch || staff.bankAcBranch;
+        staff.notes = notes || staff.notes;
+        staff.workStatus = workStatus || staff.workStatus;
+
+        // Save the updated staff details
+        await staff.save();
+
+        // Find and update the user details
+        const user = await User.findById(staff.user._id);
+        if (!user) {
+            return res.status(404).json({ response_code: 404, success: false, message: "User not found" });
+        }
+
+        user.userName = userName || user.userName;
+        user.email = email || user.email;
+        user.status = workStatus || user.status;
+
+        // Save the updated user details
+        await user.save();
+
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff and user details updated successfully!' });
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
