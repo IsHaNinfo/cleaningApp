@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-const adminSchema = new Schema(
+const superAdminSchema = new Schema(
     {
         user: {
             type: Schema.Types.ObjectId,
@@ -12,8 +12,9 @@ const adminSchema = new Schema(
     {
         timestamps: true
     }
-)
+);
 
-const Admin = mongoose.model('Admin', adminSchema);
+const SystemAdmin = mongoose.model("SuperAdmin", superAdminSchema);
 
-export default Admin;
+
+export default SystemAdmin;

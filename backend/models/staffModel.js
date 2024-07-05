@@ -4,30 +4,26 @@ const Schema = mongoose.Schema;
 const staffSchema = new Schema(
     {
 
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: false,
+        },
         firstName: {
             type: String,
-            required: true,
+            required: false,
         },
         lastName: {
             type: String,
-            required: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
+            required: false,
         },
         address: {
             type: String,
-            required: true,
+            required: false,
         },
         phoneNumber: {
             type: String,
-            required: true,
+            required: false,
         },
         position: {
             type: String,
@@ -69,7 +65,7 @@ const staffSchema = new Schema(
         adminId: {
             type: Schema.Types.ObjectId,
             ref: 'Admin',
-            required: true,
+            required: false,
         },
         notes: {
             type: String,
@@ -81,11 +77,7 @@ const staffSchema = new Schema(
             default: 'active',
             required: true,
         },
-        role:{
-            type: String,
-            default: 'staff',
-            required: true,
-        },
+        
     },
     {
         timestamps: true
