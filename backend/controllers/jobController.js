@@ -21,7 +21,7 @@ export const addJob = async (req, res) => {
                 return  res.status(404).json({ response_code: 404, success: false,message :"Job already exists" });
             } 
 
-            const adminId = req.adminId.id;
+            const adminId = req.userId._id;
             const newJob = new Job({
                 jobName, 
                 description, 
@@ -116,15 +116,25 @@ export const getJobById = async (req, res) => {
 
 export const getAllJobs = async (req, res) => {
     try {
-        const jobs = await Job.find();
+        const jobs = await Job.find()
+            .populate({
+                path: 'assignedStaff',
+                select: 'firstName lastName'
+            })
+            .populate({
+                path: 'client',
+                select: 'firstName lastName'  // Adjust field name as per your Client schema
+            })
+
         if (!jobs.length) {
-            return  res.status(404).json({ response_code: 404, success: false,message :"Jobs not found" });
+            return res.status(404).json({ response_code: 404, success: false, message: "Jobs not found" });
         }
-        res.status(200).json({ response_code: 200, success: true,message :"Jobs fetched successfully" ,jobs});
+        res.status(200).json({ response_code: 200, success: true, message: "Jobs fetched successfully", jobs });
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 }
+
 
 
 export const getAllJobPagination = async (req, res) => {
