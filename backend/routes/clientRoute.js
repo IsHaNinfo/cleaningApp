@@ -3,16 +3,16 @@ import express from "express"
 const router = express.Router();
 
 import {addClient,updateClientById ,deleteClientById,getClientById,getAllClient,getAllActiveClient,getAllClientPagination,updateStatus} from "../controllers/clientController.js"
-import adminAuthentication from "../middleware/adminAuthentication.js";
+import roleAuthentication from "../middleware/roleAuthentication.js";
 
 
-router.post("/addClient", adminAuthentication,addClient);
-router.put("/updateClientById/:id", adminAuthentication,updateClientById);
-router.delete("/deleteClientById/:id", adminAuthentication,deleteClientById);
-router.get("/getClientById/:id", adminAuthentication,getClientById);
-router.get("/getAllClientPagination", adminAuthentication,getAllClientPagination);
-router.get("/getAllActiveClient", adminAuthentication,getAllActiveClient);
-router.get("/getAllClient", adminAuthentication,getAllClient);
-router.patch("/updateStatus/:id", adminAuthentication,updateStatus);
+router.post("/addClient", roleAuthentication(['superAdmin', 'admin']),addClient);
+router.put("/updateClientById/:id", roleAuthentication(['superAdmin', 'admin']),updateClientById);
+router.delete("/deleteClientById/:id", roleAuthentication(['superAdmin', 'admin']),deleteClientById);
+router.get("/getClientById/:id", roleAuthentication(['superAdmin', 'admin']),getClientById);
+router.get("/getAllClientPagination", roleAuthentication(['superAdmin', 'admin']),getAllClientPagination);
+router.get("/getAllActiveClient", roleAuthentication(['superAdmin', 'admin']),getAllActiveClient);
+router.get("/getAllClient", roleAuthentication(['superAdmin', 'admin']),getAllClient);
+router.patch("/updateStatus/:id", roleAuthentication(['superAdmin', 'admin']),updateStatus);
 
 export default router;

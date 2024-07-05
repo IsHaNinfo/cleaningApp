@@ -2,11 +2,11 @@ import express from "express"
 
 const router = express.Router();
 import {addJob,updatedJob ,getInvoice,signInJob,signOffJob,deleteJobById,getJobById,getAllJobs,getAllJobPagination,updateStatus} from "../controllers/jobController.js"
-import adminAuthentication from "../middleware/adminAuthentication.js";
+import roleAuthentication from "../middleware/roleAuthentication.js";
 
 
-router.post("/addJob",adminAuthentication, addJob);
-router.put("/updatedJob/:id",adminAuthentication,updatedJob);
+router.post("/addJob",roleAuthentication(['superAdmin', 'admin']), addJob);
+router.put("/updatedJob/:id",roleAuthentication(['superAdmin', 'admin']),updatedJob);
 router.delete("/deleteJobById/:id",deleteJobById);
 router.get("/getJobById/:id",getJobById);
 router.get("/getAllJobPagination",getAllJobPagination);
