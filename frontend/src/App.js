@@ -21,7 +21,8 @@ import EditJob from "./scenes/jobs/EditJob.jsx";
 
 import Clients from "./scenes/clients";
 import AddClient from "./scenes/clients/AddClient.jsx";
-
+import ViewClient from "./scenes/clients/ViewClient.jsx";
+import EditClient from "./scenes/clients/EditClient.jsx";
 import EditSubscription from "./scenes/subscriptionPackage/EditSubscription";
 import NewSubscripion from "./scenes/subscriptionPackage/NewSubscripion";
 import ViewSubscription from "./scenes/subscriptionPackage/ViewSubscription";
@@ -100,7 +101,9 @@ function App() {
 
                 <Route path="/clients" element={<Clients></Clients>}></Route>
                 <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
-                
+                <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
+                <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
+
 
 
 <Route
