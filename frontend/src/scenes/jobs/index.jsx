@@ -52,7 +52,7 @@ import {
         body: data.map(({ _id, jobName, client, assignedStaff, startTime }) => [
           _id,
           jobName,
-          `${client.firstName} ${client.lastName}`,
+          `${client.firstName} ${client.lastName} `,
           `${assignedStaff.firstName} ${assignedStaff.lastName}`,
           startTime,
         ]),

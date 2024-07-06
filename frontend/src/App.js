@@ -20,6 +20,8 @@ import ViewJob from "./scenes/jobs/ViewJob.jsx"
 import EditJob from "./scenes/jobs/EditJob.jsx";
 
 import Clients from "./scenes/clients";
+import AddClient from "./scenes/clients/AddClient.jsx";
+
 import EditSubscription from "./scenes/subscriptionPackage/EditSubscription";
 import NewSubscripion from "./scenes/subscriptionPackage/NewSubscripion";
 import ViewSubscription from "./scenes/subscriptionPackage/ViewSubscription";
@@ -97,7 +99,8 @@ function App() {
                 ></Route>
 
                 <Route path="/clients" element={<Clients></Clients>}></Route>
-
+                <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
+                
 
 
 <Route
