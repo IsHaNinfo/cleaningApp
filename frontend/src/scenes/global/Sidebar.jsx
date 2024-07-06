@@ -167,6 +167,14 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+
+              <Item
+              title="Clients"
+              to="/clients"
+              icon={<BusinessCenterOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
            
             
           </Box>
