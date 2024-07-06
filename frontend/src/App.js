@@ -18,6 +18,8 @@ import Jobs from "./scenes/jobs"
 import AddJob from "./scenes/jobs/AddJob.jsx";
 import ViewJob from "./scenes/jobs/ViewJob.jsx"
 import EditJob from "./scenes/jobs/EditJob.jsx";
+
+import Clients from "./scenes/clients";
 import EditSubscription from "./scenes/subscriptionPackage/EditSubscription";
 import NewSubscripion from "./scenes/subscriptionPackage/NewSubscripion";
 import ViewSubscription from "./scenes/subscriptionPackage/ViewSubscription";
@@ -93,6 +95,8 @@ function App() {
                   path="/jobs/editjob/:id"
                   element={<EditJob></EditJob>}
                 ></Route>
+
+                <Route path="/clients" element={<Clients></Clients>}></Route>
 
 
 

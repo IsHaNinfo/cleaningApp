@@ -26,6 +26,7 @@
     "axios": "^1.6.7",
     "caniuse-lite": "^1.0.30001596",
     "chart.js": "^3.9.1",
+    "dotenv": "^16.4.5",
     "formik": "^2.2.9",
     "jodit-react": "^4.1.2",
     "jspdf": "^2.5.1",

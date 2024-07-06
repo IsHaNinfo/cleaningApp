@@ -31,10 +31,10 @@ import {
       fetchClients();
       fetchStaffs();
     }, []);
-  
+    const token = localStorage.getItem("token")
+
     const fetchClients = async () => {
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg4MGU1NWE2ZWI1ZjExMmNhOTliODciLCJyb2xlIjoic3VwZXJBZG1pbiIsImlhdCI6MTcyMDE5MjYxMCwiZXhwIjoxNzIwNDUxODEwfQ.KPcKhwHKTUrDiK_dzWgcFy1--R0B6bf3w_5Y5BLoyHY"
           const headers = {
             Authorization: `Bearer ${token}`
           };
@@ -58,7 +58,6 @@ import {
   
     const fetchStaffs = async () => {
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg4MGU1NWE2ZWI1ZjExMmNhOTliODciLCJyb2xlIjoic3VwZXJBZG1pbiIsImlhdCI6MTcyMDE5MjYxMCwiZXhwIjoxNzIwNDUxODEwfQ.KPcKhwHKTUrDiK_dzWgcFy1--R0B6bf3w_5Y5BLoyHY"
           //const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
           const response = await axios.get("http://localhost:4000/staff/getAllStaff", {
             headers: {
@@ -84,7 +83,6 @@ import {
       const handleFormSubmit = async (values, { resetForm }) => {
         setLoading(true);
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg4MGU1NWE2ZWI1ZjExMmNhOTliODciLCJyb2xlIjoic3VwZXJBZG1pbiIsImlhdCI6MTcyMDE5MjYxMCwiZXhwIjoxNzIwNDUxODEwfQ.KPcKhwHKTUrDiK_dzWgcFy1--R0B6bf3w_5Y5BLoyHY"
           const headers = {
             Authorization: `Bearer ${token}`
           };
