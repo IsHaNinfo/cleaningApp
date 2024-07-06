@@ -25,6 +25,8 @@ import { Menu, MenuItem, ProSidebar } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+
 const Item = ({ title, to, icon, selected, setSelected, children }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -158,7 +160,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
+              <Item
+              title="Jobs"
+              to="/jobs"
+              icon={<WorkOutlineIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
            
             
           </Box>

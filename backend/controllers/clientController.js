@@ -24,7 +24,7 @@ export const addClient = async (req, res) => {
                 return  res.status(404).json({ response_code: 404, success: false,message :"Client already exists" });
             } 
 
-            const adminId = req.adminId.id;
+            const adminId = req.userId._id;
             const newClient = new Client({
                 firstName, 
                 lastName, 

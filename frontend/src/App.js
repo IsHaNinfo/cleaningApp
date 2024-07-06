@@ -13,6 +13,11 @@ import AddNews from "./scenes/news/AddNews";
 import EditNews from "./scenes/news/EditNews";
 import ViewNews from "./scenes/news/ViewNews";
 
+
+import Jobs from "./scenes/jobs"
+import AddJob from "./scenes/jobs/AddJob.jsx";
+import ViewJob from "./scenes/jobs/ViewJob.jsx"
+import EditJob from "./scenes/jobs/EditJob.jsx";
 import EditSubscription from "./scenes/subscriptionPackage/EditSubscription";
 import NewSubscripion from "./scenes/subscriptionPackage/NewSubscripion";
 import ViewSubscription from "./scenes/subscriptionPackage/ViewSubscription";
@@ -78,6 +83,18 @@ function App() {
                   path="/news/editnews/:id"
                   element={<EditNews></EditNews>}
                 ></Route>
+                <Route path="/jobs" element={<Jobs></Jobs>}></Route>
+                <Route path="/jobs/newjob" element={<AddJob></AddJob>}></Route>
+                <Route
+                  path="/jobs/viewjob/:id"
+                  element={<ViewJob></ViewJob>}
+                ></Route>
+                <Route
+                  path="/jobs/editjob/:id"
+                  element={<EditJob></EditJob>}
+                ></Route>
+
+
 
 <Route
                   path="/profile/changepassword"
