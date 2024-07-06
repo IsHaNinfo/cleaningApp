@@ -97,7 +97,7 @@ h2, p {
     border-color: black; /* Border color */
   }
   &:hover .MuiOutlinedInput-notchedOutline {
-    border-color: black; /* Border color on hover */
+    border-color: black !important; /* Border color on hover */
   }
   &.Mui-focused .MuiOutlinedInput-notchedOutline {
     border-color: black; /* Border color when focused */
@@ -130,6 +130,14 @@ h2, p {
   background-color: #3E70EF !important;
   /* border-radius: 5% !important; */
   width:80% !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: black !important;
 }
 
 

@@ -18,6 +18,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as yup from "yup";
 import Header from "../../components/Header";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { environment } from "../../environment";
 
 function EditProfile() {
   const { id } = useParams();
@@ -31,6 +34,24 @@ function EditProfile() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [alertMessage, setAlertMessage] = useState("");
+  const [hasChanges, setHasChanges] = useState(false);
+  const token = localStorage.getItem("token")
+
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken._id; // Adjust according to your token structure
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const userId = getUserIdFromToken();
 
   useEffect(() => {
     fetchUserDetails();
@@ -38,16 +59,21 @@ function EditProfile() {
 
   const fetchUserDetails = async () => {
     try {
-      const response = await fetch(
-        "https://jcgnapi.hasthiya.org/admin/getAdmin"
+      const response = await axios.get(
+        environment.apiUrl + `/user/getUser/${userId}`
       );
-      if (response.ok) {
-        const data = await response.json();
-        const userData = data[0];
+      if (response) {
+        const data = await response.data;
+        const userData = data.userDetails;
         setUserDetails({
-          name: userData.name,
-          email: userData.email,
+          name: userData.userName ? userData.userName : " " ,
+          email: userData.email ? userData.email : " ",
           ProfileImage: userData.image || "",
+        });
+
+        formik.setValues({
+          name: userData.userName ? userData.userName : " " ,
+          email: userData.email ? userData.email : " ",
         });
       } else {
         console.error("Failed to fetch user details:", response.statusText);
@@ -59,6 +85,7 @@ function EditProfile() {
 
   const checkoutSchema = yup.object().shape({
     name: yup.string().required("Name is required"),
+    email: yup.string().required("Email is required").email("Enter valid mail")
   });
 
   const formik = useFormik({
@@ -66,20 +93,31 @@ function EditProfile() {
     validationSchema: () => checkoutSchema,
     onSubmit: async (values) => {
       try {
-        const response = await fetch(
-          `https://jcgnapi.hasthiya.org/admin/updateUserDetails/1`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: userDetails.email,
-              name: values.name,
-            }),
-          }
-        );
-        if (response.ok) {
+        // const response = await fetch(
+        //   `https://jcgnapi.hasthiya.org/admin/updateUserDetails/1`,
+        //   {
+        //     method: "PUT",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       email: userDetails.email,
+        //       name: values.name,
+        //     }),
+        //   }
+        // );
+        const headers = {
+          Authorization: `Bearer ${token}`
+        };
+
+        const userValues ={
+        userName : values.name,
+        email : values.email
+
+        }
+    
+        const response = await axios.put(environment.apiUrl+`/user/userUpdate/${userId}`, userValues, { headers });
+        if (response.data.success) {
           setAlertSeverity("success");
           setAlertMessage("Profile name updated successfully!");
           setOpenSnackbar(true);
@@ -87,14 +125,16 @@ function EditProfile() {
             navigate("/profile");
           }, 2000);
           fetchUserDetails();
+          setHasChanges(false);
         } else {
           console.error("Failed to update profile:", response.statusText);
           setAlertSeverity("error");
           setAlertMessage("Failed to update profile. Please try again.");
           setOpenSnackbar(true);
+
         }
       } catch (error) {
-        console.error("Error updating profile:", error.message);
+        console.error("Error updating profile:", error);
         setAlertSeverity("error");
         setAlertMessage(
           "An error occurred while updating profile. Please try again later."
@@ -207,22 +247,51 @@ function EditProfile() {
     }
   };
 
+  const handleInputChange = (event) => {
+    formik.handleChange(event);
+    setHasChanges(true); // Set hasChanges to true when input changes
+  };
+
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
-      <Header
+      <div className ="row d-flex justify-content-between">
+        <div className = "col-md-6">
+        <Header
         title={`Edit Profile`}
         subtitle={
-          <Typography sx={{ fontSize: "1.1rem" }}>
-            {`Name: ${userDetails.name}`} <br />
-            {`Email: ${userDetails.email}`}
-          </Typography>
+          // <Typography sx={{ fontSize: "1.1rem" }}>
+          //   {`Name: ${userDetails.name}`} <br />
+          //   {`Email: ${userDetails.email}`}
+          // </Typography>
+          <>
+            <Typography sx={{ fontSize: "1.1rem" }}>
+              {`Name: ${userDetails.name}`} <br />
+              {`Email: ${userDetails.email}`}
+            </Typography>
+            
+          </>
         }
-      />
+       />
+        </div>
+        <div className ="col-md-6 d-flex justify-content-end mt-2">
+        <Button
+              variant="outlined"
+              sx={{ ml: 2, color: "#6870fa", borderColor: "#6870fa",  height:"30%" }}
+              onClick={() => navigate("/profile/changepassword")}
+              mt = {2}
+            >
+              Change Password
+            </Button>
+      </div>
+        </div>
+      
+       
+      
 
       <Box ml={"40px"}>
         <Grid container spacing={2}>
           <Grid item xs={10.2}>
-            <Box display="flex" alignItems="center">
+            {/* <Box display="flex" alignItems="center">
               <Box mb={3.5}>
                 <Avatar
                   alt="profile-avatar"
@@ -280,9 +349,9 @@ function EditProfile() {
                   </>
                 )}
               </Box>
-            </Box>
+            </Box> */}
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={2} mt={4}>
             <Typography variant="h5" component="span" fontWeight="bold">
               Enter New Name:
               {formik.touched.name && formik.errors.name && (
@@ -296,23 +365,55 @@ function EditProfile() {
               )}
             </Typography>
           </Grid>
-          <Grid item xs={10}>
+          <Grid item xs={10} mt={4}>
             <TextField
               fullWidth
               variant="outlined"
               margin="normal"
               name="name"
-              value={formik.values.name || userDetails.name}
-              onChange={formik.handleChange}
+              value={formik.values.name}
+              onChange={handleInputChange}
               error={
-                (formik.touched.name && Boolean(formik.errors.name)) ||
-                (formik.values.name === userDetails.name && formik.touched.name)
+                (formik.touched.name && Boolean(formik.errors.name))
               }
               helperText={
-                (formik.touched.name && formik.errors.name) ||
-                (formik.values.name === userDetails.name && formik.touched.name)
-                  ? formik.errors.name && "No changes made"
-                  : formik.touched.name && "Enter a new name"
+                (formik.touched.name && formik.errors.name) 
+                  ? formik.errors.name && "Enter User Name"
+                  : null
+              }
+              style={{ marginTop: "-10px", width: "70%" }}
+            />
+          </Grid>
+
+          <Grid item xs={2} mt={3}>
+            <Typography variant="h5" component="span" fontWeight="bold">
+              Enter New Email:
+              {formik.touched.email && formik.errors.email && (
+                <Typography
+                  component="span"
+                  color="error"
+                  style={{ marginLeft: "3px" }}
+                >
+                  *
+                </Typography>
+              )}
+            </Typography>
+          </Grid>
+          <Grid item xs={10} mt={2}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              name="email"
+              value={formik.values.email}
+              onChange={handleInputChange}
+              error={
+                (formik.touched.email && Boolean(formik.errors.email))
+              }
+              helperText={
+                (formik.touched.email && formik.errors.email)
+                  ? formik.errors.email && "Enter valid"
+                  : null
               }
               style={{ marginTop: "-10px", width: "70%" }}
             />
@@ -330,6 +431,8 @@ function EditProfile() {
                 backgroundColor: "#3e4396",
               },
             }}
+            disabled = {!hasChanges}
+            
           >
             Update
           </Button>

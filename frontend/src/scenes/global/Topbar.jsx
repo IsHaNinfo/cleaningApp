@@ -11,6 +11,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { ColorModeContext, tokens } from "../../theme";
+import profile from "../../assets/logo/profile.png"
+import { environment } from "../../environment";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -18,20 +22,48 @@ const Topbar = () => {
   const navigate = useNavigate();
   const [adminData, setAdminData] = useState({
     name: "",
-    image: "",
+    image: profile,
+    role: ''
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken._id; // Adjust according to your token structure
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const userId = getUserIdFromToken();
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch(
-          "https://jcgnapi.hasthiya.org/admin/getAdmin"
-        );
-        const data = await response.json();
-        if (data && data.length > 0) {
-          setAdminData(data[0]);
+         await axios.get(
+          environment.apiUrl + `/user/getUser/${userId}`
+        ).then(async (res)=>{
+          const data = res.data.userDetails
+          data.image = profile;
+        ;
+        if (data) {
+          const uData = {
+            name:  data.userName,
+            image: profile,
+            role:data.role
+
+          }
+          await setAdminData(data);
+          
         }
+        });
+        
       } catch (error) {
         console.error("Error fetching admin data:", error);
       }
@@ -42,7 +74,7 @@ const Topbar = () => {
 
   const logoSrc =
     theme.palette.mode === "dark"
-      ? "../../assets/logo2.png"
+      ? "../../assets/logo.png"
       : "../../assets/logo.png";
 
   const handleClick = (event) => {
@@ -77,15 +109,15 @@ const Topbar = () => {
       justifyContent="space-between"
       alignItems="center"
       backgroundColor={colors.primary[400]}
-      p={2}
+      p={0}
     >
       <Box
         display="flex"
         backgroundColor={colors.primary[400]}
-        borderRadius="50%"
+        // borderRadius="50%"
         overflow="hidden"
-        width="100px"
-        height="100px"
+        width="170px"
+        height="70px"
       >
         <img
           alt="profile-user"
@@ -94,7 +126,7 @@ const Topbar = () => {
             width: "100%",
             height: "100%",
             cursor: "pointer",
-            borderRadius: "50%",
+            // borderRadius: "50%",
             transform:
               theme.palette.mode === "dark" ? "scale(1.2)" : "scale(1)",
             transition: "transform 0.3s ease",
@@ -120,13 +152,13 @@ const Topbar = () => {
 
       {/* ICONS */}
       <Box>
-        <IconButton onClick={colorMode.toggleColorMode}>
+        {/* <IconButton onClick={colorMode.toggleColorMode}>
           {theme.palette.mode === "dark" ? (
             <DarkModeOutlinedIcon style={{ fontSize: "1.8rem" }} />
           ) : (
             <LightModeOutlinedIcon style={{ fontSize: "1.8rem" }} />
           )}
-        </IconButton>
+        </IconButton> */}
         <IconButton>
           <NotificationsOutlinedIcon style={{ fontSize: "1.8rem" }} />
         </IconButton>
@@ -154,10 +186,10 @@ const Topbar = () => {
               fontWeight="bold"
               sx={{ display: "flex", alignItems: "center", gap: "5px" }}
             >
-              {adminData.name} <ArrowDropDownCircleOutlined />
+              {adminData.userName} <ArrowDropDownCircleOutlined />
             </Typography>
             <Typography variant="h5" color={colors.greenAccent[500]}>
-              Admin
+              {adminData.role}
             </Typography>
           </Typography>
 
