@@ -7,6 +7,7 @@ import axios from "axios";
 import MuiAlert from "@mui/material/Alert";
 import background from "../../assets/background.jpg"
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {environment} from "../../environment"
 
 const theme = createTheme({
   palette: {
@@ -97,7 +98,7 @@ function Login() {
       }
     }
     try {
-      const res = await axios.post("http://localhost:4000/user/loginUser", {
+      const res = await axios.post(environment.apiUrl +"/user/loginUser", {
         email: formData.email,
         password: formData.password,
       });
@@ -122,48 +123,46 @@ function Login() {
 
   return (
     <div className ="div-container">
-      <div className ="row  d-flex align-items-center justify-content-center">
-        <div className = "col-md-4 col-sm-12 mt-4">
+      <div className ="row  d-flex justify-content-center">
+        <div className = "col-md-4 col-sm-12 mt-5">
         <div className="login-container">
         <div className ="d-flex align-items-center justify-content-center">
-        <img src={logo}></img>
+        {/* <img src={logo}></img> */}
         </div>
         <h2>Sign In</h2>
         <Typography component="p" variant="p" className ="mt-4">
           Please sign in to your accout
         </Typography>
         <form className="" onSubmit={login}>
-        <Typography component="p" variant="p" className ="mt-3">
-          Email
+        <Typography component="p" variant="p" className ="mt-4">
+          *Email
         </Typography>
           <TextField
             variant="outlined"
             margin="normal"
             fullWidth
             id="email"
-            label="Email Address"
             name="email"
             onChange={handleChange}
             error={!!emailError}
             helperText={emailError}
-            className="mt-0"
+            className="mt-0 w-80"
           />
           <Typography component="p" variant="p" className ="mt-2">
-          Password
+          *Password
         </Typography>
           <TextField
             variant="outlined"
             margin="normal"
             fullWidth
             name="password"
-            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
             onChange={handleChange}
             error={!!passwordError}
             helperText={passwordError}
-            className="mt-0"
+            className="mt-0 w-80"
           />
           <br />
           <div className ="d-flex align-items-center justify-content-center">
