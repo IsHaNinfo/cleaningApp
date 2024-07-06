@@ -1,4 +1,6 @@
 import Job from "../models/jobModel.js"
+import Staff from "../models/staffModel.js"
+import Client from "../models/clientModel.js"
 
 export const addJob = async (req, res) => {
 
@@ -20,6 +22,17 @@ export const addJob = async (req, res) => {
             if (existingJob) {
                 return  res.status(404).json({ response_code: 404, success: false,message :"Job already exists" });
             } 
+
+            const clientExists = await Client.findById(client);
+            if (!clientExists) {
+                return res.status(404).json({ response_code: 404, success: false, message: "Client not found" });
+            }
+    
+            // Check if the assigned staff exists
+            const staffExists = await Staff.findById(assignedStaff);
+            if (!staffExists) {
+                return res.status(404).json({ response_code: 404, success: false, message: "Assigned staff not found" });
+            }
 
             const adminId = req.userId._id;
             const newJob = new Job({
