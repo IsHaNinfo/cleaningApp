@@ -5,6 +5,44 @@ import logo from "../../assets/logo/logo.png";
 import "./login.css";
 import axios from "axios";
 import MuiAlert from "@mui/material/Alert";
+import background from "../../assets/background.jpg"
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#000000', // Black for primary color
+    },
+    text: {
+      primary: '#000000', // Black text color
+    },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-root': {
+            color: 'black', // Text color
+          },
+          '& .MuiInputLabel-root': {
+            color: 'black', // Label color
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'black', // Border color
+            },
+            '&:hover fieldset': {
+              borderColor: 'black', // Border color on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'black', // Border color when focused
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -59,17 +97,17 @@ function Login() {
       }
     }
     try {
-      const res = await axios.post("https://jcgnapi.hasthiya.org/admin/login", {
+      const res = await axios.post("http://localhost:4000/user/loginUser", {
         email: formData.email,
         password: formData.password,
       });
       
-      if (res.data.result.status) {
+      if (res.data.success) {
         setAlertSeverity("success");
         setAlertMessage("Sign in Successful!");
-        localStorage.setItem("token", res.data.result.token);
+        localStorage.setItem("token", res.data.token);
         localStorage.setItem("isAuthenticated", true);
-        navigate("/dashboard");
+        navigate("/news");
       }
     } catch (err) {
       console.error(err);
@@ -83,14 +121,21 @@ function Login() {
   };
 
   return (
-    <div className="container">
-      <div className="login-container">
+    <div className ="div-container">
+      <div className ="row  d-flex align-items-center justify-content-center">
+        <div className = "col-md-4 col-sm-12 mt-4">
+        <div className="login-container">
+        <div className ="d-flex align-items-center justify-content-center">
         <img src={logo}></img>
+        </div>
         <h2>Sign In</h2>
-        <Typography component="p" variant="p">
+        <Typography component="p" variant="p" className ="mt-4">
           Please sign in to your accout
         </Typography>
         <form className="" onSubmit={login}>
+        <Typography component="p" variant="p" className ="mt-3">
+          Email
+        </Typography>
           <TextField
             variant="outlined"
             margin="normal"
@@ -101,7 +146,11 @@ function Login() {
             onChange={handleChange}
             error={!!emailError}
             helperText={emailError}
+            className="mt-0"
           />
+          <Typography component="p" variant="p" className ="mt-2">
+          Password
+        </Typography>
           <TextField
             variant="outlined"
             margin="normal"
@@ -114,17 +163,21 @@ function Login() {
             onChange={handleChange}
             error={!!passwordError}
             helperText={passwordError}
+            className="mt-0"
           />
           <br />
+          <div className ="d-flex align-items-center justify-content-center">
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            className=""
+            className="mt-5 submit-button"
           >
             Sign In
           </Button>
+          </div>
+          
         </form>
       </div>
       <Snackbar
@@ -145,6 +198,12 @@ function Login() {
           {alertMessage}
         </MuiAlert>
       </Snackbar>
+        </div>
+        <div className ="col-8 p-0">
+        <img src={background} className ="b-img " ></img>
+        </div>
+      </div>
+      
     </div>
   );
 }

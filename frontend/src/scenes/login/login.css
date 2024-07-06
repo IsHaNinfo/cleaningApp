@@ -1,4 +1,4 @@
-.container {
+/* .container {
   display: flex;
   width: 100vw;
   height: 100vh;
@@ -40,4 +40,98 @@
     width: 90vw;
     padding: 30px;
   }
+} */
+
+/* .login{
+  background-color: #fff;
+} */
+.input{
+  color: #0000 !important;
 }
+
+/* login.css */
+
+.div-container {
+  height: 100vh;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  background-color: white; /* Set background color to white */
+  color: black; /* Set font color to black */
+  overflow: hidden !important;
+
+}
+
+.row{
+  background-color: #ffff;
+
+}
+
+.login-container {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.col-8 img {
+  width: 100% !important;
+  height: 100vh; /* Full height of the viewport */
+  object-fit: cover; /* Ensure the image covers the container */
+}
+
+h2, p {
+  color: black; /* Ensure heading and paragraph text are black */
+}
+
+.MuiAlert-filledSuccess, .MuiAlert-filledError {
+  color: white !important; /* Ensure Snackbar text remains white */
+}
+
+.MuiAlert-filledSuccess, .MuiAlert-filledError {
+  color: white !important; /* Ensure Snackbar text remains white */
+}
+
+.MuiOutlinedInput-root {
+  & .MuiOutlinedInput-notchedOutline {
+    border-color: black; /* Border color */
+  }
+  &:hover .MuiOutlinedInput-notchedOutline {
+    border-color: black; /* Border color on hover */
+  }
+  &.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: black; /* Border color when focused */
+  }
+  & .MuiOutlinedInput-input {
+    color: black !important; /* Input text color */
+  }
+}
+
+.MuiInputLabel-root {
+  color: black; /* Label color */
+}
+
+.MuiInputBase-root {
+  color: black; /* Text color */
+}
+
+@media screen and (max-width: 576px) {
+  .b-img{
+  display:none;
+  }
+
+  .row{
+    height: 100%;
+    /* margin-top: 200px; */
+  }
+}
+
+.submit-button{
+  background-color: #3E70EF !important;
+  /* border-radius: 5% !important; */
+  width:80% !important;
+}
+
+
+
+
