@@ -1,7 +1,7 @@
 import { Button, TextField, Typography, Snackbar } from "@mui/material";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo/logo.png";
+import logo from "../../assets/logo/login_logo.png";
 import "./login.css";
 import axios from "axios";
 import MuiAlert from "@mui/material/Alert";
@@ -124,11 +124,11 @@ function Login() {
   return (
     <div className ="div-container">
       <div className ="row  d-flex justify-content-center">
-        <div className = "col-md-4 col-sm-12 mt-5">
-        <div className="login-container">
+        <div className = "col-md-4 col-sm-12 mt-4">
         <div className ="d-flex align-items-center justify-content-center">
-        {/* <img src={logo}></img> */}
+        <img src={logo}></img>
         </div>
+        <div className="login-container mt-3">
         <h2>Sign In</h2>
         <Typography component="p" variant="p" className ="mt-4">
           Please sign in to your accout

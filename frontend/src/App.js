@@ -105,7 +105,7 @@ function App() {
                   element={<ChangePw></ChangePw>}
                 ></Route>
                 <Route
-                  path="/profile/editprofile"
+                  path="/profile"
                   element={<EditProfile></EditProfile>}
                 ></Route>
                 

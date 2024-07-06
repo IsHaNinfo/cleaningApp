@@ -16,6 +16,7 @@ import {
   import * as yup from "yup";
   import axios from "axios";
   import Header from "../../components/Header";
+import { environment } from "../../environment";
   
   const AddJob = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -39,7 +40,7 @@ import {
             Authorization: `Bearer ${token}`
           };
       
-          const response = await axios.get("http://localhost:4000/client/getAllClient", { headers });
+          const response = await axios.get(environment.apiUrl + "/client/getAllClient", { headers });
       
           if (response.data.success) {
             setClients(response.data.clients);
@@ -59,7 +60,7 @@ import {
     const fetchStaffs = async () => {
         try {
           //const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-          const response = await axios.get("http://localhost:4000/staff/getAllStaff", {
+          const response = await axios.get(environment.apiUrl + "/staff/getAllStaff", {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -87,7 +88,7 @@ import {
             Authorization: `Bearer ${token}`
           };
       
-          const response = await axios.post("http://localhost:4000/job/addJob", values, { headers });
+          const response = await axios.post(environment.apiUrl + "/job/addJob", values, { headers });
           console.log("Response:", response.data);
       
           if (response.data.success== true) {

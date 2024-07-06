@@ -15,6 +15,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import Header from "../../components/Header";
+import { jwtDecode } from "jwt-decode";
+import { environment } from "../../environment";
 
 const CreateNewUser = () => {
   const navigate = useNavigate();
@@ -25,15 +27,41 @@ const CreateNewUser = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+
+  const token = localStorage.getItem("token")
+
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        console.log("decode",decodedToken);
+        return decodedToken._id; // Adjust according to your token structure
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const userId = getUserIdFromToken();
 
   const handleFormSubmit = async (values) => {
     try {
-      const response = await axios.post(
-        "https://jcgnapi.hasthiya.org/admin/ChangePassword/1",
+      const headers = {
+        Authorization: `Bearer ${token}`
+      };
+
+      const response = await axios.put(
+        environment.apiUrl + `/user/updateUserPassword/${userId}`,
         {
-          oldPassword: values.currentPassword,
+          currentPassword: values.currentPassword,
           newPassword: values.newPassword,
         }
+        ,
+        {headers}
       );
 
       if (response.status === 200) {

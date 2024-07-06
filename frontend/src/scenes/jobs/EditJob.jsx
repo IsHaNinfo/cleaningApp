@@ -13,6 +13,7 @@ import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
+import { environment } from '../../environment';
 const EditJob = () => {
     const { id } = useParams();
     const token = localStorage.getItem("token")
@@ -59,7 +60,7 @@ const EditJob = () => {
         Authorization: `Bearer ${token}`
       };
 
-      const response = await axios.get("http://localhost:4000/client/getAllClient", { headers });
+      const response = await axios.get(environment.apiUrl + "/client/getAllClient", { headers });
 
       if (response.data.success) {
         setClients(response.data.clients);
@@ -78,7 +79,7 @@ const EditJob = () => {
 
   const fetchStaffs = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/staff/getAllStaff", {
+      const response = await axios.get(environment.apiUrl + "/staff/getAllStaff", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -102,7 +103,7 @@ const EditJob = () => {
   const fetchJobDetails = async () => {
     try {
 
-      const response = await axios.get(`http://localhost:4000/job/getJobById/${id}`,);
+      const response = await axios.get(environment.apiUrl + `/job/getJobById/${id}`,);
 
       console.log(response.data.message)
       const responseData = response.data;
@@ -151,7 +152,7 @@ const EditJob = () => {
 
         const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg4MGU1NWE2ZWI1ZjExMmNhOTliODciLCJyb2xlIjoic3VwZXJBZG1pbiIsImlhdCI6MTcyMDE5MjYxMCwiZXhwIjoxNzIwNDUxODEwfQ.KPcKhwHKTUrDiK_dzWgcFy1--R0B6bf3w_5Y5BLoyHY";
 
-      const response = await axios.put(`http://localhost:4000/job/updatedJob/${id}`, editedDetails,{
+      const response = await axios.put( environment.apiUrl + `/job/updatedJob/${id}`, editedDetails,{
         headers: {
             Authorization: `Bearer ${token}`
           }

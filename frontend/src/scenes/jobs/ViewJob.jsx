@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import axios from "axios";
+import { environment } from "../../environment";
 
 function ViewJob() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ function ViewJob() {
 
   const fetchJobDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/job/getJobById/${id}`);
+      const response = await axios.get( environment.apiUrl + `/job/getJobById/${id}`);
       const responseData = response.data;
       console.log(responseData)
       if (responseData.success) {
