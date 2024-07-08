@@ -140,7 +140,7 @@ const Sidebar = () => {
             width={!isCollapsed ? "calc(100% + 40px)" : undefined}
           >
     
-            <Item
+            {/* <Item
               title="Subscription Options"
               to="/subscription"
               icon={<ContactsOutlinedIcon />}
@@ -161,7 +161,7 @@ const Sidebar = () => {
               icon={<MicIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
               <Item
               title="Jobs"
               to="/jobs"
@@ -176,10 +176,15 @@ const Sidebar = () => {
               icon={<BusinessCenterOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
+            />)}
+            
+             <Item
+              title="Staff"
+              to="/staff"
+              icon={<BusinessCenterOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
             />
-            )}
-              
-           
             
           </Box>
         </Menu>

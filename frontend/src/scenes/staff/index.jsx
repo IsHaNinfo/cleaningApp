@@ -13,25 +13,25 @@ import {
   import axios from "axios";
   import Header from "../../components/Header";
   import { tokens } from "../../theme";
-import { environment } from "../../environment";
+  import { environment } from "../../environment";
   
-  const Clients = () => {
+  const Staff = () => {
     const [data, setData] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-
-    const token = localStorage.getItem("token")
-    const fetchClients = async () => {
+  
+    const token = localStorage.getItem("token");
+  
+    const fetchStaff = async () => {
       try {
-
         const headers = {
           Authorization: `Bearer ${token}`
         };
   
-        const response = await axios.get(`${environment.apiUrl}/client/getAllClient`, { headers });
+        const response = await axios.get(`${environment.apiUrl}/staff/getAllStaff`, { headers });
         const responseData = response.data;
         if (responseData.success) {
-          const modifiedData = responseData.clients.map((item) => ({
+          const modifiedData = responseData.staffs.map((item) => ({
             ...item,
             id: item._id, // Set id for DataGrid row key
           }));
@@ -40,36 +40,36 @@ import { environment } from "../../environment";
   
           setData(modifiedData);
         } else {
-          console.error("Failed to fetch clients:", responseData.message);
+          console.error("Failed to fetch staff:", responseData.message);
         }
       } catch (error) {
-        console.error("Error fetching clients:", error);
+        console.error("Error fetching staff:", error);
       }
     };
   
     useEffect(() => {
-      fetchClients();
+      fetchStaff();
     }, []);
   
     const exportToPdf = () => {
       const doc = new jsPDF();
       doc.autoTable({
-        head: [["Client ID","Full Name", "Email", "Phone Number", "Client Status"]],
-        body: data.map(({ _id, firstName, lastName, email, phoneNumber, clientStatus }) => [
+        head: [["Staff ID", "Full Name", "Position", "Phone Number", "Work Status"]],
+        body: data.map(({ _id, firstName, lastName, position, phoneNumber, workStatus }) => [
           _id,
           `${firstName} ${lastName}`,
-          email,
+          position,
           phoneNumber,
-          clientStatus,
+          workStatus,
         ]),
       });
-      doc.save("clients_data.pdf");
+      doc.save("staff_data.pdf");
     };
   
     const handleDeleteClick = (id) => {
       Swal.fire({
         title: "Are you sure?",
-        text: "Once deleted, you will not be able to recover this client!",
+        text: "Once deleted, you will not be able to recover this staff!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -77,25 +77,24 @@ import { environment } from "../../environment";
         confirmButtonText: "Delete",
       }).then((result) => {
         if (result.isConfirmed) {
-
-            const headers = {
-              Authorization: `Bearer ${token}`
-            };
+          const headers = {
+            Authorization: `Bearer ${token}`
+          };
           axios
-            .delete(environment.apiUrl + `/client/deleteClientById/${id}`,{headers})
+            .delete(environment.apiUrl + `/staff/deleteStaffById/${id}`, { headers })
             .then((response) => {
               if (response.status !== 200) {
-                throw new Error("Failed to delete client");
+                throw new Error("Failed to delete staff");
               }
   
               setData(data.filter((item) => item.id !== id));
-              Swal.fire("Deleted!", "The client has been deleted.", "success");
+              Swal.fire("Deleted!", "The staff has been deleted.", "success");
             })
             .catch((error) => {
-              console.error("Error deleting client:", error);
+              console.error("Error deleting staff:", error);
               Swal.fire(
                 "Error!",
-                "Failed to delete client. Please try again later.",
+                "Failed to delete staff. Please try again later.",
                 "error"
               );
             });
@@ -106,7 +105,7 @@ import { environment } from "../../environment";
     const handleStatusChange = (id, newStatus) => {
       Swal.fire({
         title: "Are you sure?",
-        text: "Do you want to change the status of this client?",
+        text: "Do you want to change the status of this staff?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -114,33 +113,31 @@ import { environment } from "../../environment";
         confirmButtonText: "Yes, change it!",
       }).then((result) => {
         if (result.isConfirmed) {
-
-            const headers = {
-              Authorization: `Bearer ${token}`
-            };
-        
+          const headers = {
+            Authorization: `Bearer ${token}`
+          };
+  
           axios
-            .patch(environment.apiUrl + `/client/updateStatus/${id}`, { clientStatus: newStatus },{headers})
+            .patch(environment.apiUrl + `/staff/updateStatus/${id}`, { workStatus: newStatus }, { headers })
             .then((response) => {
-                console.log(response);
               if (response.status !== 200) {
                 throw new Error("Failed to update status");
               }
   
               const updatedData = data.map((item) => {
                 if (item.id === id) {
-                  return { ...item, clientStatus: newStatus };
+                  return { ...item, workStatus: newStatus };
                 }
                 return item;
               });
               setData(updatedData);
-              Swal.fire("Updated!", "The client status has been updated.", "success");
+              Swal.fire("Updated!", "The staff status has been updated.", "success");
             })
             .catch((error) => {
-              console.error("Error updating client status:", error);
+              console.error("Error updating staff status:", error);
               Swal.fire(
                 "Error!",
-                "Failed to update client status. Please try again later.",
+                "Failed to update staff status. Please try again later.",
                 "error"
               );
             });
@@ -151,22 +148,22 @@ import { environment } from "../../environment";
     const handleEditClick = (id) => {};
   
     const columns = [
-      { field: "id", headerName: "Client ID", flex: 1 },
+      { field: "id", headerName: "Staff ID", flex: 1 },
       {
         field: "fullName",
         headerName: "Full Name",
         flex: 1,
         renderCell: (params) => `${params.row.firstName} ${params.row.lastName}`,
-    },
-      { field: "email", headerName: "Email", flex: 1 },
+      },
+      { field: "position", headerName: "Position", flex: 1 },
       { field: "phoneNumber", headerName: "Phone Number", flex: 1 },
       {
-        field: "clientStatus",
-        headerName: "Client Status",
+        field: "workStatus",
+        headerName: "Work Status",
         flex: 0.6,
         renderCell: (params) => (
           <Select
-            value={params.row.clientStatus}
+            value={params.row.workStatus}
             onChange={(e) => handleStatusChange(params.row.id, e.target.value)}
           >
             <MenuItem value="active">Active</MenuItem>
@@ -181,14 +178,14 @@ import { environment } from "../../environment";
         renderCell: (params) => (
           <Box>
             <Tooltip title="Edit">
-              <Link to={`/clients/editClient/${params.row.id}`}>
+              <Link to={`/staff/editStaff/${params.row.id}`}>
                 <IconButton>
                   <EditIcon onClick={() => handleEditClick(params.row.id)} />
                 </IconButton>
               </Link>
             </Tooltip>
             <Tooltip title="View">
-              <Link to={`/clients/viewClient/${params.row.id}`}>
+              <Link to={`/staff/viewStaff/${params.row.id}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
@@ -207,9 +204,9 @@ import { environment } from "../../environment";
     return (
       <Box m="20px">
         <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="-10px">
-          <Header title="Clients Management" subtitle="Managing the clients" />
+          <Header title="Staff Management" subtitle="Managing the staff" />
           <Box>
-            <Link to={"/clients/newClient"} style={{ marginRight: "10px" }}>
+            <Link to={"/staff/newStaff"} style={{ marginRight: "10px" }}>
               <Button
                 variant="contained"
                 sx={{
@@ -221,7 +218,7 @@ import { environment } from "../../environment";
                   },
                 }}
               >
-                Add a Client
+                Add a Staff
               </Button>
             </Link>
           </Box>
@@ -283,5 +280,5 @@ import { environment } from "../../environment";
     );
   };
   
-  export default Clients;
+  export default Staff;
   
