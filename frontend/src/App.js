@@ -19,6 +19,13 @@ import AddJob from "./scenes/jobs/AddJob.jsx";
 import ViewJob from "./scenes/jobs/ViewJob.jsx"
 import EditJob from "./scenes/jobs/EditJob.jsx";
 
+
+import Staff from "./scenes/staff";
+import ViewStaff from "./scenes/staff/ViewStaff.jsx";
+import AddStaff from "./scenes/staff/AddStaff.jsx";
+import EditStaff from "./scenes/staff/EditStaff.jsx";
+
+
 import Clients from "./scenes/clients";
 import AddClient from "./scenes/clients/AddClient.jsx";
 import ViewClient from "./scenes/clients/ViewClient.jsx";
@@ -103,6 +110,12 @@ function App() {
                 <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
                 <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
                 <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
+
+
+                <Route path="/staff" element={<Staff></Staff>}></Route>
+                <Route path="/staff/newstaff" element={<AddStaff></AddStaff>}></Route>
+                <Route path="/staff/viewstaff/:id" element={<ViewStaff></ViewStaff>}></Route>
+                <Route path="/staff/editStaff/:id" element={<EditStaff></EditStaff>}></Route>
 
 
 
