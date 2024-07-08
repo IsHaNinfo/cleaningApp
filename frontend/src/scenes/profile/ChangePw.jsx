@@ -36,7 +36,6 @@ const CreateNewUser = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        console.log("decode",decodedToken);
         return decodedToken._id; // Adjust according to your token structure
       } catch (error) {
         console.error("Error decoding token:", error);

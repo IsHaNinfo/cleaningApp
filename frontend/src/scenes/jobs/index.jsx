@@ -14,15 +14,40 @@ import {
   import Header from "../../components/Header";
   import { tokens } from "../../theme";
 import { environment } from "../../environment";
+import { jwtDecode } from "jwt-decode";
   
   const Jobs = () => {
     const [data, setData] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const userRole = localStorage.getItem("User_role");
+    const shouldShowButton = userRole !== 'staff';
+
+    const getUserIdFromToken = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          return decodedToken._id; // Adjust according to your token structure
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          return null;
+        }
+      }
+      return null;
+    };
+  
+    const userId = getUserIdFromToken();
   
     const fetchJobs = async () => {
       try {
-        const response = await axios.get(environment.apiUrl + "/job/getAllJobs");
+        let response;
+        if(userRole === "staff"){
+          response = await axios.get(environment.apiUrl + `/job/getJobsbyStaff/${userId}`);
+        }else{
+          response = await axios.get(environment.apiUrl + "/job/getAllJobs");
+        }
+         
         const responseData = response.data;
         if (responseData.success) {
           const modifiedData = responseData.jobs.map((item) => ({
@@ -178,7 +203,8 @@ import { environment } from "../../environment";
           marginBottom="-10px"
         >
           <Header title="Jobs Management" subtitle="Managing the jobs" />
-          <Box>
+          {shouldShowButton && (
+            <Box >
             <Link to={"/jobs/newjob"} style={{ marginRight: "10px" }}>
               <Button
                 variant="contained"
@@ -190,11 +216,14 @@ import { environment } from "../../environment";
                     backgroundColor: "#3e4396",
                   },
                 }}
+                
               >
                 Add a Job
               </Button>
             </Link>
           </Box>
+          )}
+          
         </Box>
         <Box
           m="10px 0 0 0"

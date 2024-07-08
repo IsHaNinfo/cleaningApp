@@ -1,6 +1,7 @@
 import Job from "../models/jobModel.js"
 import Staff from "../models/staffModel.js"
 import Client from "../models/clientModel.js"
+import mongoose from 'mongoose';
 
 export const addJob = async (req, res) => {
 
@@ -318,5 +319,24 @@ export const getInvoice = async (req, res) => {
         res.status(200).json({ response_code: 200, success: true, invoice });
     } catch (error) {
         res.status(500).json({ response_code: 500, success: false, message: error.message });
+    }
+};
+
+export const getJobsByStaffId = async (req, res) => {
+    const { staffId } = req.params; // Get the staffId from the request parameters
+    const staffData = await Staff.find({user:staffId});
+   
+    const staffObjectId = staffData[0]._id;
+    
+    try {
+        const jobs = await Job.find({ assignedStaff:staffObjectId }).populate('assignedStaff').populate('client');
+
+        if (jobs.length === 0) {
+            return res.status(404).json({ response_code: 404, success: false, message: "No jobs found for this staff member" });
+        }
+
+        res.status(200).json({ response_code: 200, success: true, message: "Jobs fetched successfully", jobs });
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 };
