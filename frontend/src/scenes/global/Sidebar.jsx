@@ -177,14 +177,16 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />)}
-            
-             <Item
+            {showItem &&(
+              <Item
               title="Staff"
               to="/staff"
               icon={<BusinessCenterOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+            )}
+             
             
           </Box>
         </Menu>

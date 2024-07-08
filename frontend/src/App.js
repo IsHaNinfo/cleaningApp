@@ -19,7 +19,17 @@ import AddJob from "./scenes/jobs/AddJob.jsx";
 import ViewJob from "./scenes/jobs/ViewJob.jsx"
 import EditJob from "./scenes/jobs/EditJob.jsx";
 
+import Staff from "./scenes/staff";
+import ViewStaff from "./scenes/staff/ViewStaff.jsx";
+import AddStaff from "./scenes/staff/AddStaff.jsx";
+import EditStaff from "./scenes/staff/EditStaff.jsx";
+
+
 import Clients from "./scenes/clients";
+import AddClient from "./scenes/clients/AddClient.jsx";
+import ViewClient from "./scenes/clients/ViewClient.jsx";
+import EditClient from "./scenes/clients/EditClient.jsx";
+
 import EditSubscription from "./scenes/subscriptionPackage/EditSubscription";
 import NewSubscripion from "./scenes/subscriptionPackage/NewSubscripion";
 import ViewSubscription from "./scenes/subscriptionPackage/ViewSubscription";
@@ -174,16 +184,16 @@ return (
                 </PrivateRoute>
               }
             />
-            <Route path="/clients" element={<Clients></Clients>}></Route>
-                <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
-                <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
-                <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
+            <Route path="/clients" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><Clients></Clients></PrivateRoute>}></Route>
+                <Route path="/clients/newclient" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><AddClient></AddClient></PrivateRoute>}></Route>
+                <Route path="/clients/viewclient/:id" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><ViewClient></ViewClient></PrivateRoute>}></Route>
+                <Route path="/clients/editclient/:id" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><EditClient></EditClient></PrivateRoute>}></Route>
 
 
-                <Route path="/staff" element={<Staff></Staff>}></Route>
-                <Route path="/staff/newstaff" element={<AddStaff></AddStaff>}></Route>
-                <Route path="/staff/viewstaff/:id" element={<ViewStaff></ViewStaff>}></Route>
-                <Route path="/staff/editStaff/:id" element={<EditStaff></EditStaff>}></Route>
+                <Route path="/staff" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><Staff></Staff></PrivateRoute>}></Route>
+                <Route path="/staff/newstaff" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><AddStaff></AddStaff></PrivateRoute>}></Route>
+                <Route path="/staff/viewstaff/:id" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><ViewStaff></ViewStaff></PrivateRoute>}></Route>
+                <Route path="/staff/editStaff/:id" element={<PrivateRoute allowedRoles={["admin", "superAdmin"]}><EditStaff></EditStaff></PrivateRoute>}></Route>
           </Routes>
         </main>
       </div>
