@@ -81,6 +81,8 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const userRole = localStorage.getItem("User_role");
+  const showItem = userRole !== 'staff';
 
   return (
     <Box
@@ -167,7 +169,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
+            {showItem &&(
               <Item
               title="Clients"
               to="/clients"
@@ -175,6 +177,8 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            )}
+              
            
             
           </Box>

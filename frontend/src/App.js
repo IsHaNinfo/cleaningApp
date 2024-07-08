@@ -20,9 +20,6 @@ import ViewJob from "./scenes/jobs/ViewJob.jsx"
 import EditJob from "./scenes/jobs/EditJob.jsx";
 
 import Clients from "./scenes/clients";
-import AddClient from "./scenes/clients/AddClient.jsx";
-import ViewClient from "./scenes/clients/ViewClient.jsx";
-import EditClient from "./scenes/clients/EditClient.jsx";
 import EditSubscription from "./scenes/subscriptionPackage/EditSubscription";
 import NewSubscripion from "./scenes/subscriptionPackage/NewSubscripion";
 import ViewSubscription from "./scenes/subscriptionPackage/ViewSubscription";
@@ -34,6 +31,7 @@ import EditSubUser from "./scenes/subscriptionPackage/subscribedUsers/EditSubUse
 import SubscribedUsers from "./scenes/subscriptionPackage/subscribedUsers/Index";
 import ViewSubUser from "./scenes/subscriptionPackage/subscribedUsers/ViewSubUser";
 import SubscriptionPackage from "./scenes/subscriptionPackage";
+import PrivateRoute from "./PrivateRoutes.js";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -43,84 +41,144 @@ function App() {
   // Check if the current route is the login page
   const isLoginPage = location.pathname === "/";
 
-  return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div className="app">
-          {!isLoginPage && <Sidebar isSidebar={isSidebar} />}
-          <main className="content">
-            {!isLoginPage && <Topbar setIsSidebar={setIsSidebar} />}
-            <Routes>
-              <Route path="/" element={<Login />} />
+return (
+  <ColorModeContext.Provider value={colorMode}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className="app">
+        {!isLoginPage && <Sidebar isSidebar={isSidebar} />}
+        <main className="content">
+          {!isLoginPage && <Topbar setIsSidebar={setIsSidebar} />}
+          <Routes>
+            <Route path="/" element={<Login />} />
 
-               
-               
-              <Route
-                  path="/subscription"
-                  element={<SubscriptionPackage></SubscriptionPackage>}
-                />
-                <Route
-                  path="/subscribedusers"
-                  element={<SubscribedUsers></SubscribedUsers>}
-                />
-                <Route
-                  path="/subscribedusers/viewsubscribeduser/:id"
-                  element={<ViewSubUser></ViewSubUser>}
-                />
-                <Route
-                  path="/subscribedusers/editsubscribeduser/:id"
-                  element={<EditSubUser></EditSubUser>}
-                />
-               
-
-                <Route path="/news" element={<News></News>}></Route>
-                <Route
-                  path="/news/newnews"
-                  element={<AddNews></AddNews>}
-                ></Route>
-
-                <Route
-                  path="/news/viewnews/:id"
-                  element={<ViewNews></ViewNews>}
-                ></Route>
-                <Route
-                  path="/news/editnews/:id"
-                  element={<EditNews></EditNews>}
-                ></Route>
-                <Route path="/jobs" element={<Jobs></Jobs>}></Route>
-                <Route path="/jobs/newjob" element={<AddJob></AddJob>}></Route>
-                <Route
-                  path="/jobs/viewjob/:id"
-                  element={<ViewJob></ViewJob>}
-                ></Route>
-                <Route
-                  path="/jobs/editjob/:id"
-                  element={<EditJob></EditJob>}
-                ></Route>
-
-                <Route path="/clients" element={<Clients></Clients>}></Route>
-                <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
-                <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
-                <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
-
-
-
-<Route
-                  path="/profile/changepassword"
-                  element={<ChangePw></ChangePw>}
-                ></Route>
-                <Route
-                  path="/profile"
-                  element={<EditProfile></EditProfile>}
-                ></Route>
-                
-            </Routes>
-          </main>
-        </div>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
-  );
+            <Route
+              path="/subscription"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <SubscriptionPackage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/subscribedusers"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <SubscribedUsers />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/subscribedusers/viewsubscribeduser/:id"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <ViewSubUser />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/subscribedusers/editsubscribeduser/:id"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <EditSubUser />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/news"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <News />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/news/newnews"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <AddNews />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/news/viewnews/:id"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <ViewNews />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/news/editnews/:id"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <EditNews />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/jobs"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin", "staff"]}>
+                  <Jobs />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/jobs/newjob"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <AddJob />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/jobs/viewjob/:id"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin","staff"]}>
+                  <ViewJob />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/jobs/editjob/:id"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <EditJob />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/clients"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin"]}>
+                  <Clients />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="/profile/changepassword"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin", "staff"]}>
+                  <ChangePw />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute allowedRoles={["admin", "superAdmin", "staff"]}>
+                  <EditProfile />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </main>
+      </div>
+    </ThemeProvider>
+  </ColorModeContext.Provider>
+);
 }
 
 export default App;
