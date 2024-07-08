@@ -122,7 +122,7 @@ const Sidebar = () => {
                 ml="30px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  JCGN
+                  Tangora
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />

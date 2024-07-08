@@ -13,6 +13,7 @@ import {
   import axios from "axios";
   import Header from "../../components/Header";
   import { tokens } from "../../theme";
+import { environment } from "../../environment";
   
   const Jobs = () => {
     const [data, setData] = useState([]);
@@ -21,7 +22,7 @@ import {
   
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/job/getAllJobs");
+        const response = await axios.get(environment.apiUrl + "/job/getAllJobs");
         const responseData = response.data;
         if (responseData.success) {
           const modifiedData = responseData.jobs.map((item) => ({
@@ -83,7 +84,7 @@ import {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`http://localhost:4000/job/deleteJobById/${id}`)
+            .delete(environment.apiUrl + `/job/deleteJobById/${id}`)
             .then((response) => {
               if (response.status !== 200) {
                 throw new Error("Failed to delete job");

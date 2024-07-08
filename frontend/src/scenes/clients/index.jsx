@@ -13,6 +13,7 @@ import {
   import axios from "axios";
   import Header from "../../components/Header";
   import { tokens } from "../../theme";
+import { environment } from "../../environment";
   
   const Clients = () => {
     const [data, setData] = useState([]);
@@ -28,7 +29,7 @@ import {
           Authorization: `Bearer ${token}`
         };
   
-        const response = await axios.get(`${REACT_APP_BACKEND_URL}/client/getAllClient`, { headers });
+        const response = await axios.get(`${environment.apiUrl}/client/getAllClient`, { headers });
         const responseData = response.data;
         if (responseData.success) {
           const modifiedData = responseData.clients.map((item) => ({
@@ -82,7 +83,7 @@ import {
               Authorization: `Bearer ${token}`
             };
           axios
-            .delete(`http://localhost:4000/client/deleteClientById/${id}`,{headers})
+            .delete(environment.apiUrl + `/client/deleteClientById/${id}`,{headers})
             .then((response) => {
               if (response.status !== 200) {
                 throw new Error("Failed to delete client");
@@ -120,7 +121,7 @@ import {
             };
         
           axios
-            .patch(`http://localhost:4000/client/updateStatus/${id}`, { clientStatus: newStatus },{headers})
+            .patch(environment.apiUrl + `/client/updateStatus/${id}`, { clientStatus: newStatus },{headers})
             .then((response) => {
                 console.log(response);
               if (response.status !== 200) {
