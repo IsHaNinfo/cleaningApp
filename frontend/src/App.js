@@ -33,6 +33,7 @@ import ViewSubUser from "./scenes/subscriptionPackage/subscribedUsers/ViewSubUse
 import SubscriptionPackage from "./scenes/subscriptionPackage";
 import PrivateRoute from "./PrivateRoutes.js";
 
+
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
@@ -173,6 +174,16 @@ return (
                 </PrivateRoute>
               }
             />
+            <Route path="/clients" element={<Clients></Clients>}></Route>
+                <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
+                <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
+                <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
+
+
+                <Route path="/staff" element={<Staff></Staff>}></Route>
+                <Route path="/staff/newstaff" element={<AddStaff></AddStaff>}></Route>
+                <Route path="/staff/viewstaff/:id" element={<ViewStaff></ViewStaff>}></Route>
+                <Route path="/staff/editStaff/:id" element={<EditStaff></EditStaff>}></Route>
           </Routes>
         </main>
       </div>
