@@ -1,0 +1,443 @@
+import {
+    Box,
+    Button,
+    MenuItem,
+    Alert as MuiAlert,
+    Snackbar,
+    TextField,
+    Typography,
+  } from "@mui/material";
+  import AlertTitle from "@mui/material/AlertTitle";
+  import useMediaQuery from "@mui/material/useMediaQuery";
+  import { Formik } from "formik";
+  import React, { useState } from "react";
+  import * as yup from "yup";
+  import axios from "axios";
+  import Header from "../../components/Header";
+  import { environment } from "../../environment";
+
+  const AddStaff = ({ onStaffAdded }) => {
+    const isNonMobile = useMediaQuery("(min-width:600px)");
+    const [loading, setLoading] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertSeverity, setAlertSeverity] = useState("success");
+  
+    const handleFormSubmit = async (values, { resetForm }) => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+  
+        const response = await axios.post(
+          environment.apiUrl+ `/user/adduser`,
+          {
+            email: values.email,
+            password: values.password,
+            userName: values.userName,
+            role: "staff",
+            staffDetails: values
+          },
+          { headers }
+        );
+        console.log(response);
+        if (response.data.success) {
+          setAlertSeverity("success");
+          setAlertMessage("Staff Added Successfully");
+          resetForm();
+          if (onStaffAdded) {
+            onStaffAdded(response.data.staff);
+          }
+        } else {
+          setAlertSeverity("error");
+          setAlertMessage(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error creating staff:", error);
+        setAlertSeverity("error");
+        setAlertMessage("Failed to add staff");
+      } finally {
+        setLoading(false);
+        setOpenSnackbar(true);
+      }
+    };
+  
+    return (
+      <Box
+        m="20px"
+        height="70vh"
+        width="90%"
+        overflow="auto"
+        paddingRight="20px"
+        position="relative"
+      >
+        <Header title="Add Staff" subtitle="" />
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={5000}
+          onClose={() => setOpenSnackbar(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MuiAlert
+            onClose={() => setOpenSnackbar(false)}
+            severity={alertSeverity}
+            elevation={6}
+            variant="filled"
+            sx={{ color: "#fff" }}
+          >
+            <AlertTitle>
+              {alertSeverity === "success" ? "Success" : "Error"}
+            </AlertTitle>
+            {alertMessage}
+          </MuiAlert>
+        </Snackbar>
+        <Formik
+          onSubmit={handleFormSubmit}
+          initialValues={initialValues}
+          validationSchema={staffSchema}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+          }) => (
+            <form onSubmit={handleSubmit}>
+              <Box
+                display="grid"
+                gap="30px"
+                gridTemplateColumns={
+                  isNonMobile ? "repeat(1, 1fr)" : "repeat(1, 1fr)"
+                }
+              >
+                <Typography fontWeight="bold" fontSize="16px">
+                  First Name*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.firstName}
+                    name="firstName"
+                    error={!!touched.firstName && !!errors.firstName}
+                    helperText={touched.firstName && errors.firstName}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Last Name*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.lastName}
+                    name="lastName"
+                    error={!!touched.lastName && !!errors.lastName}
+                    helperText={touched.lastName && errors.lastName}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Email*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="email"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.email}
+                    name="email"
+                    error={!!touched.email && !!errors.email}
+                    helperText={touched.email && errors.email}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Password*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="password"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.password}
+                    name="password"
+                    error={!!touched.password && !!errors.password}
+                    helperText={touched.password && errors.password}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Username*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.userName}
+                    name="userName"
+                    error={!!touched.userName && !!errors.userName}
+                    helperText={touched.userName && errors.userName}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Address*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.address}
+                    name="address"
+                    error={!!touched.address && !!errors.address}
+                    helperText={touched.address && errors.address}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Phone Number*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.phoneNumber}
+                    name="phoneNumber"
+                    error={!!touched.phoneNumber && !!errors.phoneNumber}
+                    helperText={touched.phoneNumber && errors.phoneNumber}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Position*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.position}
+                    name="position"
+                    error={!!touched.position && !!errors.position}
+                    helperText={touched.position && errors.position}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Date of Birth*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="date"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.dateOfBirth}
+                    name="dateOfBirth"
+                    error={!!touched.dateOfBirth && !!errors.dateOfBirth}
+                    helperText={touched.dateOfBirth && errors.dateOfBirth}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Date of Hire*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="date"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.dateOfHire}
+                    name="dateOfHire"
+                    error={!!touched.dateOfHire && !!errors.dateOfHire}
+                    helperText={touched.dateOfHire && errors.dateOfHire}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Emergency Contact Name
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.empContactName}
+                    name="empContactName"
+                    error={!!touched.empContactName && !!errors.empContactName}
+                    helperText={touched.empContactName && errors.empContactName}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Emergency Contact Phone Number
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.empPhoneNumber}
+                    name="empPhoneNumber"
+                    error={!!touched.empPhoneNumber && !!errors.empPhoneNumber}
+                    helperText={touched.empPhoneNumber && errors.empPhoneNumber}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Bank Account Number
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.bankAcNo}
+                    name="bankAcNo"
+                    error={!!touched.bankAcNo && !!errors.bankAcNo}
+                    helperText={touched.bankAcNo && errors.bankAcNo}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Bank Name
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.bankName}
+                    name="bankName"
+                    error={!!touched.bankName && !!errors.bankName}
+                    helperText={touched.bankName && errors.bankName}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Bank Branch
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.bankAcBranch}
+                    name="bankAcBranch"
+                    error={!!touched.bankAcBranch && !!errors.bankAcBranch}
+                    helperText={touched.bankAcBranch && errors.bankAcBranch}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Notes
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.notes}
+                    name="notes"
+                    multiline
+                    rows={3}
+                    error={!!touched.notes && !!errors.notes}
+                    helperText={touched.notes && errors.notes}
+                  />
+                </Box>
+                
+              </Box>
+              <Box display="flex" justifyContent="end" mt="20px">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={loading}
+                  sx={{
+                    backgroundColor: "#6870fa",
+                    color: "white",
+                    marginRight: 2,
+                    fontSize: "16px",
+                    "&:hover": {
+                      backgroundColor: "#3e4396",
+                    },
+                  }}
+                >
+                  {loading ? "Adding..." : "Add"}
+                </Button>
+              </Box>
+            </form>
+          )}
+        </Formik>
+      </Box>
+    );
+  };
+  
+  const staffSchema = yup.object().shape({
+    firstName: yup.string().required("First Name is required"),
+    lastName: yup.string().required("Last Name is required"),
+    email: yup.string().email("Invalid email format").required("Email is required"),
+    password: yup.string().required("Password is required"),
+    userName: yup.string().required("Username is required"),
+    address: yup.string().required("Address is required"),
+    phoneNumber: yup.string().required("Phone Number is required"),
+    position: yup.string().required("Position is required"),
+    dateOfBirth: yup.string().required("Date of Birth is required"),
+    dateOfHire: yup.string().required("Date of Hire is required"),
+    empContactName: yup.string(),
+    empPhoneNumber: yup.string(),
+    bankAcNo: yup.string(),
+    bankName: yup.string(),
+    bankAcBranch: yup.string(),
+    notes: yup.string(),
+  });
+  
+  const initialValues = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    userName: "",
+    address: "",
+    phoneNumber: "",
+    position: "",
+    dateOfBirth: "",
+    dateOfHire: "",
+    empContactName: "",
+    empPhoneNumber: "",
+    bankAcNo: "",
+    bankName: "",
+    bankAcBranch: "",
+    notes: "",
+  };
+  
+  export default AddStaff;
+  
