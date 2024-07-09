@@ -168,20 +168,27 @@ const Sidebar = () => {
               icon={<WorkOutlineIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            {showItem &&(
+              >
+              <Subtopic
+                title="CompletedJobs"
+                to="/completedjobs"
+                selected={selected}
+                setSelected={setSelected}
+              />
+              </Item>
+
               <Item
               title="Clients"
               to="/clients"
-              icon={<BusinessCenterOutlinedIcon />}
+              icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />)}
+            />
             {showItem &&(
               <Item
               title="Staff"
               to="/staff"
-              icon={<BusinessCenterOutlinedIcon />}
+              icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

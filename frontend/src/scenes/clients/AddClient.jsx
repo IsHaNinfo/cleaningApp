@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import * as yup from "yup";
 import axios from "axios";
 import Header from "../../components/Header";
+import { environment } from '../../environment';
 
 const AddClient = ({ onClientAdded }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -31,7 +32,7 @@ const AddClient = ({ onClientAdded }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/client/addClient",
+        environment.apiUrl+`/client/addClient`,
         values,
         { headers }
       );

@@ -11,6 +11,7 @@ import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
+import { environment } from '../../environment';
 
 const EditClient = () => {
   const { id } = useParams();
@@ -43,7 +44,7 @@ const EditClient = () => {
 
   const fetchClientDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/client/getClientById/${id}`, {
+      const response = await axios.get(environment.apiUrl+`/client/getClientById/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -73,7 +74,7 @@ const EditClient = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put(`http://localhost:4000/client/updateClientById/${id}`, editedDetails, {
+      const response = await axios.put(environment.apiUrl+`/client/updateClientById/${id}`, editedDetails, {
         headers: {
           Authorization: `Bearer ${token}`
         }
