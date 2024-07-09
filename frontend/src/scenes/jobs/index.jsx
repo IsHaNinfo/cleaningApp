@@ -3,7 +3,15 @@ import {
     Visibility as VisibilityIcon,
   } from "@mui/icons-material";
   import EditIcon from "@mui/icons-material/Edit";
-  import { Box, Button, IconButton, Tooltip, useTheme } from "@mui/material";
+  import {
+    Box,
+    Button,
+    IconButton,
+    Tooltip,
+    useTheme,
+    Select,
+    MenuItem,
+  } from "@mui/material";
   import { DataGrid, GridToolbar } from "@mui/x-data-grid";
   import jsPDF from "jspdf";
   import "jspdf-autotable";
@@ -13,16 +21,16 @@ import {
   import axios from "axios";
   import Header from "../../components/Header";
   import { tokens } from "../../theme";
-import { environment } from "../../environment";
-import { jwtDecode } from "jwt-decode";
-  
+  import { jwtDecode } from "jwt-decode";
+  import { environment } from '../../environment';
+
   const Jobs = () => {
     const [data, setData] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const userRole = localStorage.getItem("User_role");
-    const shouldShowButton = userRole !== 'staff';
-
+    const shouldShowButton = userRole !== "staff";
+  
     const getUserIdFromToken = () => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -42,12 +50,12 @@ import { jwtDecode } from "jwt-decode";
     const fetchJobs = async () => {
       try {
         let response;
-        if(userRole === "staff"){
+        if (userRole === "staff") {
           response = await axios.get(environment.apiUrl + `/job/getJobsbyStaff/${userId}`);
-        }else{
+        } else {
           response = await axios.get(environment.apiUrl + "/job/getAllJobs");
         }
-         
+  
         const responseData = response.data;
         if (responseData.success) {
           const modifiedData = responseData.jobs.map((item) => ({
@@ -86,15 +94,26 @@ import { jwtDecode } from "jwt-decode";
       doc.save("jobs_data.pdf");
     };
   
-    const handleStatusChange = (id, newStatus) => {
-      const updatedData = data.map((item) => {
-        if (item.id === id) {
-          return { ...item, jobStatus: newStatus };
+    const handleStatusChange = async (id, newStatus) => {
+      try {
+        const response = await axios.patch(
+          environment.apiUrl + `/job/updateStatus/${id}`,
+          { jobStatus: newStatus }
+        );
+        if (response.data.success) {
+          setData((prevData) =>
+            prevData.map((item) =>
+              item.id === id ? { ...item, jobStatus: newStatus } : item
+            )
+          );
+          Swal.fire("Updated!", "Job status has been updated.", "success");
+        } else {
+          throw new Error(response.data.message);
         }
-        return item;
-      });
-      setData(updatedData);
-      console.log("Status changed for id:", id, "New status:", newStatus);
+      } catch (error) {
+        console.error("Error updating job status:", error);
+        Swal.fire("Error!", "Failed to update job status. Please try again later.", "error");
+      }
     };
   
     const handleDeleteClick = (id) => {
@@ -120,32 +139,28 @@ import { jwtDecode } from "jwt-decode";
             })
             .catch((error) => {
               console.error("Error deleting job:", error);
-              Swal.fire(
-                "Error!",
-                "Failed to delete job. Please try again later.",
-                "error"
-              );
+              Swal.fire("Error!", "Failed to delete job. Please try again later.", "error");
             });
         }
       });
     };
   
-    const handleEditClick = (id) => {};
+    const handleEditClick = (id) => { };
   
     const columns = [
       { field: "id", headerName: "Job ID" },
-      { field: "jobName", headerName: "Job Name", flex: 1.5 },
+      { field: "jobName", headerName: "Job Name", flex: 1 },
       {
         field: "client",
         headerName: "Client",
-        flex: 1,
+        flex: 0.8,
         renderCell: (params) =>
           `${params.row.client.firstName} ${params.row.client.lastName}`,
       },
       {
         field: "assignedStaff",
         headerName: "Assigned Staff",
-        flex: 1,
+        flex: 0.8,
         renderCell: (params) =>
           `${params.row.assignedStaff.firstName} ${params.row.assignedStaff.lastName}`,
       },
@@ -155,9 +170,14 @@ import { jwtDecode } from "jwt-decode";
         headerName: "Status",
         flex: 0.6,
         renderCell: (params) => (
-          <span style={{ textTransform: "capitalize" }}>
-            {params.row.jobStatus.toLowerCase()}
-          </span>
+          <Select
+            value={params.row.jobStatus}
+            onChange={(e) => handleStatusChange(params.row.id, e.target.value)}
+          >
+            <MenuItem value="InProgress">In Progress</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+            <MenuItem value="Cancelled">Cancelled</MenuItem>
+          </Select>
         ),
       },
       {
@@ -204,26 +224,45 @@ import { jwtDecode } from "jwt-decode";
         >
           <Header title="Jobs Management" subtitle="Managing the jobs" />
           {shouldShowButton && (
-            <Box >
-            <Link to={"/jobs/newjob"} style={{ marginRight: "10px" }}>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#6870fa",
-                  color: "white",
-                  fontSize: "16px",
-                  "&:hover": {
-                    backgroundColor: "#3e4396",
-                  },
-                }}
-                
-              >
-                Add a Job
-              </Button>
-            </Link>
-          </Box>
+            <Box>
+              <Link to={"/jobs/newjob"} style={{ marginRight: "10px" }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#6870fa",
+                    color: "white",
+                    fontSize: "16px",
+                    "&:hover": {
+                      backgroundColor: "#3e4396",
+                    },
+                  }}
+                >
+                  Add a Job
+                </Button>
+              </Link>
+            </Box>
           )}
-          
+        </Box>
+        <Box
+          display="flex"
+          justifyContent="flex-start"
+          marginTop="10px"
+          marginBottom="20px"
+        >
+          <Button
+            variant="contained"
+            onClick={exportToPdf}
+            sx={{
+              backgroundColor: "#4caf50",
+              color: "white",
+              fontSize: "10px",
+              "&:hover": {
+                backgroundColor: "#388e3c",
+              },
+            }}
+          >
+            Export as PDF
+          </Button>
         </Box>
         <Box
           m="10px 0 0 0"
@@ -258,20 +297,6 @@ import { jwtDecode } from "jwt-decode";
             },
           }}
         >
-          <Button
-            variant="contained"
-            onClick={exportToPdf}
-            sx={{
-              backgroundColor: "#4caf50",
-              color: "white",
-              fontSize: "10px",
-              "&:hover": {
-                backgroundColor: "#388e3c",
-              },
-            }}
-          >
-            Export as PDF
-          </Button>
           <DataGrid
             rows={data}
             columns={columns}

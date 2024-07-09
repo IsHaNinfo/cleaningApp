@@ -88,7 +88,7 @@ import { environment } from "../../environment";
             Authorization: `Bearer ${token}`
           };
       
-          const response = await axios.post(environment.apiUrl + "/job/addJob", values, { headers });
+          const response = await axios.post(environment.apiUrl + `/job/addJob`, values, { headers });
           console.log("Response:", response.data);
       
           if (response.data.success== true) {
