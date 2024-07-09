@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import axios from "axios";
+import { environment } from '../../environment';
 
 const ViewClient = () => {
   const { id } = useParams();
@@ -30,7 +31,7 @@ const ViewClient = () => {
         const headers = {
             Authorization: `Bearer ${token}`
           };
-      const response = await axios.get(`http://localhost:4000/client/getClientById/${id}`,{headers});
+      const response = await axios.get(environment.apiUrl+`/client/getClientById/${id}`,{headers});
       const responseData = response.data;
       console.log(response)
       if (responseData.success) {
