@@ -36,16 +36,16 @@ function App() {
   // Check if the current route is the login page
   const isLoginPage = location.pathname === "/";
 
-  return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div className="app">
-          {!isLoginPage && <Sidebar isSidebar={isSidebar} />}
-          <main className="content">
-            {!isLoginPage && <Topbar setIsSidebar={setIsSidebar} />}
-            <Routes>
-              <Route path="/" element={<Login />} />
+return (
+  <ColorModeContext.Provider value={colorMode}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className="app">
+        {!isLoginPage && <Sidebar isSidebar={isSidebar} />}
+        <main className="content">
+          {!isLoginPage && <Topbar setIsSidebar={setIsSidebar} />}
+          <Routes>
+            <Route path="/" element={<Login />} />
 
                 <Route path="/jobs" element={<Jobs></Jobs>}></Route>
                 <Route path="/jobs/newjob" element={<AddJob></AddJob>}></Route>
