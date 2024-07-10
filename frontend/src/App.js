@@ -27,6 +27,7 @@ import EditClient from "./scenes/clients/EditClient.jsx";
 import ChangePw from "./scenes/profile/ChangePw";
 import EditProfile from "./scenes/profile/EditProfile";
 import { ColorModeContext, useMode } from "./theme";
+import ClientJobs from "./scenes/clients/ClientJobs .jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -58,6 +59,7 @@ return (
                 <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
                 <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
                 <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
+                <Route path="/clients/viewclient/:id/jobs" element={<ClientJobs> </ClientJobs>}></Route> 
 
                 <Route path="/staff" element={<Staff></Staff>}></Route>
                 <Route path="/staff/newstaff" element={<AddStaff></AddStaff>}></Route>
