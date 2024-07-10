@@ -244,7 +244,7 @@ export const signInJob = async (req, res) => {
 
         job.signInTime = new Date();
         job.assignedStaff = staffId;
-        job.isSignOff = true;
+        job.isSignOff = false
         await job.save();
 
         res.status(200).json({ response_code: 200, success: true, message: 'Staff signed in successfully', job });
@@ -263,7 +263,7 @@ export const signOffJob = async (req, res) => {
             return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
         }
 
-        if(!job.isSignOff == true){
+        if(job.isSignOff == true){
             return res.status(404).json({ response_code: 404, success: false, message: 'This Job is already sign off' });
         }
 
