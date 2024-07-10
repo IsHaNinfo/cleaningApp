@@ -247,7 +247,7 @@ export const signInJob = async (req, res) => {
         job.isSignOff = false
         await job.save();
 
-        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed in successfully', job });
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed in successfully', data:job });
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, message: error.message });
     }
@@ -259,6 +259,7 @@ export const signOffJob = async (req, res) => {
 
     try {
         const job = await Job.findById(jobId);
+        console.log("job found",job);
         if (!job) {
             return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
         }
@@ -280,7 +281,7 @@ export const signOffJob = async (req, res) => {
 
         await job.save();
 
-        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed off successfully', job });
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed off successfully', data:job });
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, message: error.message });
     }
