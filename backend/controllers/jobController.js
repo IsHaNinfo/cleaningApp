@@ -419,15 +419,15 @@ export const getStaffJobsbyId = async (req, res) => {
             query.jobStatus = jobStatus;
         }
 
-     //   if (minPayment !== undefined || maxPayment !== undefined) {
+        //   if (minPayment !== undefined || maxPayment !== undefined) {
         //    query.payment = {};
-//    if (minPayment !== undefined) {
-//         query.payment.$gte = parseFloat(minPayment);
-//}
-//if (maxPayment !== undefined) {
-//query.payment.$lte = //parseFloat(maxPayment);
-//}
-//}
+        //    if (minPayment !== undefined) {
+        //         query.payment.$gte = parseFloat(minPayment);
+        //}
+        //if (maxPayment !== undefined) {
+        //query.payment.$lte = //parseFloat(maxPayment);
+        //}
+        //}
 
         if (month || year) {
             query.startTime = {};
