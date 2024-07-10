@@ -61,6 +61,12 @@ const jobSchema = new Schema(
             type: Number,
             required: false,
         },
+        paymentStatus:{
+            type: String,
+            enum: ['Pending', 'Done'],
+            default: 'Pending',
+            required: true,
+        },
         jobStatus:{
             type: String,
             enum: ['InProgress', 'Completed','Cancelled'],
