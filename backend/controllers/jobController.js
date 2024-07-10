@@ -244,6 +244,7 @@ export const signInJob = async (req, res) => {
 
         job.signInTime = new Date();
         job.assignedStaff = staffId;
+        job.isSignOff = false
         await job.save();
 
         res.status(200).json({ response_code: 200, success: true, message: 'Staff signed in successfully', data:job });
@@ -338,6 +339,66 @@ export const getJobsByStaffId = async (req, res) => {
 
         res.status(200).json({ response_code: 200, success: true, message: "Jobs fetched successfully", jobs });
     } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
+
+
+export const getFilteredJobs = async (req, res) => {
+    const {clientId}
+    
+    = req.params;
+    const {  jobStatus, minPayment, maxPayment, month, year } = req.query;
+
+    try {
+        
+        // Build the query object
+        let query = {};
+
+        if (clientId) {
+            query.client = clientId;
+        }
+
+        if (jobStatus) {
+            query.jobStatus = jobStatus;
+        }
+
+     //   if (minPayment !== undefined || maxPayment !== undefined) {
+        //    query.payment = {};
+//    if (minPayment !== undefined) {
+//         query.payment.$gte = parseFloat(minPayment);
+//}
+//if (maxPayment !== undefined) {
+//query.payment.$lte = //parseFloat(maxPayment);
+//}
+//}
+
+        if (month || year) {
+            query.startTime = {};
+            if (year) {
+                query.startTime.$gte = new Date(year, 0, 1);
+                query.startTime.$lt = new Date(year + 1, 0, 1);
+            }
+            if (month && year) {
+                query.startTime.$gte = new Date(year, month - 1, 1);
+                query.startTime.$lt = new Date(year, month, 1);
+            }
+        }
+
+        const jobs = await Job.find(query)
+            .populate('client')
+            .populate('assignedStaff')
+            .populate('adminId')
+            .exec();
+
+        res.status(200).json({
+            response_code: 200,
+            success: true,
+            total: jobs.length,
+            jobs,
+        });
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 };
