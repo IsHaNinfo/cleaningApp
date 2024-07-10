@@ -15,6 +15,8 @@ import profile from "../../assets/logo/profile.png"
 import { environment } from "../../environment";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+
+import logoSrc from "../../assets/logo/login_logo.png"
 const Topbar = () => {
 
   
@@ -74,10 +76,7 @@ const Topbar = () => {
     fetchAdminData();
   }, []);
 
-  const logoSrc =
-    theme.palette.mode === "dark"
-      ? "../../assets/logo.png"
-      : "../../assets/logo.png";
+  
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
