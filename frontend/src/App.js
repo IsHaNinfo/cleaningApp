@@ -23,11 +23,15 @@ import Clients from "./scenes/clients";
 import AddClient from "./scenes/clients/AddClient.jsx";
 import ViewClient from "./scenes/clients/ViewClient.jsx";
 import EditClient from "./scenes/clients/EditClient.jsx";
+import StaffJobs from "./scenes/staff/StaffJobs.jsx";
 
 import ChangePw from "./scenes/profile/ChangePw";
 import EditProfile from "./scenes/profile/EditProfile";
 import { ColorModeContext, useMode } from "./theme";
 import ClientJobs from "./scenes/clients/ClientJobs .jsx";
+import Dashboard from "./scenes/dashboard/dashboard.jsx";
+
+
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -47,6 +51,7 @@ return (
           {!isLoginPage && <Topbar setIsSidebar={setIsSidebar} />}
           <Routes>
             <Route path="/" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard></Dashboard>}></Route>
 
                 <Route path="/jobs" element={<Jobs></Jobs>}></Route>
                 <Route path="/jobs/newjob" element={<AddJob></AddJob>}></Route>
@@ -65,6 +70,7 @@ return (
                 <Route path="/staff/newstaff" element={<AddStaff></AddStaff>}></Route>
                 <Route path="/staff/viewstaff/:id" element={<ViewStaff></ViewStaff>}></Route>
                 <Route path="/staff/editStaff/:id" element={<EditStaff></EditStaff>}></Route>
+                <Route path="/staff/viewstaff/:id/jobs" element={<StaffJobs> </StaffJobs>}></Route> 
 
                 <Route path="/profile/changepassword"element={<ChangePw></ChangePw>} ></Route>
                 <Route path="/profile" element={<EditProfile></EditProfile>}></Route>

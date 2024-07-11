@@ -2,7 +2,7 @@ import express from "express"
 
 const router = express.Router();
 
-import {addClient,updateClientById ,deleteClientById,getClientById,getAllClient,getAllActiveClient,getAllClientPagination,updateStatus} from "../controllers/clientController.js"
+import {addClient,updateClientById ,getAllClientCount,deleteClientById,getClientById,getAllClient,getAllActiveClient,getAllClientPagination,updateStatus} from "../controllers/clientController.js"
 import roleAuthentication from "../middleware/roleAuthentication.js";
 
 
@@ -14,5 +14,6 @@ router.get("/getAllClientPagination", roleAuthentication(['superAdmin', 'admin']
 router.get("/getAllActiveClient", roleAuthentication(['superAdmin', 'admin']),getAllActiveClient);
 router.get("/getAllClient", roleAuthentication(['superAdmin', 'admin']),getAllClient);
 router.patch("/updateStatus/:id", roleAuthentication(['superAdmin', 'admin']),updateStatus);
+router.get("/getAllClientCount",getAllClientCount);
 
 export default router;

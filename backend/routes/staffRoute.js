@@ -1,7 +1,7 @@
 import express from "express"
 
 const router = express.Router();
-import {addStaffMember,loginStaff,updateStaffById ,deleteStaffById,getStaffById,getAllStaff,getAllActiveStaff,getAllStaffsPagination,updateStatus} from "../controllers/staffController.js"
+import {addStaffMember,getAllStaffCount,loginStaff,updateStaffById ,deleteStaffById,getStaffById,getAllStaff,getAllActiveStaff,getAllStaffsPagination,updateStatus} from "../controllers/staffController.js"
 import roleAuthentication from "../middleware/roleAuthentication.js";
 
 
@@ -13,6 +13,7 @@ router.get("/getAllStaffsPagination", roleAuthentication(['superAdmin', 'admin']
 router.get("/getAllActiveStaff", roleAuthentication(['superAdmin', 'admin']),getAllActiveStaff);
 router.get("/getAllStaff", roleAuthentication(['superAdmin', 'admin']),getAllStaff);
 router.patch("/updateStatus/:id", roleAuthentication(['superAdmin', 'admin']),updateStatus);
+router.get("/getAllStaffCount", getAllStaffCount);
 
 router.post("/loginStaff",loginStaff);
 

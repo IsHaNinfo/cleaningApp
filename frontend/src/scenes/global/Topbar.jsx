@@ -16,7 +16,7 @@ import { environment } from "../../environment";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
-import logoSrc from "../../assets/logo/login_logo.png"
+import logoSrc from "../../assets/logo/logo.png"
 const Topbar = () => {
 
   
@@ -118,9 +118,9 @@ const Topbar = () => {
         // borderRadius="50%"
         overflow="hidden"
         width="170px"
-        height="70px"
+        height="50px"
       >
-        <img
+        {/* <img
           alt="profile-user"
           src={logoSrc}
           style={{
@@ -132,7 +132,7 @@ const Topbar = () => {
               theme.palette.mode === "dark" ? "scale(1.2)" : "scale(1)",
             transition: "transform 0.3s ease",
           }}
-        />
+        /> */}
       </Box>
       {/* <Box
         display="flex"

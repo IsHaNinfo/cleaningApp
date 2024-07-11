@@ -1,9 +1,10 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import axios from "axios";
 import { environment } from "../../environment";
+import { Link } from "react-router-dom";
 
 const ViewStaff = () => {
   const { id } = useParams();
@@ -52,6 +53,25 @@ const ViewStaff = () => {
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
       <Header title={`View Staff ID: ${id}`} subtitle="" />
+
+      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
+        <Link to={`/staff/viewstaff/${id}/jobs`} style={{ textDecoration: "none" }}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#6870fa",
+              color: "white",
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: "#3e4396",
+              },
+            }}
+          >
+            View Staff Jobs
+          </Button>
+        </Link>
+      </Box>
+
       <Box ml={"40px"}>
         <Grid container spacing={2}>
           {Object.entries(staffDetails)

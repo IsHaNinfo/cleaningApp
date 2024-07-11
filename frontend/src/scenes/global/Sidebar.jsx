@@ -26,6 +26,7 @@ import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import logoSrc from "../../assets/logo/login_logo.png"
 
 const Item = ({ title, to, icon, selected, setSelected, children }) => {
   const theme = useTheme();
@@ -42,6 +43,10 @@ const Item = ({ title, to, icon, selected, setSelected, children }) => {
         active={selected === title}
         style={{
           color: colors.grey[100],
+          backgroundColor: selected === title ? "#868dfb" : "transparent",
+          "&:hover": {
+            backgroundColor: "#868dfb",
+          },
         }}
         onClick={() => {
           setSelected(title);
@@ -67,6 +72,10 @@ const Subtopic = ({ title, to, selected, setSelected }) => {
       style={{
         color: colors.grey[100],
         textAlign: "center",
+        backgroundColor: selected === title ? "#868dfb" : "transparent",
+        "&:hover": {
+          backgroundColor: "#868dfb",
+        },
       }}
       onClick={() => setSelected(title)}
     >
@@ -123,9 +132,19 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="30px"
               >
-                <Typography variant="h3" color={colors.grey[100]}>
-                  Tangora
-                </Typography>
+                  <img
+          alt="profile-user"
+          src={logoSrc}
+          style={{
+            width: "45%",
+            height: "45%",
+            cursor: "pointer",
+            // borderRadius: "50%",
+            transform:
+              theme.palette.mode === "dark" ? "scale(1.2)" : "scale(1)",
+            transition: "transform 0.3s ease",
+          }}
+        />
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -139,63 +158,43 @@ const Sidebar = () => {
             sx={{ marginTop: "20px" }}
             width={!isCollapsed ? "calc(100% + 40px)" : undefined}
           >
-    
-            {/* <Item
-              title="Subscription Options"
-              to="/subscription"
-              icon={<ContactsOutlinedIcon />}
+            <Item
+              title="Dashboard"
+              to="/dashboard"
+              icon={<HomeOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Jobs"
+              to="/jobs"
+              icon={<BusinessCenterOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             >
               <Subtopic
-                title="Subscribed Users"
-                to="/subscribedusers"
-                selected={selected}
-                setSelected={setSelected}
-              />{" "}
-            </Item>
-           
-            <Item
-              title="News"
-              to="/news"
-              icon={<MicIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-              <Item
-              title="Jobs"
-              to="/jobs"
-              icon={<WorkOutlineIcon />}
-              selected={selected}
-              setSelected={setSelected}
-              >
-              <Subtopic
-                title="CompletedJobs"
+                title="Completed Jobs"
                 to="/completedjobs"
                 selected={selected}
                 setSelected={setSelected}
               />
-              </Item>
-
-              <Item
+            </Item>
+            <Item
               title="Clients"
               to="/clients"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            {showItem &&(
-              <Item
-              title="Staff"
-              to="/staff"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            
+            {showItem && (
+              <Item
+                title="Staff"
+                to="/staff"
+                icon={<GroupOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
             )}
-             
-            
           </Box>
         </Menu>
       </ProSidebar>
