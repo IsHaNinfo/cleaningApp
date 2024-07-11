@@ -19,6 +19,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     };
   
     const userRole = getUserIdFromToken();
+    
     localStorage.setItem("User_role",userRole); // Get the authenticated user from your auth context or hook
 
   if (!userRole || !allowedRoles.includes(userRole)) {

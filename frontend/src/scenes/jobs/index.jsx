@@ -24,12 +24,13 @@ import {
   import { jwtDecode } from "jwt-decode";
   import { environment } from '../../environment';
 
+
   const Jobs = () => {
     const [data, setData] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const userRole = localStorage.getItem("User_role");
-    const shouldShowButton = userRole !== "staff";
+    
+    
   
     const getUserIdFromToken = () => {
       const token = localStorage.getItem("token");
@@ -44,8 +45,29 @@ import {
       }
       return null;
     };
+
+    const getUserRoleFromToken = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          return decodedToken.role; // Adjust according to your token structure
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          return null;
+        }
+      }
+      return null;
+    };
+    const userRole = getUserRoleFromToken();
+    const shouldShowButton = userRole !== "staff";
   
     const userId = getUserIdFromToken();
+    const formatTime = (dateTime) => {
+      if (!dateTime) return null;
+      const time = new Date(dateTime);
+      return time.toLocaleTimeString("en-CA", { hour: '2-digit', minute: '2-digit', second: '2-digit',hour12: false, });
+    };
   
     const fetchJobs = async () => {
       try {
@@ -58,9 +80,12 @@ import {
   
         const responseData = response.data;
         if (responseData.success) {
+          
           const modifiedData = responseData.jobs.map((item) => ({
             ...item,
             startTime: item.startTime.split("T")[0],
+            signInTime:formatTime(item.signInTime),
+            signOffTime:formatTime(item.signOffTime),
             id: item._id, // Set id for DataGrid row key
           }));
   
@@ -146,6 +171,34 @@ import {
     };
   
     const handleEditClick = (id) => { };
+
+    const handleSignInSignOut = async (id,staffId, isSignedIn) => {
+      try {
+        let response;
+        if (!isSignedIn) {
+          response = await axios.put(environment.apiUrl + `/job/signInJob/${id}`,{staffId:staffId});
+        } else {
+          response = await axios.put(environment.apiUrl + `/job/signOffJob/${id}`);
+        }
+    
+        if (response.data.success) {
+          await fetchJobs();
+          const updatedJob = response.data.job;
+          setData((prevData) =>
+            prevData.map((item) =>
+              item.id === id ? { ...item, ...updatedJob } : item
+            )
+          );
+          Swal.fire("Updated!", `Job has been ${!isSignedIn ? 'signed in' : 'signed out'}.`, "success");
+        } else {
+          throw new Error(response.data.message);
+        }
+      } catch (error) {
+        console.error(`Error ${!isSignedIn ? 'signing in' : 'signing out'} job:`, error);
+        Swal.fire("Error!", `Failed to ${!isSignedIn ? 'sign in' : 'sign out'} job. Please try again later.`, "error");
+      }
+    };
+    
   
     const columns = [
       { field: "id", headerName: "Job ID" },
@@ -164,7 +217,17 @@ import {
         renderCell: (params) =>
           `${params.row.assignedStaff.firstName} ${params.row.assignedStaff.lastName}`,
       },
-      { field: "startTime", headerName: "Start Time (YYYY/MM/DD)", flex: 1 },
+      { field: "startTime", headerName: "Start Time (YYYY/MM/DD)", flex: 0.6 },
+      {
+        field: "signInTime",
+        headerName: "Sign In Time",
+        flex: 0.5,
+      },
+      {
+        field: "signOffTime",
+        headerName: "Sign Out Time",
+        flex: 0.5,
+      },
       {
         field: "jobStatus",
         headerName: "Status",
@@ -172,13 +235,32 @@ import {
         renderCell: (params) => (
           <Select
             value={params.row.jobStatus}
-            onChange={(e) => handleStatusChange(params.row.id, e.target.value)}
+            onChange={(e) => handleStatusChange(params.row.id,e.target.value)}
           >
             <MenuItem value="InProgress">In Progress</MenuItem>
             <MenuItem value="Completed">Completed</MenuItem>
             <MenuItem value="Cancelled">Cancelled</MenuItem>
           </Select>
         ),
+      },
+      {
+        field: "signInSignOut",
+        headerName: "Sign In/Sign Out",
+        flex: 0.6,
+        renderCell: (params) => {
+          const isSignedIn = !!params.row.signInTime && !params.row.signOutTime;
+          const isSignedOut = !!params.row.signOffTime;
+          return (
+            <Button
+              variant="contained"
+              color={isSignedIn ? "secondary" : "primary"}
+              disabled={isSignedOut}
+              onClick={() => handleSignInSignOut(params.row.id,params.row.assignedStaff._id, isSignedIn)}
+            >
+               {isSignedOut ? "Signed Out" : isSignedIn ? "Sign Out" : "Sign In"}
+            </Button>
+          );
+        },
       },
       {
         field: "Actions",
