@@ -149,6 +149,21 @@ export const getAllJobs = async (req, res) => {
     }
 }
 
+export const getAllJobsCount = async (req, res) => {
+    try {
+        const jobs = await Job.find()
+           
+
+        if (!jobs.length) {
+            return res.status(404).json({ response_code: 404, success: false, message: "Jobs not found" });
+        }
+        const count = jobs.length
+        res.status(200).json({ response_code: 200, success: true, message: "Jobs fetched successfully", count });
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+}
+
 
 
 export const getAllJobPagination = async (req, res) => {
@@ -222,7 +237,7 @@ export const updateStatus = async (req, res) => {
 
 export const getAllCompletedJobs = async (req, res) => {
     try {
-        const jobs = await Job.find({ jobStatus: 'Completed' });
+        const jobs = await Job.find({ jobStatus: 'Completed' }).populate('client').populate('assignedStaff');
         if (!jobs.length) {
             return  res.status(404).json({ response_code: 404, success: false,message :"jobs not found" });
         }
@@ -259,13 +274,13 @@ export const signOffJob = async (req, res) => {
 
     try {
         const job = await Job.findById(jobId);
-        console.log("job found",job);
+        console.log("job found", job);
         if (!job) {
             return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
         }
 
-        if(job.isSignOff == true){
-            return res.status(404).json({ response_code: 404, success: false, message: 'This Job is already sign off' });
+        if (job.isSignOff) {
+            return res.status(400).json({ response_code: 400, success: false, message: 'This Job is already signed off' });
         }
 
         job.signOffTime = new Date();
@@ -273,19 +288,20 @@ export const signOffJob = async (req, res) => {
         // Calculate the number of hours worked
         const signInTime = new Date(job.signInTime);
         const signOffTime = new Date(job.signOffTime);
-        const noOfHours = (signOffTime - signInTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+        const noOfHours = ((signOffTime - signInTime) / (1000 * 60 * 60)).toFixed(0); // Convert milliseconds to hours and format to 2 decimal places
 
-        job.noOfhours = noOfHours;
+        job.noOfhours = parseFloat(noOfHours); // Convert the string to a number
         job.isSignOff = true;
-        job.payment = noOfHours * job.hourRate;
+        job.payment = parseFloat((job.noOfhours * job.hourRate).toFixed(0)); // Calculate payment and format to 2 decimal places
 
         await job.save();
 
-        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed off successfully', data:job });
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff signed off successfully', data: job });
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, message: error.message });
     }
 };
+
 
 
 export const getInvoice = async (req, res) => {

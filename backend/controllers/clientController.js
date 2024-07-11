@@ -133,6 +133,19 @@ export const getAllClient = async (req, res) => {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 }
+
+export const getAllClientCount = async (req, res) => {
+    try {
+        const clients = await Client.find();
+        if (!clients.length) {
+            return  res.status(404).json({ response_code: 404, success: false,message :"clients not found" });
+        }
+        const count = clients.length
+        res.status(200).json({ response_code: 200, success: true,message :"clients fetched successfully" ,count});
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+}
 export const getAllActiveClient = async (req, res) => {
     try {
         const clients = await Client.find({ clientStatus: 'active' });

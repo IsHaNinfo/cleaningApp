@@ -21,6 +21,7 @@ import {
       try {
         const response = await axios.get(environment.apiUrl + "/job/getAllCompletedJobs");
         const responseData = response.data;
+        console.log(responseData)
         if (responseData.success) {
           const modifiedData = responseData.jobs.map((item) => ({
             ...item,

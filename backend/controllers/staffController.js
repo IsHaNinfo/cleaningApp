@@ -157,12 +157,27 @@ export const getAllStaff = async (req, res) => {
     }
 }
 
+
+export const getAllStaffCount = async (req, res) => {
+    try {
+        const staffs = await Staff.find();
+        if (!staffs.length) {
+            return  res.status(404).json({ response_code: 404, success: false,message :"Staff not found" });
+        }
+        const count = staffs.length
+
+        res.status(200).json({ response_code: 200, success: true,message :"Staff fetched successfully" ,count});
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+}
 export const getAllActiveStaff = async (req, res) => {
     try {
         const staffs = await Staff.find({ workStatus: 'active' });
         if (!staffs.length) {
             return  res.status(404).json({ response_code: 404, success: false,message :"Staff not found" });
         }
+
         res.status(200).json({ response_code: 200, success: true,message :"Staff fetched successfully" ,staffs});
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
