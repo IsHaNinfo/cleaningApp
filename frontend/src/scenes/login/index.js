@@ -108,7 +108,7 @@ function Login() {
         setAlertMessage("Sign in Successful!");
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("isAuthenticated", true);
-        navigate("/news");
+        navigate("/dashboard");
       }
     } catch (err) {
       console.error(err);
