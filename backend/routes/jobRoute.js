@@ -24,7 +24,7 @@ router.get("/getJobsbyStaff/:staffId", getJobsByStaffId);
 
 router.get("/getFilteredJobs/:clientId", getFilteredJobs);
 router.get("/getStaffJobsbyId/:assignedStaff", getStaffJobsbyId);
-router.put("/paymentJob/:assignedStaff", paymentJob);
+router.put("/paymentJob", paymentJob);
 
 
 export default router;

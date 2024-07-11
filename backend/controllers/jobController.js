@@ -478,8 +478,7 @@ export const getStaffJobsbyId = async (req, res) => {
 
 
 export const paymentJob = async (req, res) => {
-    const { assignedStaff } = req.params;
-    const { jobId } = req.body; // Ensure you pass the staffId in the request body
+    const { jobId,paymentStatus } = req.body; // Ensure you pass the staffId in the request body
 
     try {
         const job = await Job.findById(jobId);
@@ -487,13 +486,10 @@ export const paymentJob = async (req, res) => {
             return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
         }
 
-        const staff = await Staff.findById(assignedStaff); // Correct the model used for finding the staff
-        if (!staff) {
-            return res.status(404).json({ response_code: 404, success: false, message: 'Staff not found for this job' });
-        }
+      
+        job.paymentStatus = paymentStatus; // Assuming 'paymentStatus' is a field in your Job model
 
         job.jobStatus = "Cancelled"
-        job.paymentStatus = "Done"
         await job.save();
 
         res.status(200).json({ response_code: 200, success: true, message: 'Payment Done in successfully', job });
