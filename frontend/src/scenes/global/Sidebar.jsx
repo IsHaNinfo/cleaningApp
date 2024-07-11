@@ -158,13 +158,15 @@ const Sidebar = () => {
             sx={{ marginTop: "20px" }}
             width={!isCollapsed ? "calc(100% + 40px)" : undefined}
           >
+            {showItem &&
             <Item
-              title="Dashboard"
-              to="/dashboard"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            title="Dashboard"
+            to="/dashboard"
+            icon={<HomeOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />}
+            
             <Item
               title="Jobs"
               to="/jobs"
@@ -179,13 +181,15 @@ const Sidebar = () => {
                 setSelected={setSelected}
               />
             </Item>
+            {showItem &&
             <Item
-              title="Clients"
-              to="/clients"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            title="Clients"
+            to="/clients"
+            icon={<ContactsOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />}
+            
             {showItem && (
               <Item
                 title="Staff"
