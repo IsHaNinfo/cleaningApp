@@ -20,7 +20,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, MenuItem, ProSidebar } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
@@ -90,8 +90,15 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-  const userRole = localStorage.getItem("User_role");
+  const [userRole, setUserRole] = useState(localStorage.getItem("User_role"));
+  useEffect(() => {
+    const role = localStorage.getItem("User_role");
+    setUserRole(role);
+  }, []);
+
+  const showSuperAdmin = userRole === 'superAdmin';
   const showItem = userRole !== 'staff';
+  
 
   return (
     <Box
@@ -194,6 +201,15 @@ const Sidebar = () => {
               <Item
                 title="Staff"
                 to="/staff"
+                icon={<GroupOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
+            {showSuperAdmin && (
+              <Item
+                title="Admin"
+                to="/admin"
                 icon={<GroupOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
