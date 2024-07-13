@@ -11,7 +11,7 @@ const createToken = (_id,role) => {
     return jwt.sign({ _id,role }, process.env.SECRET, { expiresIn: 259200 });
 };
 export const addUser = async (req, res) => {
-    const { email, password, userName, role, staffDetails } = req.body;
+    const { email, password, userName, role, staffDetails,adminDetails } = req.body;
 
     try {
         if (!email || !password || !role || !userName) {
@@ -32,7 +32,10 @@ export const addUser = async (req, res) => {
         await user.save();
 
         if (role === "admin") {
-            const admin = new Admin({ user: user._id });
+            const admin = new Admin({ user: user._id,
+                firstName:adminDetails.firstName,
+                lastName:adminDetails.lastName,
+                position:adminDetails.position });
             await admin.save();
             user.adminDetails = admin._id;
         } else if (role === "staff") {
@@ -183,12 +186,12 @@ export const getUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     const { id } = req.params;
-  const { userName, email } = req.body;
+  const { userName, email} = req.body;
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { userName, email },
+      { userName, email},
       { new: true, runValidators: true }
     );
 
@@ -253,6 +256,7 @@ export const updateUserPassword = async (req, res) => {
     const { id } = req.params;
 
     try {
+
         if (  !currentPassword || !newPassword) {
             return res.status(404).json({ error: "current password, and new password are required" });
 
@@ -330,3 +334,43 @@ export const updateStaff = async (req, res) => {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 };
+
+export const updateAdmin = async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName,position,userName,email} = req.body;
+    console.log(req.body,id);
+
+    try {
+        // Find the staff member by ID
+        const admin = await Admin.findById(id).populate('user');
+        if (!admin) {
+            return res.status(404).json({ response_code: 404, success: false, message: "admin not found" });
+        }
+
+        // Update staff details
+        admin.firstName = firstName || admin.firstName;
+        admin.lastName = lastName || admin.lastName;
+        admin.position = position || admin.position;
+        
+        // Save the updated staff details
+        await admin.save();
+
+        // Find and update the user details
+        const user = await User.findById(admin.user);
+        if (!user) {
+            return res.status(404).json({ response_code: 404, success: false, message: "User not found" });
+        }
+
+        user.userName = userName || user.userName;
+        user.email = email || user.email;
+
+        // Save the updated user details
+        await user.save();
+
+        res.status(200).json({ response_code: 200, success: true, message: 'Staff and user details updated successfully!' });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+};
+

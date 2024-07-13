@@ -33,7 +33,6 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     }
 
     if(expired){
-        console.log("expired state", expired)
         return <Navigate to="/" replace />;
     }else if (!role || !allowedRoles.includes(role)) {
     return <Navigate to="/jobs" replace />;

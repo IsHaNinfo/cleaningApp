@@ -31,6 +31,10 @@ import { ColorModeContext, useMode } from "./theme";
 import ClientJobs from "./scenes/clients/ClientJobs .jsx";
 import Dashboard from "./scenes/dashboard/dashboard.jsx";
 import PrivateRoute from "./PrivateRoutes.js";
+import Admin from "./scenes/admins/index.jsx";
+import CreateAdmin from "./scenes/admins/CreateAdmin.jsx";
+import ViewAdmin from "./scenes/admins/ViewAdmin.jsx";
+import EditAdmin from "./scenes/admins/EditAdmin.jsx";
 
 
 
@@ -198,6 +202,39 @@ return (
                 element={
                   <PrivateRoute allowedRoles={['superAdmin', 'admin','staff']}>
                     <EditProfile />
+                  </PrivateRoute>
+                }
+              />
+
+<Route
+                path="/admin"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <Admin />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/createadmin"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <CreateAdmin />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/viewadmin/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <ViewAdmin />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/editadmin/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <EditAdmin />
                   </PrivateRoute>
                 }
               />
