@@ -30,6 +30,11 @@ import EditProfile from "./scenes/profile/EditProfile";
 import { ColorModeContext, useMode } from "./theme";
 import ClientJobs from "./scenes/clients/ClientJobs .jsx";
 import Dashboard from "./scenes/dashboard/dashboard.jsx";
+import PrivateRoute from "./PrivateRoutes.js";
+import Admin from "./scenes/admins/index.jsx";
+import CreateAdmin from "./scenes/admins/CreateAdmin.jsx";
+import ViewAdmin from "./scenes/admins/ViewAdmin.jsx";
+import EditAdmin from "./scenes/admins/EditAdmin.jsx";
 
 
 
@@ -51,29 +56,188 @@ return (
           {!isLoginPage && <Topbar setIsSidebar={setIsSidebar} />}
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard></Dashboard>}></Route>
+            
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
 
-                <Route path="/jobs" element={<Jobs></Jobs>}></Route>
-                <Route path="/jobs/newjob" element={<AddJob></AddJob>}></Route>
-                <Route path="/jobs/viewjob/:id"element={<ViewJob></ViewJob>}></Route>
-                <Route path="/jobs/editjob/:id" element={<EditJob></EditJob>}></Route>
+              <Route
+                path="/jobs"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
+                    <Jobs />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/jobs/newjob"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <AddJob />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/jobs/viewjob/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
+                    <ViewJob />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/jobs/editjob/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <EditJob />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/completedjobs"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
+                    <CompletedJobs />
+                  </PrivateRoute>
+                }
+              />
 
-                <Route path="/completedjobs" element={<CompletedJobs></CompletedJobs>}></Route>
+              <Route
+                path="/clients"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <Clients />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/clients/newclient"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <AddClient />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/clients/viewclient/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <ViewClient />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/clients/editclient/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <EditClient />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/clients/viewclient/:id/jobs"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <ClientJobs />
+                  </PrivateRoute>
+                }
+              />
 
-                <Route path="/clients" element={<Clients></Clients>}></Route>
-                <Route path="/clients/newclient" element={<AddClient></AddClient>}></Route>
-                <Route path="/clients/viewclient/:id" element={<ViewClient></ViewClient>}></Route>
-                <Route path="/clients/editclient/:id" element={<EditClient></EditClient>}></Route>
-                <Route path="/clients/viewclient/:id/jobs" element={<ClientJobs> </ClientJobs>}></Route> 
+              <Route
+                path="/staff"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <Staff />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/staff/newstaff"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <AddStaff />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/staff/viewstaff/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <ViewStaff />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/staff/editstaff/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <EditStaff />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/staff/viewstaff/:id/jobs"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <StaffJobs />
+                  </PrivateRoute>
+                }
+              />
 
-                <Route path="/staff" element={<Staff></Staff>}></Route>
-                <Route path="/staff/newstaff" element={<AddStaff></AddStaff>}></Route>
-                <Route path="/staff/viewstaff/:id" element={<ViewStaff></ViewStaff>}></Route>
-                <Route path="/staff/editStaff/:id" element={<EditStaff></EditStaff>}></Route>
-                <Route path="/staff/viewstaff/:id/jobs" element={<StaffJobs> </StaffJobs>}></Route> 
+              <Route
+                path="/profile/changepassword"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin','staff']}>
+                    <ChangePw />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin','staff']}>
+                    <EditProfile />
+                  </PrivateRoute>
+                }
+              />
 
-                <Route path="/profile/changepassword"element={<ChangePw></ChangePw>} ></Route>
-                <Route path="/profile" element={<EditProfile></EditProfile>}></Route>
+<Route
+                path="/admin"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <Admin />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/createadmin"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <CreateAdmin />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/viewadmin/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <ViewAdmin />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/editadmin/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <EditAdmin />
+                  </PrivateRoute>
+                }
+              />
                 
             </Routes>
           </main>

@@ -1,6 +1,7 @@
 import Admin from "../models/adminModel.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import User from "../models/userModel.js";
 
 
 const createToken = (_id,role) => {
@@ -73,35 +74,70 @@ export const loginAdmin = async (req, res) => {
     }
 };
 export const updateAdminPassword = async (req, res) => {
-    const {  currentPassword, newPassword } = req.body;
+    const { password } = req.body;
     const { id } = req.params;
 
     try {
-        if (  !currentPassword || !newPassword) {
-            return  res.status(404).json({ response_code: 404, success: false,message :"current password, and new password are required" });
+        if (  !password) {
+            return  res.status(404).json({ response_code: 404, success: false,message :"passsord required" });
 
         }
 
-        const admin = await Admin.findById(id);
+        const admin = await User.findById(id);
         if (!admin) {
             return  res.status(404).json({ response_code: 404, success: false,message :"Admin not found" });
 
         }
 
-        const isPasswordValid = bcrypt.compareSync(currentPassword, admin.password);
-        if (!isPasswordValid) {
-            return  res.status(404).json({ response_code: 404, success: false,message :"Invalid current password" });
+        // const isPasswordValid = bcrypt.compareSync(currentPassword, admin.password);
+        // if (!isPasswordValid) {
+        //     return  res.status(404).json({ response_code: 404, success: false,message :"Invalid current password" });
 
-        }
+        // }
 
         // Hash the new password
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        const hashedNewPassword = await bcrypt.hash(password, 10);
         admin.password = hashedNewPassword;
 
         await admin.save();
         res.status(200).json({ response_code: 200, success: true, message: 'Password updated successfully!' });
 
     } catch (error) {
+        console.log(error);
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 };
+
+export const getAllAdmins = async (req, res) => {
+    try {
+        const admins = await User.find({role:"admin"}).populate('adminDetails');
+        if (!admins.length) {
+            return  res.status(404).json({ response_code: 404, success: false,message :"Admins not found" });
+        }
+        res.status(200).json({ response_code: 200, success: true,message :"Admin data fetched successfully" ,admins});
+    } catch (error) {
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+}
+
+export const updateStatus = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    try {
+        const admin = await User.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
+
+        if (!admin) {
+            return  res.status(404).json({ response_code: 404, success: false,message :"Admin account not found" });
+        }
+        res.status(200).json({ response_code: 200, success: true,message :"Admin updated successfully" ,status});
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ response_code: 400, success: false, error: error.message });
+    }
+}
