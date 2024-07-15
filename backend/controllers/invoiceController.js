@@ -74,12 +74,12 @@ export const updatedInvoice = async (req, res) => {
 export const getInvoiceById = async (req, res) => {
     const { id } = req.params;
     try {
-        const job = await Invoice.findById(id).populate('client');
+        const invoice = await Invoice.findById(id).populate('client');
 
-        if (!job) {
+        if (!invoice) {
             return  res.status(404).json({ response_code: 404, success: false,message :"Invoice not found" });
         }
-        res.status(200).json({ response_code: 200, success: true,message :"Invoice fetched successfully" ,job});
+        res.status(200).json({ response_code: 200, success: true,message :"Invoice fetched successfully" ,invoice});
 
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
@@ -87,16 +87,16 @@ export const getInvoiceById = async (req, res) => {
 };
 export const getAllInvoices = async (req, res) => {
     try {
-        const jobs = await Invoice.find()
+        const invoices = await Invoice.find()
             .populate({
                 path: 'client',
                 select: 'firstName lastName'  // Adjust field name as per your Client schema
             })
 
-        if (!jobs.length) {
+        if (!invoices.length) {
             return res.status(404).json({ response_code: 404, success: false, message: "Invoices not found" });
         }
-        res.status(200).json({ response_code: 200, success: true, message: "Invoices fetched successfully", jobs });
+        res.status(200).json({ response_code: 200, success: true, message: "Invoices fetched successfully", invoices });
     } catch (error) {
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }

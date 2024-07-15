@@ -27,7 +27,7 @@ import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import logoSrc from "../../assets/logo/login_logo.png"
-
+import ReceiptIcon from '@mui/icons-material/Receipt';
 const Item = ({ title, to, icon, selected, setSelected, children }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -195,7 +195,19 @@ const Sidebar = () => {
             icon={<ContactsOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
-          />}
+          />
+          
+          }
+           {showItem &&
+            <Item
+            title="Invoices"
+            to="/invoices"
+            icon={<ReceiptIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          
+          }
             
             {showItem && (
               <Item
