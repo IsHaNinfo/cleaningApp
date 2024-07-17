@@ -68,7 +68,7 @@ import {
         <Header title="Client Jobs" subtitle={`Jobs for Client ID: ${id}`} />
         <Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
   <Box>
-    <Typography fontWeight="bold" fontSize="16px">Start Time*</Typography>
+    <Typography fontWeight="bold" fontSize="16px">From</Typography>
     <Box >
       <TextField
         fullWidth
@@ -81,7 +81,7 @@ import {
     </Box>
   </Box>
   <Box>
-    <Typography fontWeight="bold" fontSize="16px">End Time*</Typography>
+    <Typography fontWeight="bold" fontSize="16px">To</Typography>
     <Box>
       <TextField
         fullWidth
@@ -104,6 +104,8 @@ import {
         backgroundColor: "#388e3c",
       },
     }}
+    disabled={(!startDate && endDate) || (startDate && !endDate)}
+  
   >
     View Jobs
   </Button>

@@ -131,12 +131,18 @@ export const getJobById = async (req, res) => {
 export const getAllJobs = async (req, res) => {
     try {
 
-        const { startDate, endDate } = req.query;
+const {startDate, endDate} = req.query;
 
   let filter = {};
   if (startDate && endDate) {
-    filter.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
-  }
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0); // Set to 00:00
+
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Set to 23:59
+
+    filter.startTime = { $gte: start, $lte: end };
+}
         const jobs = await Job.find(filter)
             .populate({
                 path: 'assignedStaff',
@@ -355,16 +361,24 @@ export const getJobsByStaffId = async (req, res) => {
 
     const { startDate, endDate } = req.query;
 
-  let filter = {};
-  if (startDate && endDate) {
-    filter.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
-  }
+    let filter = { assignedStaff: staffObjectId };
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0); // Set to 00:00
+
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Set to 23:59
+
+        filter.startTime = { $gte: start, $lte: end };
+    }
+  console.log(filter);
     
     try {
-        const jobs = await Job.find({ assignedStaff:staffObjectId,filter }).populate('assignedStaff').populate('client');
+        const jobs = await Job.find(filter).populate('assignedStaff').populate('client');
+        console.log(jobs);
 
         if (jobs.length === 0) {
-            return res.status(404).json({ response_code: 404, success: false, message: "No jobs found for this staff member" });
+            return res.status(404).json({ response_code: 404, success: false, message: "Jobs not found" });
         }
 
         res.status(200).json({ response_code: 200, success: true, message: "Jobs fetched successfully", jobs });
@@ -413,9 +427,14 @@ export const getFilteredJobs = async (req, res) => {
             }
         }
         if (startDate && endDate) {
-            query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
-          }
-          console.log(query)
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0); // Set to 00:00
+    
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); // Set to 23:59
+    
+            query.startTime = { $gte: start, $lte: end };
+        }
 
         const jobs = await Job.find(query)
             .populate('client')
@@ -447,7 +466,7 @@ export const getStaffJobsbyId = async (req, res) => {
         let query = {};
 
         if (assignedStaff) {
-            query.staff = assignedStaff;
+            query.assignedStaff = assignedStaff;
         }
 
         if (jobStatus) {
@@ -477,8 +496,14 @@ export const getStaffJobsbyId = async (req, res) => {
         }
 
         if (startDate && endDate) {
-            query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
-          }
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0); // Set to 00:00
+    
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); // Set to 23:59
+    
+            filter.startTime = { $gte: start, $lte: end };
+        }
 
         const jobs = await Job.find(query)
             .populate('client')

@@ -30,14 +30,12 @@ import {
     const fetchStaffJobs = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        console.log(id)
         let url = environment.apiUrl + `/job/getStaffJobsbyId/${id}`
         if (startDate && endDate) {
           url += `?startDate=${startDate}&endDate=${endDate}`;
         }
         const response = await axios.get(url, { headers });
         const responseData = response.data;
-        console.log(responseData)
         if (responseData.success) {
           setJobs(responseData.jobs);
         } else {
@@ -98,7 +96,7 @@ import {
         <Header title="Staff Jobs" subtitle={`Jobs for Staff ID: ${id}`} />
         <Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
   <Box>
-    <Typography fontWeight="bold" fontSize="16px">Start Time*</Typography>
+    <Typography fontWeight="bold" fontSize="16px">From</Typography>
     <Box>
       <TextField
         fullWidth
@@ -111,7 +109,7 @@ import {
     </Box>
   </Box>
   <Box>
-    <Typography fontWeight="bold" fontSize="16px">End Time*</Typography>
+    <Typography fontWeight="bold" fontSize="16px">To</Typography>
     <Box>
       <TextField
         fullWidth
@@ -134,6 +132,7 @@ import {
         backgroundColor: "#388e3c",
       },
     }}
+    disabled={(!startDate && endDate) || (startDate && !endDate)}
   >
     View Jobs
   </Button>

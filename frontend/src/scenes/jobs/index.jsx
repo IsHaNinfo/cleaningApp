@@ -136,7 +136,7 @@ import {
         }
       } catch (error) {
         if(error.response.data.message === 'Jobs not found'){
-          setData()
+          setData([])
         }
         console.error("Error fetching jobs:", error);
       }
@@ -398,7 +398,7 @@ import {
         </Box> */}
 <Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
   <Box>
-    <Typography fontWeight="bold" fontSize="16px">Start Time*</Typography>
+    <Typography fontWeight="bold" fontSize="16px">From</Typography>
     <Box >
       <TextField
         fullWidth
@@ -411,7 +411,7 @@ import {
     </Box>
   </Box>
   <Box>
-    <Typography fontWeight="bold" fontSize="16px">End Time*</Typography>
+    <Typography fontWeight="bold" fontSize="16px">To</Typography>
     <Box>
       <TextField
         fullWidth
@@ -434,6 +434,7 @@ import {
         backgroundColor: "#388e3c",
       },
     }}
+    disabled={(!startDate && endDate) || (startDate && !endDate)}
   >
     View Jobs
   </Button>
