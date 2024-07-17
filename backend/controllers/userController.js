@@ -58,7 +58,7 @@ export const addUser = async (req, res) => {
             </div>
           `;
 
-            await sendEmail(email, htmlMessage);
+            // await sendEmail(email, htmlMessage);
             const staff = new Staff({
                 user: user._id,
                 firstName: staffDetails.firstName,

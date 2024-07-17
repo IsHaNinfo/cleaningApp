@@ -11,6 +11,8 @@ import {
     useTheme,
     Select,
     MenuItem,
+    Typography,
+    TextField,
   } from "@mui/material";
   import { DataGrid, GridToolbar } from "@mui/x-data-grid";
   import jsPDF from "jspdf";
@@ -29,6 +31,8 @@ import {
     const [data, setData] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
     
     
   
@@ -69,23 +73,58 @@ import {
       return time.toLocaleTimeString("en-CA", { hour: '2-digit', minute: '2-digit', second: '2-digit',hour12: false, });
     };
   
+    // const fetchJobs = async () => {
+    //   try {
+    //     let response;
+    //     if (userRole === "staff") {
+    //       response = await axios.get(environment.apiUrl + `/job/getJobsbyStaff/${userId}`);
+    //     } else {
+    //       response = await axios.get(environment.apiUrl + "/job/getAllJobs");
+    //     }
+  
+    //     const responseData = response.data;
+    //     if (responseData.success) {
+          
+    //       const modifiedData = responseData.jobs.map((item) => ({
+    //         ...item,
+    //         startTime: item.startTime.split("T")[0],
+    //         signInTime:formatTime(item.signInTime),
+    //         signOffTime:formatTime(item.signOffTime),
+    //         id: item._id, // Set id for DataGrid row key
+    //       }));
+  
+    //       modifiedData.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  
+    //       setData(modifiedData);
+    //     } else {
+    //       console.error("Failed to fetch jobs:", responseData.message);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching jobs:", error);
+    //   }
+    // };
+
     const fetchJobs = async () => {
       try {
-        let response;
+        let url;
         if (userRole === "staff") {
-          response = await axios.get(environment.apiUrl + `/job/getJobsbyStaff/${userId}`);
+          url = environment.apiUrl + `/job/getJobsbyStaff/${userId}`;
         } else {
-          response = await axios.get(environment.apiUrl + "/job/getAllJobs");
+          url = environment.apiUrl + "/job/getAllJobs";
         }
   
+        if (startDate && endDate) {
+          url += `?startDate=${startDate}&endDate=${endDate}`;
+        }
+  
+        const response = await axios.get(url);
         const responseData = response.data;
         if (responseData.success) {
-          
           const modifiedData = responseData.jobs.map((item) => ({
             ...item,
             startTime: item.startTime.split("T")[0],
-            signInTime:formatTime(item.signInTime),
-            signOffTime:formatTime(item.signOffTime),
+            signInTime: formatTime(item.signInTime),
+            signOffTime: formatTime(item.signOffTime),
             id: item._id, // Set id for DataGrid row key
           }));
   
@@ -96,9 +135,13 @@ import {
           console.error("Failed to fetch jobs:", responseData.message);
         }
       } catch (error) {
+        if(error.response.data.message === 'Jobs not found'){
+          setData([])
+        }
         console.error("Error fetching jobs:", error);
       }
     };
+  
   
     useEffect(() => {
       fetchJobs();
@@ -198,6 +241,11 @@ import {
         Swal.fire("Error!", `Failed to ${!isSignedIn ? 'sign in' : 'sign out'} job. Please try again later.`, "error");
       }
     };
+
+    const handleViewJobs = () => {
+      fetchJobs();
+    };
+    
     
   
     const columns = [
@@ -242,6 +290,7 @@ import {
             <MenuItem value="Cancelled">Cancelled</MenuItem>
           </Select>
         ),
+        
       },
       {
         field: "signInSignOut",
@@ -261,6 +310,7 @@ import {
             </Button>
           );
         },
+        hide: userRole !== "staff"
       },
       {
         field: "Actions",
@@ -325,7 +375,7 @@ import {
             </Box>
           )}
         </Box>
-        <Box
+        {/* <Box
           display="flex"
           justifyContent="flex-start"
           marginTop="10px"
@@ -345,7 +395,65 @@ import {
           >
             Export as PDF
           </Button>
-        </Box>
+        </Box> */}
+<Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
+  <Box>
+    <Typography fontWeight="bold" fontSize="16px">From</Typography>
+    <Box >
+      <TextField
+        fullWidth
+        variant="outlined"
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        name="startTime"
+      />
+    </Box>
+  </Box>
+  <Box>
+    <Typography fontWeight="bold" fontSize="16px">To</Typography>
+    <Box>
+      <TextField
+        fullWidth
+        variant="outlined"
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        name="endTime"
+      />
+    </Box>
+  </Box>
+  <Button
+    variant="contained"
+    onClick={handleViewJobs}
+    sx={{
+      backgroundColor: "#4caf50",
+      color: "white",
+      fontSize: "10px",
+      "&:hover": {
+        backgroundColor: "#388e3c",
+      },
+    }}
+    disabled={(!startDate && endDate) || (startDate && !endDate)}
+  >
+    View Jobs
+  </Button>
+  <Button
+    variant="contained"
+    onClick={exportToPdf}
+    sx={{
+      backgroundColor: "#4caf50",
+      color: "white",
+      fontSize: "10px",
+      "&:hover": {
+        backgroundColor: "#388e3c",
+      },
+    }}
+  >
+    Export as PDF
+  </Button>
+</Box>
+
         <Box
           m="10px 0 0 0"
           height="55vh"
