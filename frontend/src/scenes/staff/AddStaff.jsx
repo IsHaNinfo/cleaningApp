@@ -6,7 +6,10 @@ import {
     Snackbar,
     TextField,
     Typography,
+    IconButton,
+    InputAdornment
   } from "@mui/material";
+  import { Visibility, VisibilityOff } from "@mui/icons-material";
   import AlertTitle from "@mui/material/AlertTitle";
   import useMediaQuery from "@mui/material/useMediaQuery";
   import { Formik } from "formik";
@@ -22,7 +25,8 @@ import {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [alertSeverity, setAlertSeverity] = useState("success");
-  
+    const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+
     const handleFormSubmit = async (values, { resetForm }) => {
       setLoading(true);
       try {
@@ -166,18 +170,32 @@ import {
                   Password*
                 </Typography>
                 <Box mt={-2}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="password"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.password}
-                    name="password"
-                    error={!!touched.password && !!errors.password}
-                    helperText={touched.password && errors.password}
-                  />
-                </Box>
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  type={showPassword ? "text" : "password"}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.password}
+                  name="password"
+                  error={!!touched.password && !!errors.password}
+                  helperText={touched.password && errors.password}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
                 <Typography fontWeight="bold" fontSize="16px">
                   Username*
                 </Typography>

@@ -6,7 +6,10 @@ import {
   Snackbar,
   TextField,
   Typography,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +19,9 @@ import { environment } from "../../environment";
 const EditAdmin = () => {
   const { id } = useParams();
   const token = localStorage.getItem("token");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [adminDetails, setAdminDetails] = useState({
     firstName: "",
@@ -36,7 +42,7 @@ const EditAdmin = () => {
     password: "",
     confirmPassword: "",
   });
-  const [admin,setAdmin] = useState('')
+  const [admin, setAdmin] = useState('');
 
   useEffect(() => {
     fetchAdminDetails();
@@ -44,7 +50,7 @@ const EditAdmin = () => {
 
   const fetchAdminDetails = async () => {
     try {
-      const response = await axios.get(environment.apiUrl+`/user/getUser/${id}`, {
+      const response = await axios.get(`${environment.apiUrl}/user/getUser/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -52,21 +58,21 @@ const EditAdmin = () => {
 
       const responseData = response.data.userDetails;
       if (responseData) {
-        const admindata = responseData.adminDetails
-        setAdmin(admindata._id)
+        const adminData = responseData.adminDetails;
+        setAdmin(adminData._id);
         setAdminDetails({
-          firstName: admindata.firstName,
-    lastName: admindata.lastName,
-    email: responseData.email,
-    position: admindata.position,
-    userName: responseData.userName,
+          firstName: adminData.firstName,
+          lastName: adminData.lastName,
+          email: responseData.email,
+          position: adminData.position,
+          userName: responseData.userName,
         });
         setEditedDetails({
-          firstName: admindata.firstName,
-    lastName: admindata.lastName,
-    email: responseData.email,
-    position: admindata.position,
-    userName: responseData.userName,
+          firstName: adminData.firstName,
+          lastName: adminData.lastName,
+          email: responseData.email,
+          position: adminData.position,
+          userName: responseData.userName,
         });
       } else {
         console.error('Failed to fetch admin details:', responseData.message);
@@ -92,11 +98,27 @@ const EditAdmin = () => {
     }));
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleClickShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   const handleUpdateAdmin = async () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put(environment.apiUrl+`/user/updateAdmin/${admin}`, editedDetails, {
+      const response = await axios.put(`${environment.apiUrl}/user/updateAdmin/${admin}`, editedDetails, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -114,7 +136,7 @@ const EditAdmin = () => {
         setAlertMessage(`Failed to update admin: ${response.data.message}`);
       }
     } catch (error) {
-      console.log(error)
+      console.error('Error updating admin:', error);
       setAlertSeverity('error');
       setAlertMessage(`Error updating admin: ${error.message}`);
     } finally {
@@ -124,14 +146,13 @@ const EditAdmin = () => {
   };
 
   const handleUpdatePassword = async () => {
-    if(!passwordDetails.password){
+    if (!passwordDetails.password) {
       setAlertSeverity('error');
-      setAlertMessage('Please enter valid password');
+      setAlertMessage('Please enter a valid password');
       setOpenSnackbar(true);
       return;
     }
-    if  (passwordDetails.password !== passwordDetails.confirmPassword) {
-      
+    if (passwordDetails.password !== passwordDetails.confirmPassword) {
       setAlertSeverity('error');
       setAlertMessage('Passwords do not match');
       setOpenSnackbar(true);
@@ -139,7 +160,7 @@ const EditAdmin = () => {
     }
 
     try {
-      const response = await axios.put(environment.apiUrl + `/admin/updateAdminPassword/${id}`, { password: passwordDetails.password }, {
+      const response = await axios.put(`${environment.apiUrl}/admin/updateAdminPassword/${id}`, { password: passwordDetails.password }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -155,7 +176,7 @@ const EditAdmin = () => {
         setAlertMessage(`Failed to update password: ${response.data.message}`);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error updating password:', error);
       setAlertSeverity('error');
       setAlertMessage(`Error updating password: ${error.message}`);
     } finally {
@@ -163,43 +184,28 @@ const EditAdmin = () => {
     }
   };
 
+  // Function to filter out unwanted fields
+  const filterFields = (field) => {
+    const unwantedFields = ['createdAt', '__v', '_id', 'updatedAt', 'adminId', 'user', 'status', 'adminDetails', 'role'];
+    return !unwantedFields.includes(field);
+  };
+
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
       <Header title={`Edit Admin ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
         <Grid container spacing={2}>
-          {/* Staff details fields */}
-          {adminDetails.adminDetails && Object.entries(adminDetails.adminDetails).map(([field, value]) => (
-            <React.Fragment key={field}>
-                {field !== 'createdAt' && field !== '__v' && field !== '_id' && field !== 'updatedAt' && field !== 'adminId' &&  field !== 'user' && field !== 'status' && field !== 'adminDetails' && field !=='role'  &&(
-                <Grid item xs={12}>
-                  <Typography variant="h5" component="span" fontWeight="bold">
-                    {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                    name={field}
-                    value={editedDetails?.adminDetails[field]}
-                    onChange={handleInputChange}
-                    multiline={field === 'notes'}
-                    rows={field === 'notes' ? 3 : 1}
-                  />
-                </Grid>
-              )}
-            </React.Fragment>
-          ))}
+          {/* Render fields */}
           {Object.entries(adminDetails).map(([field, value]) => (
             <React.Fragment key={field}>
-                {field !== 'createdAt' && field !== '__v' && field !== '_id' && field !== 'updatedAt' && field !== 'adminId' &&  field !== 'user' && field !== 'status' && field !== 'adminDetails' && field !=='role'  &&(
+              {filterFields(field) && (
                 <Grid item xs={12}>
                   <Typography variant="h5" component="span" fontWeight="bold">
                     {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
                   </Typography>
                   <TextField
                     fullWidth
-                    variant="outlined"
+                    variant="filled"
                     margin="normal"
                     name={field}
                     value={editedDetails[field]}
@@ -239,23 +245,49 @@ const EditAdmin = () => {
             </Typography>
             <TextField
               fullWidth
-              variant="outlined"
+              variant="filled"
               margin="normal"
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={passwordDetails.password}
               onChange={handlePasswordChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               fullWidth
-              variant="outlined"
+              variant="filled"
               margin="normal"
               name="confirmPassword"
               label="Confirm Password"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               value={passwordDetails.confirmPassword}
               onChange={handlePasswordChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowConfirmPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               variant="contained"
@@ -275,7 +307,6 @@ const EditAdmin = () => {
             </Button>
           </Grid>
         </Grid>
-
       </Box>
       {/* Snackbar for alerts */}
       <Snackbar

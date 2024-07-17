@@ -14,9 +14,10 @@ import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { environment } from '../../environment';
+
 const EditJob = () => {
-    const { id } = useParams();
-    const token = localStorage.getItem("token")
+  const { id } = useParams();
+  const token = localStorage.getItem("token");
 
   const [jobDetails, setJobDetails] = useState({
     jobName: '',
@@ -39,8 +40,8 @@ const EditJob = () => {
     hourRate: 0,
     notes: '',
   });
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState('success');
@@ -102,17 +103,16 @@ const EditJob = () => {
 
   const fetchJobDetails = async () => {
     try {
+      const response = await axios.get(environment.apiUrl + `/job/getJobById/${id}`);
 
-      const response = await axios.get(environment.apiUrl + `/job/getJobById/${id}`,);
-
-      console.log(response.data.message)
+      console.log(response.data.message);
       const responseData = response.data;
-      console.log(responseData.job)
+      console.log(responseData.job);
 
       if (responseData.success) {
         setJobDetails(responseData.job);
         setEditedDetails(responseData.job);
-        console.log(editedDetails)
+        console.log(editedDetails);
       } else {
         console.error('Failed to fetch job details:', response.data.message);
       }
@@ -123,38 +123,42 @@ const EditJob = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
-    // For client and assignedStaff fields, set the value to the corresponding object
-    if (name === 'client') {
+    console.log(editedDetails.startTime)
+    if (name === 'startTime') {
+      // Ensure value is correctly formatted for datetime-local input
+      setEditedDetails(prevDetails => ({
+        ...prevDetails,
+        [name]: value, 
+        
+      }));
+    } else if (name === 'client') {
       const selectedClient = clients.find(client => client._id === value);
       setEditedDetails(prevDetails => ({
         ...prevDetails,
-        client: selectedClient || '', // Set to empty string or handle null case as needed
+        client: selectedClient || '',
       }));
     } else if (name === 'assignedStaff') {
       const selectedStaff = staffs.find(staff => staff._id === value);
       setEditedDetails(prevDetails => ({
         ...prevDetails,
-        assignedStaff: selectedStaff || '', // Set to empty string or handle null case as needed
+        assignedStaff: selectedStaff || '',
       }));
     } else {
-      // For other fields, update normally
       setEditedDetails(prevDetails => ({
         ...prevDetails,
         [name]: value,
       }));
     }
   };
+
   const handleUpdateJob = async () => {
     setIsLoading(true);
 
     try {
-
-
-      const response = await axios.put( environment.apiUrl + `/job/updatedJob/${id}`, editedDetails,{
+      const response = await axios.put(environment.apiUrl + `/job/updatedJob/${id}`, editedDetails, {
         headers: {
-            Authorization: `Bearer ${token}`
-          }
+          Authorization: `Bearer ${token}`
+        }
       });
       const responseData = response.data;
       if (response.status === 200) {
@@ -185,56 +189,70 @@ const EditJob = () => {
           {/* Job details fields */}
           {Object.entries(jobDetails).map(([field, value]) => (
             <React.Fragment key={field}>
-            {field !== 'createdAt' && field !== 'updatedAt' && field !== '__v' &&  field !=='jobStatus' &&(
-              <Grid item xs={12}>
-                <Typography variant="h5" component="span" fontWeight="bold">
-                  {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                </Typography>
-                {/* Render appropriate input based on field */}
-                {field === 'client' ? (
-                  <Select
-                    fullWidth
-                    variant="outlined"
-                    value={editedDetails.client}
-                    onChange={handleInputChange}
-                    name="client"
-                  >
-                    {clients.map((client) => (
-                      <MenuItem key={client._id} value={client._id}>
-                        {client.firstName} {client.lastName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                ) : field === 'assignedStaff' ? (
-                  <Select
-                    fullWidth
-                    variant="outlined"
-                    value={editedDetails.assignedStaff}
-                    onChange={handleInputChange}
-                    name="assignedStaff"
-                  >
-                    {staffs.map((staff) => (
-                      <MenuItem key={staff._id} value={staff._id}>
-                        {staff.firstName} {staff.lastName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                ) : (
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                    name={field}
-                    value={editedDetails[field]}
-                    onChange={handleInputChange}
-                    multiline={field === 'description' || field === 'notes'}
-                    rows={field === 'description' || field === 'notes' ? 3 : 1}
-                  />
-                )}
-              </Grid>
-            )}
-          </React.Fragment>
-
+              {field !== 'createdAt' && field !== 'updatedAt' && field !== '__v' && field !== 'jobStatus' && field !== '_id' && field !== 'adminId' && field !== 'paymentStatus' && field !== 'signInTime' && field !== 'signOffTime' && (
+                <Grid item xs={12}>
+                  <Typography variant="h5" component="span" fontWeight="bold">
+                    {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+                  </Typography>
+                  {/* Render appropriate input based on field */}
+                  {field === 'client' ? (
+                    <Select
+                      fullWidth
+                      variant="filled"
+                      value={editedDetails.client._id || ''}
+                      onChange={handleInputChange}
+                      name="client"
+                      sx={{ backgroundColor: 'white' }}
+                    >
+                      {clients.map((client) => (
+                        <MenuItem key={client._id} value={client._id}>
+                          {client.firstName} {client.lastName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  ) : field === 'assignedStaff' ? (
+                    <Select
+                      fullWidth
+                      variant="filled"
+                      value={editedDetails.assignedStaff._id || ''}
+                      onChange={handleInputChange}
+                      name="assignedStaff"
+                      sx={{ backgroundColor: 'white' }}
+                    >
+                      {staffs.map((staff) => (
+                        <MenuItem key={staff._id} value={staff._id}>
+                          {staff.firstName} {staff.lastName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  ) : field === 'startTime' ? (
+                    <Box mt={1}>
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      type="datetime-local"
+                      name="startTime"
+                      value={editedDetails.startTime || ''}
+                      onChange={handleInputChange}
+                      sx={{ backgroundColor: 'white' }}
+                    />
+                  </Box>
+                  ) : (
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      margin="normal"
+                      name={field}
+                      value={editedDetails[field]}
+                      onChange={handleInputChange}
+                      multiline={field === 'description' || field === 'notes'}
+                      rows={field === 'description' || field === 'notes' ? 3 : 1}
+                      sx={{ backgroundColor: 'white' }}
+                    />
+                  )}
+                </Grid>
+              )}
+            </React.Fragment>
           ))}
           {/* Update button */}
           <Grid item xs={12}>

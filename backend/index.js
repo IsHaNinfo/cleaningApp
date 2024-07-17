@@ -7,6 +7,7 @@ import staffRoutes from "./routes/staffRoute.js"
 import clientRoutes from "./routes/clientRoute.js"
 import jobRoutes from "./routes/jobRoute.js"
 import userRoutes from "./routes/userRoute.js"
+import invoiceRoutes from "./routes/invoiceRoute.js"
 import dotenv from 'dotenv';
 const app = express();
 
@@ -30,7 +31,7 @@ app.use("/staff",staffRoutes)
 app.use("/client",clientRoutes)
 app.use("/job",jobRoutes);
 app.use("/user",userRoutes);
-
+app.use("/invoice",invoiceRoutes);
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         app.listen(process.env.PORT, () => {

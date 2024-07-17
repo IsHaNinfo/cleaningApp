@@ -36,7 +36,10 @@ import CreateAdmin from "./scenes/admins/CreateAdmin.jsx";
 import ViewAdmin from "./scenes/admins/ViewAdmin.jsx";
 import EditAdmin from "./scenes/admins/EditAdmin.jsx";
 
-
+import Invoices from "./scenes/invoices/index.jsx";
+import AddInvoice from "./scenes/invoices/AddInvoices.jsx";
+import EditInvoice from "./scenes/invoices/EditInvoices.jsx";
+import ViewInvoice from "./scenes/invoices/ViewInvoice.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -189,6 +192,41 @@ return (
                 }
               />
 
+
+              <Route
+                path="/invoices"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <Invoices />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/invoices/newInvoice"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <AddInvoice />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/invoices/editInvoice/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <EditInvoice />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/invoices/viewInvoice/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <ViewInvoice />
+                  </PrivateRoute>
+                }
+              />
               <Route
                 path="/profile/changepassword"
                 element={

@@ -121,7 +121,7 @@ const EditStaff = () => {
                   </Typography>
                   <TextField
                     fullWidth
-                    variant="outlined"
+                    variant="filled"
                     margin="normal"
                     name={field}
                     value={editedDetails[field]}
