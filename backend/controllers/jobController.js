@@ -130,7 +130,14 @@ export const getJobById = async (req, res) => {
 
 export const getAllJobs = async (req, res) => {
     try {
-        const jobs = await Job.find()
+
+        const { startDate, endDate } = req.query;
+
+  let filter = {};
+  if (startDate && endDate) {
+    filter.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+  }
+        const jobs = await Job.find(filter)
             .populate({
                 path: 'assignedStaff',
                 select: 'firstName lastName'
@@ -145,6 +152,7 @@ export const getAllJobs = async (req, res) => {
         }
         res.status(200).json({ response_code: 200, success: true, message: "Jobs fetched successfully", jobs });
     } catch (error) {
+        console.log(error);
         res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
 }
@@ -343,11 +351,17 @@ export const getInvoice = async (req, res) => {
 export const getJobsByStaffId = async (req, res) => {
     const { staffId } = req.params; // Get the staffId from the request parameters
     const staffData = await Staff.find({user:staffId});
-   
     const staffObjectId = staffData[0]._id;
+
+    const { startDate, endDate } = req.query;
+
+  let filter = {};
+  if (startDate && endDate) {
+    filter.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+  }
     
     try {
-        const jobs = await Job.find({ assignedStaff:staffObjectId }).populate('assignedStaff').populate('client');
+        const jobs = await Job.find({ assignedStaff:staffObjectId,filter }).populate('assignedStaff').populate('client');
 
         if (jobs.length === 0) {
             return res.status(404).json({ response_code: 404, success: false, message: "No jobs found for this staff member" });
@@ -362,7 +376,7 @@ export const getJobsByStaffId = async (req, res) => {
 
 export const getFilteredJobs = async (req, res) => {
     const {clientId} = req.params;
-    const {  jobStatus, minPayment, maxPayment, month, year } = req.query;
+    const {  jobStatus, minPayment, maxPayment, month, year,startDate, endDate } = req.query;
 
     try {
         
@@ -398,6 +412,10 @@ export const getFilteredJobs = async (req, res) => {
                 query.startTime.$lt = new Date(year, month, 1);
             }
         }
+        if (startDate && endDate) {
+            query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+          }
+          console.log(query)
 
         const jobs = await Job.find(query)
             .populate('client')
@@ -421,7 +439,7 @@ export const getFilteredJobs = async (req, res) => {
 
 export const getStaffJobsbyId = async (req, res) => {
     const {assignedStaff} = req.params;
-    const {  jobStatus, minPayment, maxPayment, month, year } = req.query;
+    const {  jobStatus, minPayment, maxPayment, month, year,startDate, endDate } = req.query;
 
     try {
         
@@ -457,6 +475,10 @@ export const getStaffJobsbyId = async (req, res) => {
                 query.startTime.$lt = new Date(year, month, 1);
             }
         }
+
+        if (startDate && endDate) {
+            query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+          }
 
         const jobs = await Job.find(query)
             .populate('client')
