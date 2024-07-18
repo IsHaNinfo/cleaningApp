@@ -86,8 +86,22 @@ export const getInvoiceById = async (req, res) => {
     }
 };
 export const getAllInvoices = async (req, res) => {
+
+    const {startDate, endDate} = req.query;
+
+    let filter = {};
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0); 
+
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
+        filter.sendDate = { $gte: start, $lte: end };
+    }
+
     try {
-        const invoices = await Invoice.find()
+        const invoices = await Invoice.find(filter)
             .populate({
                 path: 'client',
                 select: 'firstName lastName'  // Adjust field name as per your Client schema

@@ -3,7 +3,7 @@ import {
     Visibility as VisibilityIcon,
     Edit as EditIcon,
   } from "@mui/icons-material";
-  import { Box, Button, IconButton, MenuItem, Select, Tooltip, useTheme } from "@mui/material";
+  import { Box, Button, IconButton, MenuItem, Select, TextField, Tooltip, Typography, useTheme } from "@mui/material";
   import { DataGrid, GridToolbar } from "@mui/x-data-grid";
   import React, { useEffect, useState } from "react";
   import { useParams, Link } from "react-router-dom";
@@ -18,6 +18,8 @@ import {
     const [jobs, setJobs] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   
     const token = localStorage.getItem("token");
   
@@ -28,10 +30,12 @@ import {
     const fetchStaffJobs = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        console.log(id)
-        const response = await axios.get(environment.apiUrl + `/job/getStaffJobsbyId/${id}`, { headers });
+        let url = environment.apiUrl + `/job/getStaffJobsbyId/${id}`
+        if (startDate && endDate) {
+          url += `?startDate=${startDate}&endDate=${endDate}`;
+        }
+        const response = await axios.get(url, { headers });
         const responseData = response.data;
-        console.log(responseData)
         if (responseData.success) {
           setJobs(responseData.jobs);
         } else {
@@ -55,6 +59,10 @@ import {
       } catch (error) {
         console.error("Error updating payment status:", error);
       }
+    };
+
+    const handleViewJobs = () => {
+      fetchStaffJobs()
     };
   
     const columns = [
@@ -86,6 +94,51 @@ import {
     return (
       <Box m="20px">
         <Header title="Staff Jobs" subtitle={`Jobs for Staff ID: ${id}`} />
+        <Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
+  <Box>
+    <Typography fontWeight="bold" fontSize="16px">From</Typography>
+    <Box>
+      <TextField
+        fullWidth
+        variant="outlined"
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        name="startTime"
+      />
+    </Box>
+  </Box>
+  <Box>
+    <Typography fontWeight="bold" fontSize="16px">To</Typography>
+    <Box>
+      <TextField
+        fullWidth
+        variant="outlined"
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        name="endTime"
+      />
+    </Box>
+  </Box>
+  <Button
+    variant="contained"
+    onClick={handleViewJobs}
+    sx={{
+      backgroundColor: "#4caf50",
+      color: "white",
+      fontSize: "10px",
+      "&:hover": {
+        backgroundColor: "#388e3c",
+      },
+    }}
+    disabled={(!startDate && endDate) || (startDate && !endDate)}
+  >
+    View Jobs
+  </Button>
+  
+</Box>
+
         <Box
           m="10px 0 0 0"
           height="75vh"

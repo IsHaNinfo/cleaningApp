@@ -3,7 +3,7 @@ import {
     Visibility as VisibilityIcon,
   } from "@mui/icons-material";
   import EditIcon from "@mui/icons-material/Edit";
-  import { Box, Button, IconButton, MenuItem, Select, Tooltip, useTheme } from "@mui/material";
+  import { Box, Button, IconButton, MenuItem, Select, TextField, Tooltip, Typography, useTheme } from "@mui/material";
   import { DataGrid, GridToolbar } from "@mui/x-data-grid";
   import jsPDF from "jspdf";
   import "jspdf-autotable";
@@ -20,11 +20,17 @@ import {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const token = localStorage.getItem("token");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
   
     const fetchInvoices = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(`${environment.apiUrl}/invoice/getAllInvoices`, { headers });
+        let url = `${environment.apiUrl}/invoice/getAllInvoices`
+        if (startDate && endDate) {
+          url += `?startDate=${startDate}&endDate=${endDate}`;
+        }
+        const response = await axios.get(url, { headers });
         const responseData = response.data;
         if (responseData.success) {
           const modifiedData = responseData.invoices.map((item) => ({
@@ -138,6 +144,10 @@ import {
           }
         });
       };
+      const handleViewInvoices = () => {
+        console.log("view jobs")
+        fetchInvoices();
+      };
     const columns = [
       { field: "id", headerName: "Invoice ID", flex: 1 },
       { field: "invoiceTitle", headerName: "Title", flex: 0.6 },
@@ -241,20 +251,63 @@ import {
             },
           }}
         >
-          <Button
-            variant="contained"
-            onClick={exportToPdf}
-            sx={{
-              backgroundColor: "#4caf50",
-              color: "white",
-              fontSize: "10px",
-              "&:hover": {
-                backgroundColor: "#388e3c",
-              },
-            }}
-          >
-            Export as PDF
-          </Button>
+         <Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
+  <Box>
+    <Typography fontWeight="bold" fontSize="16px">From</Typography>
+    <Box >
+      <TextField
+        fullWidth
+        variant="outlined"
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        name="startTime"
+      />
+    </Box>
+  </Box>
+  <Box>
+    <Typography fontWeight="bold" fontSize="16px">To</Typography>
+    <Box>
+      <TextField
+        fullWidth
+        variant="outlined"
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        name="endTime"
+      />
+    </Box>
+  </Box>
+  <Button
+    variant="contained"
+    onClick={handleViewInvoices}
+    sx={{
+      backgroundColor: "#4caf50",
+      color: "white",
+      fontSize: "10px",
+      "&:hover": {
+        backgroundColor: "#388e3c",
+      },
+    }}
+    disabled={(!startDate && endDate) || (startDate && !endDate)}
+  >
+    View Jobs
+  </Button>
+  <Button
+    variant="contained"
+    onClick={exportToPdf}
+    sx={{
+      backgroundColor: "#4caf50",
+      color: "white",
+      fontSize: "10px",
+      "&:hover": {
+        backgroundColor: "#388e3c",
+      },
+    }}
+  >
+    Export as PDF
+  </Button>
+</Box>
           <DataGrid
             rows={data}
             columns={columns}
