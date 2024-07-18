@@ -42,7 +42,7 @@ export const addUser = async (req, res) => {
             if (req.userRole !== "superAdmin" && req.userRole !== "admin") {
                 return res.status(404).json({ error: "Access denied" });
             }
-            const htmlMessage = `
+           /* const htmlMessage = `
             <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; border: 1px solid #e0e0e0; border-radius: 5px; padding: 20px;">
               <img src="https://intellipaat.com/blog/wp-content/uploads/2016/06/Salesforce-Automation-System_BIG.jpg" alt="SAS" style="display: block; margin: 0 auto; max-width: 100%; height: 300px;">
               <div style="text-align: center; margin-top: 20px;">
@@ -56,7 +56,7 @@ export const addUser = async (req, res) => {
               </div>
               <p style="text-align: center; font-size: 14px; color: #666; margin-top: 20px;">If you didn't request this, you can safely ignore this email.</p>
             </div>
-          `;
+          `;*/
 
             // await sendEmail(email, htmlMessage);
             const staff = new Staff({

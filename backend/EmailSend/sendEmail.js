@@ -16,7 +16,7 @@ const sendEmail = async ( email ,htmlMessage) => {
           const mailOptions = {
             from: process.env.USER_EMAIL,
             to: email,
-            subject: 'SSA Sales Rep Details ',
+            subject: 'Cleaning Staff  Details ',
             html:htmlMessage
           };
     
