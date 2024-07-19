@@ -18,6 +18,7 @@ import {
   import axios from "axios";
   import Header from "../../components/Header";
   import { environment } from "../../environment";
+  import { useNavigate } from "react-router-dom";
 
   const AddStaff = ({ onStaffAdded }) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -26,7 +27,9 @@ import {
     const [alertMessage, setAlertMessage] = useState("");
     const [alertSeverity, setAlertSeverity] = useState("success");
     const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+    const navigate = useNavigate();
 
+  
     const handleFormSubmit = async (values, { resetForm }) => {
       setLoading(true);
       try {
@@ -50,6 +53,9 @@ import {
         if (response.data.success) {
           setAlertSeverity("success");
           setAlertMessage("Staff Added Successfully");
+          setTimeout(() => {
+            navigate("/staff");
+          }, 2000);
           resetForm();
           if (onStaffAdded) {
             onStaffAdded(response.data.staff);
@@ -418,25 +424,29 @@ import {
       </Box>
     );
   };
-  
+  const phoneNumberRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/; // Example regex for phone numbers (e.g., +123-1234567890 or 1234567890)
+  const bankAcNoRegex = /^\d{8,20}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   const staffSchema = yup.object().shape({
     firstName: yup.string().required("First Name is required"),
     lastName: yup.string().required("Last Name is required"),
     email: yup.string().email("Invalid email format").required("Email is required"),
-    password: yup.string().required("Password is required"),
+    password: yup.string().matches(passwordRegex, "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one symbol").required("Password is required"),
     userName: yup.string().required("Username is required"),
     address: yup.string().required("Address is required"),
-    phoneNumber: yup.string().required("Phone Number is required"),
+    phoneNumber: yup.string().matches(phoneNumberRegex, "Invalid phone number format").required("Phone Number is required"),
     position: yup.string().required("Position is required"),
     dateOfBirth: yup.string().required("Date of Birth is required"),
     dateOfHire: yup.string().required("Date of Hire is required"),
     empContactName: yup.string(),
-    empPhoneNumber: yup.string(),
-    bankAcNo: yup.string(),
+    empPhoneNumber: yup.string().matches(phoneNumberRegex, "Invalid phone number format"),
+    bankAcNo: yup.string().matches(bankAcNoRegex, "Invalid bank account number format"),
     bankName: yup.string(),
     bankAcBranch: yup.string(),
     notes: yup.string(),
   });
+  
   
   const initialValues = {
     firstName: "",
