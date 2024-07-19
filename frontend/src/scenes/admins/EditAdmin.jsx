@@ -42,6 +42,9 @@ const EditAdmin = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [admin, setAdmin] = useState('');
 
   useEffect(() => {
@@ -96,6 +99,12 @@ const EditAdmin = () => {
       ...prevDetails,
       [name]: value,
     }));
+    if (name === "password") {
+      setPasswordError("");
+    }
+    if (name === "confirmPassword") {
+      setConfirmPasswordError("");
+    }
   };
 
   const handleClickShowPassword = () => {
@@ -112,6 +121,11 @@ const EditAdmin = () => {
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
+  };
+
+  const validatePassword = (password) => {
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordPattern.test(password);
   };
 
   const handleUpdateAdmin = async () => {
@@ -146,15 +160,22 @@ const EditAdmin = () => {
   };
 
   const handleUpdatePassword = async () => {
+    let isValid = true;
+
     if (!passwordDetails.password) {
-      setAlertSeverity('error');
-      setAlertMessage('Please enter a valid password');
-      setOpenSnackbar(true);
-      return;
+      setPasswordError("Please enter a valid password");
+      isValid = false;
+    } else if (!validatePassword(passwordDetails.password)) {
+      setPasswordError("Password should be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number");
+      isValid = false;
     }
+
     if (passwordDetails.password !== passwordDetails.confirmPassword) {
-      setAlertSeverity('error');
-      setAlertMessage('Passwords do not match');
+      setConfirmPasswordError("Passwords do not match");
+      isValid = false;
+    }
+
+    if (!isValid) {
       setOpenSnackbar(true);
       return;
     }
@@ -166,7 +187,6 @@ const EditAdmin = () => {
         }
       });
       if (response.status === 200) {
-        setAlertSeverity('success');
         setAlertMessage('Password updated successfully');
         setTimeout(() => {
           navigate('/admin');
@@ -252,6 +272,8 @@ const EditAdmin = () => {
               type={showPassword ? 'text' : 'password'}
               value={passwordDetails.password}
               onChange={handlePasswordChange}
+              error={!!passwordError}
+              helperText={passwordError}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -260,7 +282,7 @@ const EditAdmin = () => {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -275,6 +297,8 @@ const EditAdmin = () => {
               type={showConfirmPassword ? 'text' : 'password'}
               value={passwordDetails.confirmPassword}
               onChange={handlePasswordChange}
+              error={!!confirmPasswordError}
+              helperText={confirmPasswordError}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -283,27 +307,31 @@ const EditAdmin = () => {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
             />
+          </Grid>
+          {/* Update Password button */}
+          <Grid item xs={12}>
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={handleUpdatePassword}
+              disabled={isLoading}
               sx={{
-                backgroundColor: '#f50057',
+                backgroundColor: '#6870fa',
                 color: 'white',
-                marginTop: 2,
+                marginRight: 2,
                 fontSize: '16px',
                 '&:hover': {
-                  backgroundColor: '#ab003c',
+                  backgroundColor: '#3e4396',
                 },
               }}
             >
-              Update Password
+              {isLoading ? 'Updating...' : 'Update Password'}
             </Button>
           </Grid>
         </Grid>
@@ -320,7 +348,7 @@ const EditAdmin = () => {
           severity={alertSeverity}
           elevation={6}
           variant="filled"
-          sx={{ color: '#fff' }}
+          style={{ color: 'white' }}
         >
           {alertSeverity === 'success' ? 'Success' : 'Error'}
           {': '}
