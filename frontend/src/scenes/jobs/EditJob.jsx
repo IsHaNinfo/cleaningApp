@@ -61,7 +61,7 @@ const EditJob = () => {
         Authorization: `Bearer ${token}`
       };
 
-      const response = await axios.get(environment.apiUrl + "/client/getAllClient", { headers });
+      const response = await axios.get(environment.apiUrl + "/client/getAllActiveClient", { headers });
 
       if (response.data.success) {
         setClients(response.data.clients);
@@ -80,7 +80,7 @@ const EditJob = () => {
 
   const fetchStaffs = async () => {
     try {
-      const response = await axios.get(environment.apiUrl + "/staff/getAllStaff", {
+      const response = await axios.get(environment.apiUrl + "/staff/getAllActiveStaff", {
         headers: {
           Authorization: `Bearer ${token}`
         }

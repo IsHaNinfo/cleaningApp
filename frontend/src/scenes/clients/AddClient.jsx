@@ -46,7 +46,7 @@ const AddClient = ({ onClientAdded }) => {
         if (onClientAdded) {
           onClientAdded(response.data.client);
         }
-        navigate('/client');
+        navigate('/clients');
 
       } else {
         setAlertSeverity("error");
