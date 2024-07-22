@@ -160,9 +160,9 @@ const Topbar = () => {
             <LightModeOutlinedIcon style={{ fontSize: "1.8rem" }} />
           )}
         </IconButton> */}
-        <IconButton>
+        {/* <IconButton>
           <NotificationsOutlinedIcon style={{ fontSize: "1.8rem" }} />
-        </IconButton>
+        </IconButton> */}
 
         <IconButton
           display="flex"
