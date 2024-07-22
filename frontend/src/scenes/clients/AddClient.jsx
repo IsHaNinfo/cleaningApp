@@ -15,6 +15,7 @@ import * as yup from "yup";
 import axios from "axios";
 import Header from "../../components/Header";
 import { environment } from '../../environment';
+import { useNavigate } from "react-router";
 
 const AddClient = ({ onClientAdded }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -22,6 +23,7 @@ const AddClient = ({ onClientAdded }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("success");
+  const navigate = useNavigate();
 
   const handleFormSubmit = async (values, { resetForm }) => {
     setLoading(true);
@@ -44,6 +46,8 @@ const AddClient = ({ onClientAdded }) => {
         if (onClientAdded) {
           onClientAdded(response.data.client);
         }
+        navigate('/client');
+
       } else {
         setAlertSeverity("error");
         setAlertMessage(response.data.message);

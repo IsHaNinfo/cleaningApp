@@ -41,6 +41,7 @@ const ViewAdmin = () => {
           email: userdata.email,
           Status: userdata.status,
         });
+        
       } else {
         console.error("Failed to fetch admin details:");
       }
