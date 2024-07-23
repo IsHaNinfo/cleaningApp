@@ -389,139 +389,134 @@ export const getJobsByStaffId = async (req, res) => {
 
 
 export const getFilteredJobs = async (req, res) => {
-    const {clientId} = req.params;
-    const {  jobStatus, minPayment, maxPayment, month, year,startDate, endDate } = req.query;
-
+    const { clientId } = req.params;
+    const { jobStatus, minPayment, maxPayment, month, year, startDate, endDate } = req.query;
+  
     try {
-        
-        // Build the query object
-        let query = {};
-
-        if (clientId) {
-            query.client = clientId;
+      // Build the query object
+      let query = {};
+  
+      if (clientId) {
+        query.client = clientId;
+      }
+  
+      if (jobStatus) {
+        query.jobStatus = jobStatus;
+      }
+  
+    /*  if (minPayment !== undefined || maxPayment !== undefined) {
+        query.payment = {};
+        if (minPayment !== undefined) {
+          query.payment.$gte = parseFloat(minPayment);
         }
-
-        if (jobStatus) {
-            query.jobStatus = jobStatus;
+        if (maxPayment !== undefined) {
+          query.payment.$lte = parseFloat(maxPayment);
         }
-
-     //   if (minPayment !== undefined || maxPayment !== undefined) {
-        //    query.payment = {};
-//    if (minPayment !== undefined) {
-//         query.payment.$gte = parseFloat(minPayment);
-//}
-//if (maxPayment !== undefined) {
-//query.payment.$lte = //parseFloat(maxPayment);
-//}
-//}
-
-        if (month || year) {
-            query.startTime = {};
-            if (year) {
-                query.startTime.$gte = new Date(year, 0, 1);
-                query.startTime.$lt = new Date(year + 1, 0, 1);
-            }
-            if (month && year) {
-                query.startTime.$gte = new Date(year, month - 1, 1);
-                query.startTime.$lt = new Date(year, month, 1);
-            }
+      }*/
+  
+      if (month || year) {
+        query.startTime = {};
+        if (year) {
+          query.startTime.$gte = new Date(year, 0, 1);
+          query.startTime.$lt = new Date(year + 1, 0, 1);
         }
-        if (startDate && endDate) {
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0); // Set to 00:00
-    
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); // Set to 23:59
-    
-            query.startTime = { $gte: start, $lte: end };
+        if (month && year) {
+          query.startTime.$gte = new Date(year, month - 1, 1);
+          query.startTime.$lt = new Date(year, month, 1);
         }
-
-        const jobs = await Job.find(query)
-            .populate('client')
-            .populate('assignedStaff')
-            .populate('adminId')
-            .exec();
-
-        res.status(200).json({
-            response_code: 200,
-            success: true,
-            total: jobs.length,
-            jobs,
-        });
+      }
+  
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0); // Set to 00:00
+  
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Set to 23:59
+  
+        query.startTime = { $gte: start, $lte: end };
+      }
+  
+      const jobs = await Job.find(query)
+        .populate('client')
+        .populate('assignedStaff')
+        .populate('adminId')
+        .exec();
+  
+      const totalPayment = jobs.reduce((sum, job) => sum + (job.payment || 0), 0);
+  
+      res.status(200).json({
+        response_code: 200,
+        success: true,
+        total: jobs.length,
+        totalPayment,
+        jobs,
+      });
     } catch (error) {
-        console.error("Error fetching jobs:", error);
-        res.status(400).json({ response_code: 400, success: false, error: error.message });
+      console.error("Error fetching jobs:", error);
+      res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
-};
+  };
 
 
 
-export const getStaffJobsbyId = async (req, res) => {
-    const {assignedStaff} = req.params;
-    const {  jobStatus, minPayment, maxPayment, month, year,startDate, endDate } = req.query;
-
+  export const getStaffJobsbyId = async (req, res) => {
+    const { assignedStaff } = req.params;
+    const { jobStatus, month, year, startDate, endDate } = req.query;
+  
     try {
-        
-        // Build the query object
-        let query = {};
-
-        if (assignedStaff) {
-            query.assignedStaff = assignedStaff;
+      // Build the query object
+      let query = {};
+  
+      if (assignedStaff) {
+        query.assignedStaff = assignedStaff;
+      }
+  
+      if (jobStatus) {
+        query.jobStatus = jobStatus;
+      }
+  
+      /*if (month || year) {
+        query.startTime = {};
+        if (year) {
+          query.startTime.$gte = new Date(year, 0, 1);
+          query.startTime.$lt = new Date(year + 1, 0, 1);
         }
-
-        if (jobStatus) {
-            query.jobStatus = jobStatus;
+        if (month && year) {
+          query.startTime.$gte = new Date(year, month - 1, 1);
+          query.startTime.$lt = new Date(year, month, 1);
         }
-
-        //   if (minPayment !== undefined || maxPayment !== undefined) {
-        //    query.payment = {};
-        //    if (minPayment !== undefined) {
-        //         query.payment.$gte = parseFloat(minPayment);
-        //}
-        //if (maxPayment !== undefined) {
-        //query.payment.$lte = //parseFloat(maxPayment);
-        //}
-        //}
-
-        if (month || year) {
-            query.startTime = {};
-            if (year) {
-                query.startTime.$gte = new Date(year, 0, 1);
-                query.startTime.$lt = new Date(year + 1, 0, 1);
-            }
-            if (month && year) {
-                query.startTime.$gte = new Date(year, month - 1, 1);
-                query.startTime.$lt = new Date(year, month, 1);
-            }
-        }
-
-        if (startDate && endDate) {
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0); // Set to 00:00
-    
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); // Set to 23:59
-    
-            filter.startTime = { $gte: start, $lte: end };
-        }
-
-        const jobs = await Job.find(query)
-            .populate('client')
-            .populate('assignedStaff')
-            .populate('adminId')
-            .exec();
-
-        res.status(200).json({
-            response_code: 200,
-            success: true,
-            total: jobs.length,
-            jobs,
-        });
+      }*/
+  
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0); // Set to 00:00
+  
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Set to 23:59
+  
+        query.startTime = { $gte: start, $lte: end };
+      }
+  
+      const jobs = await Job.find(query)
+        .populate('client')
+        .populate('assignedStaff')
+        .populate('adminId')
+        .exec();
+  
+      const totalPayment = jobs.reduce((sum, job) => sum + (job.payment || 0), 0);
+  
+      res.status(200).json({
+        response_code: 200,
+        success: true,
+        total: jobs.length,
+        totalPayment,
+        jobs,
+      });
     } catch (error) {
-        console.error("Error fetching jobs:", error);
-        res.status(400).json({ response_code: 400, success: false, error: error.message });
+      console.error("Error fetching jobs:", error);
+      res.status(400).json({ response_code: 400, success: false, error: error.message });
     }
-};
+  };
 
 
 export const paymentJob = async (req, res) => {
