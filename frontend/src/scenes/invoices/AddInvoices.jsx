@@ -35,7 +35,7 @@ import {
     const fetchClients = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(environment.apiUrl + "/client/getAllClient", { headers });
+        const response = await axios.get(environment.apiUrl + "/client/getAllActiveClient", { headers });
         if (response.data.success) {
           setClients(response.data.clients);
         } else {

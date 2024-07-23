@@ -42,7 +42,7 @@ import { environment } from "../../environment";
             Authorization: `Bearer ${token}`
           };
       
-          const response = await axios.get(environment.apiUrl + "/client/getAllClient", { headers });
+          const response = await axios.get(environment.apiUrl + "/client/getAllActiveClient", { headers });
       
           if (response.data.success) {
             setClients(response.data.clients);
@@ -62,7 +62,7 @@ import { environment } from "../../environment";
     const fetchStaffs = async () => {
         try {
           //const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-          const response = await axios.get(environment.apiUrl + "/staff/getAllStaff", {
+          const response = await axios.get(environment.apiUrl + "/staff/getAllActiveStaff", {
             headers: {
               Authorization: `Bearer ${token}`
             }

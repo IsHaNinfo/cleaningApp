@@ -52,7 +52,7 @@ const EditInvoice = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(environment.apiUrl + "/client/getAllClient", {
+      const response = await axios.get(environment.apiUrl + "/client/getAllActiveClient", {
         headers: {
           Authorization: `Bearer ${token}`
         }
