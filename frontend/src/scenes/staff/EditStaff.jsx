@@ -12,6 +12,27 @@ import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { environment } from "../../environment";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
+
+const phoneNumberRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+const bankAcNoRegex = /^\d{8,20}$/;
+
+const staffSchema = yup.object().shape({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  address: yup.string().required("Address is required"),
+  phoneNumber: yup.string().matches(phoneNumberRegex, "Invalid phone number format").required("Phone Number is required"),
+  position: yup.string().required("Position is required"),
+  dateOfBirth: yup.string().required("Date of Birth is required"),
+  dateOfHire: yup.string().required("Date of Hire is required"),
+  empContactName: yup.string(),
+  empPhoneNumber: yup.string().matches(phoneNumberRegex, "Invalid phone number format"),
+  bankAcNo: yup.string().matches(bankAcNoRegex, "Invalid bank account number format").nullable(true),
+  bankName: yup.string(),
+  bankAcBranch: yup.string(),
+  notes: yup.string(),
+});
 
 const EditStaff = () => {
   const { id } = useParams();
@@ -36,7 +57,6 @@ const EditStaff = () => {
     userName: "",
   });
 
-  const [editedDetails, setEditedDetails] = useState({ ...staffDetails });
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +79,6 @@ const EditStaff = () => {
       const responseData = response.data;
       if (responseData.success) {
         setStaffDetails(responseData.staff);
-        setEditedDetails(responseData.staff);
       } else {
         console.error('Failed to fetch staff details:', responseData.message);
       }
@@ -68,26 +87,17 @@ const EditStaff = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedDetails(prevDetails => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateStaff = async () => {
+  const handleUpdateStaff = async (values) => {
     setIsLoading(true);
+    console.log("update")
 
     try {
-      const response = await axios.put(environment.apiUrl+`/user/updateStaff/${id}`, editedDetails, {
+      const response = await axios.put(environment.apiUrl+`/user/updateStaff/${id}`, values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-    console.log(response)
       if (response.status === 200) {
-        setStaffDetails(editedDetails);
         setAlertSeverity('success');
         setAlertMessage('Staff updated successfully');
         setTimeout(() => {
@@ -110,52 +120,62 @@ const EditStaff = () => {
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
       <Header title={`Edit Staff ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
-        <Grid container spacing={2}>
-          {/* Staff details fields */}
-          {Object.entries(staffDetails).map(([field, value]) => (
-            <React.Fragment key={field}>
-                {field !== 'createdAt' && field !== '__v' && field !== '_id' && field !== 'updatedAt' && field !== 'adminId' &&  field !== 'user' && field !== 'workStatus' &&(
+        <Formik
+          initialValues={staffDetails}
+          enableReinitialize
+          validationSchema={staffSchema}
+          onSubmit={handleUpdateStaff}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <Form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                {Object.keys(staffDetails).map((field) => (
+                  field !== 'createdAt' && field !== '__v' && field !== '_id' && field !== 'updatedAt' && field !== 'adminId' && field !== 'user' && field !== 'workStatus' && (
+                    <Grid item xs={12} key={field}>
+                      <Typography variant="h5" component="span" fontWeight="bold">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+                      </Typography>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        variant="filled"
+                        margin="normal"
+                        name={field}
+                        value={values[field]}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        multiline={field === 'notes'}
+                        rows={field === 'notes' ? 3 : 1}
+                        error={touched[field] && Boolean(errors[field])}
+                        helperText={touched[field] && errors[field]}
+                      />
+                    </Grid>
+                  )
+                ))}
                 <Grid item xs={12}>
-                  <Typography variant="h5" component="span" fontWeight="bold">
-                    {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    margin="normal"
-                    name={field}
-                    value={editedDetails[field]}
-                    onChange={handleInputChange}
-                    multiline={field === 'notes'}
-                    rows={field === 'notes' ? 3 : 1}
-                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={isLoading}
+                    sx={{
+                      backgroundColor: '#6870fa',
+                      color: 'white',
+                      marginRight: 2,
+                      fontSize: '16px',
+                      '&:hover': {
+                        backgroundColor: '#3e4396',
+                      },
+                    }}
+                  >
+                    {isLoading ? 'Updating...' : 'Update Staff'}
+                  </Button>
                 </Grid>
-              )}
-            </React.Fragment>
-          ))}
-          {/* Update button */}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateStaff}
-              disabled={isLoading}
-              sx={{
-                backgroundColor: '#6870fa',
-                color: 'white',
-                marginRight: 2,
-                fontSize: '16px',
-                '&:hover': {
-                  backgroundColor: '#3e4396',
-                },
-              }}
-            >
-              {isLoading ? 'Updating...' : 'Update Staff'}
-            </Button>
-          </Grid>
-        </Grid>
+              </Grid>
+            </Form>
+          )}
+        </Formik>
       </Box>
-      {/* Snackbar for alerts */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={5000}

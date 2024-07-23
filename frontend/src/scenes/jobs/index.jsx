@@ -317,7 +317,7 @@ import {
         headerName: "Actions",
         flex: 0.6,
         renderCell: (params) => (
-          <Box>
+          <Box>{shouldShowButton &&
             <Tooltip title="Edit">
               <Link to={`/jobs/editjob/${params.row.id}`}>
                 <IconButton>
@@ -329,6 +329,8 @@ import {
                 </IconButton>
               </Link>
             </Tooltip>
+            }
+            
             <Tooltip title="View">
               <Link to={`/jobs/viewjob/${params.row.id}`}>
                 <IconButton>
@@ -336,11 +338,13 @@ import {
                 </IconButton>
               </Link>
             </Tooltip>
+            {shouldShowButton &&
             <Tooltip title="Delete">
-              <IconButton onClick={() => handleDeleteClick(params.row.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
+            <IconButton onClick={() => handleDeleteClick(params.row.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>}
+            
           </Box>
         ),
       },

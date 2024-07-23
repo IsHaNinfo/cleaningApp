@@ -355,9 +355,12 @@ export const getInvoice = async (req, res) => {
 };
 
 export const getJobsByStaffId = async (req, res) => {
-    const { staffId } = req.params; // Get the staffId from the request parameters
+    const { staffId } = req.params;
+    console.log(staffId) // Get the staffId from the request parameters
     const staffData = await Staff.find({user:staffId});
-    const staffObjectId = staffData[0]._id;
+    console.log(staffData);
+    
+    const staffObjectId = staffData[0]?._id;
 
     const { startDate, endDate } = req.query;
 

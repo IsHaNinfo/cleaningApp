@@ -13,8 +13,19 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
+import { Formik, Field, Form } from 'formik';
+import * as yup from 'yup';
 import Header from "../../components/Header";
 import { environment } from "../../environment";
+
+// Validation schema
+const adminSchema = yup.object().shape({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
+  userName: yup.string().required("Username is required"),
+  position: yup.string().required("Position is required"),
+});
 
 const EditAdmin = () => {
   const { id } = useParams();
@@ -31,13 +42,6 @@ const EditAdmin = () => {
     userName: "",
   });
 
-  const [editedDetails, setEditedDetails] = useState({ ...adminDetails });
-  const navigate = useNavigate();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState('success');
-  const [alertMessage, setAlertMessage] = useState('');
   const [passwordDetails, setPasswordDetails] = useState({
     password: "",
     confirmPassword: "",
@@ -46,6 +50,11 @@ const EditAdmin = () => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [admin, setAdmin] = useState('');
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
     fetchAdminDetails();
@@ -70,27 +79,12 @@ const EditAdmin = () => {
           position: adminData.position,
           userName: responseData.userName,
         });
-        setEditedDetails({
-          firstName: adminData.firstName,
-          lastName: adminData.lastName,
-          email: responseData.email,
-          position: adminData.position,
-          userName: responseData.userName,
-        });
       } else {
         console.error('Failed to fetch admin details:', responseData.message);
       }
     } catch (error) {
       console.error('Error fetching admin details:', error);
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedDetails(prevDetails => ({
-      ...prevDetails,
-      [name]: value,
-    }));
   };
 
   const handlePasswordChange = (e) => {
@@ -128,17 +122,17 @@ const EditAdmin = () => {
     return passwordPattern.test(password);
   };
 
-  const handleUpdateAdmin = async () => {
+  const handleUpdateAdmin = async (values) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put(`${environment.apiUrl}/user/updateAdmin/${admin}`, editedDetails, {
+      const response = await axios.put(`${environment.apiUrl}/user/updateAdmin/${admin}`, values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       if (response.status === 200) {
-        setAdminDetails(editedDetails);
+        setAdminDetails(values);
         setAlertSeverity('success');
         setAlertMessage('Admin account updated successfully');
         setTimeout(() => {
@@ -204,61 +198,67 @@ const EditAdmin = () => {
     }
   };
 
-  // Function to filter out unwanted fields
-  const filterFields = (field) => {
-    const unwantedFields = ['createdAt', '__v', '_id', 'updatedAt', 'adminId', 'user', 'status', 'adminDetails', 'role'];
-    return !unwantedFields.includes(field);
-  };
-
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
       <Header title={`Edit Admin ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
-        <Grid container spacing={2}>
-          {/* Render fields */}
-          {Object.entries(adminDetails).map(([field, value]) => (
-            <React.Fragment key={field}>
-              {filterFields(field) && (
+        <Formik
+          initialValues={adminDetails}
+          validationSchema={adminSchema}
+          enableReinitialize={true}
+          onSubmit={handleUpdateAdmin}
+        >
+          {({ values, handleChange, handleBlur, errors, touched }) => (
+            <Form>
+              <Grid container spacing={2}>
+                {/* Render fields */}
+                {Object.entries(values).map(([field, value]) => (
+                  <React.Fragment key={field}>
+                    <Grid item xs={12}>
+                      <Typography variant="h5" component="span" fontWeight="bold">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        margin="normal"
+                        name={field}
+                        value={value}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={touched[field] && !!errors[field]}
+                        helperText={touched[field] && errors[field]}
+                        multiline={field === 'notes'}
+                        rows={field === 'notes' ? 3 : 1}
+                      />
+                    </Grid>
+                  </React.Fragment>
+                ))}
                 <Grid item xs={12}>
-                  <Typography variant="h5" component="span" fontWeight="bold">
-                    {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    margin="normal"
-                    name={field}
-                    value={editedDetails[field]}
-                    onChange={handleInputChange}
-                    multiline={field === 'notes'}
-                    rows={field === 'notes' ? 3 : 1}
-                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={isLoading}
+                    sx={{
+                      backgroundColor: '#6870fa',
+                      color: 'white',
+                      marginRight: 2,
+                      fontSize: '16px',
+                      '&:hover': {
+                        backgroundColor: '#3e4396',
+                      },
+                    }}
+                  >
+                    {isLoading ? 'Updating...' : 'Update Admin'}
+                  </Button>
                 </Grid>
-              )}
-            </React.Fragment>
-          ))}
-          {/* Update button */}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateAdmin}
-              disabled={isLoading}
-              sx={{
-                backgroundColor: '#6870fa',
-                color: 'white',
-                marginRight: 2,
-                fontSize: '16px',
-                '&:hover': {
-                  backgroundColor: '#3e4396',
-                },
-              }}
-            >
-              {isLoading ? 'Updating...' : 'Update Admin'}
-            </Button>
-          </Grid>
-
-          {/* Password update fields */}
+              </Grid>
+            </Form>
+          )}
+        </Formik>
+        {/* Password update fields */}
+        <Grid container spacing={2} mt={2}>
           <Grid item xs={12} sm={6}>
             <Typography variant="h5" component="span" fontWeight="bold">
               Update Password:
@@ -314,7 +314,6 @@ const EditAdmin = () => {
               }}
             />
           </Grid>
-          {/* Update Password button */}
           <Grid item xs={12}>
             <Button
               variant="contained"
