@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Grid,
-  Snackbar,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Grid, Snackbar, TextField, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import Header from "../../components/Header";
 import { environment } from '../../environment';
 
@@ -30,13 +25,11 @@ const EditClient = () => {
     notes: "",
   });
 
-  const [editedDetails, setEditedDetails] = useState({ ...clientDetails });
-  const navigate = useNavigate();
-
   const [isLoading, setIsLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState('success');
   const [alertMessage, setAlertMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClientDetails();
@@ -44,7 +37,7 @@ const EditClient = () => {
 
   const fetchClientDetails = async () => {
     try {
-      const response = await axios.get(environment.apiUrl+`/client/getClientById/${id}`, {
+      const response = await axios.get(environment.apiUrl + `/client/getClientById/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -53,7 +46,7 @@ const EditClient = () => {
       const responseData = response.data;
       if (responseData.success) {
         setClientDetails(responseData.client);
-        setEditedDetails(responseData.client);
+        formik.setValues(responseData.client);
       } else {
         console.error('Failed to fetch client details:', responseData.message);
       }
@@ -62,94 +55,105 @@ const EditClient = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedDetails(prevDetails => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
+  const clientSchema = yup.object().shape({
+    firstName: yup.string().required("First Name is required"),
+    lastName: yup.string().required("Last Name is required"),
+    email: yup.string().email("Invalid email format").required("Email is required"),
+    address: yup.string().required("Address is required"),
+    phoneNumber: yup.string().required("Phone Number is required"),
+    contactName: yup.string(),
+    contactPhoneNumber: yup.string(),
+    contactEmail: yup.string().email("Invalid email format"),
+    accountManager: yup.string(),
+    notes: yup.string(),
+  });
 
-  const handleUpdateClient = async () => {
-    setIsLoading(true);
+  const formik = useFormik({
+    initialValues: clientDetails,
+    validationSchema: clientSchema,
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      setIsLoading(true);
 
-    try {
-      const response = await axios.put(environment.apiUrl+`/client/updateClientById/${id}`, editedDetails, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      try {
+        const response = await axios.put(environment.apiUrl + `/client/updateClientById/${id}`, values, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 200) {
+          setAlertSeverity('success');
+          setAlertMessage('Client updated successfully');
+          setTimeout(() => {
+            navigate('/clients');
+          }, 2000);
+        } else {
+          setAlertSeverity('error');
+          setAlertMessage(`Failed to update client: ${response.data.message}`);
         }
-      });
-
-      if (response.status === 200) {
-        setClientDetails(editedDetails);
-        setAlertSeverity('success');
-        setAlertMessage('Client updated successfully');
-        setTimeout(() => {
-          navigate('/clients');
-        }, 2000);
-      } else {
+      } catch (error) {
         setAlertSeverity('error');
-        setAlertMessage(`Failed to update client: ${response.data.message}`);
+        setAlertMessage(`Error updating client: ${error.message}`);
+      } finally {
+        setIsLoading(false);
+        setOpenSnackbar(true);
       }
-    } catch (error) {
-      setAlertSeverity('error');
-      setAlertMessage(`Error updating client: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-      setOpenSnackbar(true);
-    }
-  };
+    },
+  });
 
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
       <Header title={`Edit Client ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
-        <Grid container spacing={2}>
-          {/* Client details fields */}
-          {Object.entries(clientDetails).map(([field, value]) => (
-            <React.Fragment key={field}>
+        <form onSubmit={formik.handleSubmit}>
+          <Grid container spacing={2}>
+            {Object.entries(clientDetails).map(([field]) => (
+              <React.Fragment key={field}>
                 {field !== 'createdAt' && field !== 'clientStatus' && field !== '__v' && field !== '_id' && field !== 'updatedAt' && field !== 'adminId' && (
-                <Grid item xs={12}>
-                  <Typography variant="h5" component="span" fontWeight="bold">
-                    {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    margin="normal"
-                    name={field}
-                    value={editedDetails[field]}
-                    onChange={handleInputChange}
-                    multiline={field === 'notes'}
-                    rows={field === 'notes' ? 3 : 1}
-                  />
-                </Grid>
-              )}
-            </React.Fragment>
-          ))}
-          {/* Update button */}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateClient}
-              disabled={isLoading}
-              sx={{
-                backgroundColor: '#6870fa',
-                color: 'white',
-                marginRight: 2,
-                fontSize: '16px',
-                '&:hover': {
-                  backgroundColor: '#3e4396',
-                },
-              }}
-            >
-              {isLoading ? 'Updating...' : 'Update Client'}
-            </Button>
+                  <Grid item xs={12}>
+                    <Typography variant="h5" component="span" fontWeight="bold">
+                      {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      margin="normal"
+                      name={field}
+                      value={formik.values[field]}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={formik.touched[field] && Boolean(formik.errors[field])}
+                      helperText={formik.touched[field] && formik.errors[field]}
+                      multiline={field === 'notes'}
+                      rows={field === 'notes' ? 3 : 1}
+                    />
+                  </Grid>
+                )}
+              </React.Fragment>
+            ))}
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isLoading}
+                sx={{
+                  backgroundColor: '#6870fa',
+                  color: 'white',
+                  marginRight: 2,
+                  fontSize: '16px',
+                  '&:hover': {
+                    backgroundColor: '#3e4396',
+                  },
+                }}
+              >
+                {isLoading ? 'Updating...' : 'Update Client'}
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        </form>
       </Box>
-      {/* Snackbar for alerts */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={5000}

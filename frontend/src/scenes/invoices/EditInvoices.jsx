@@ -12,8 +12,19 @@ import {
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
+import { Formik, Field, Form } from 'formik';
+import * as yup from 'yup';
 import Header from "../../components/Header";
 import { environment } from "../../environment";
+
+// Validation schema
+const invoiceSchema = yup.object().shape({
+  invoiceTitle: yup.string().required("Invoice Title is required"),
+  invoiceDescription: yup.string().required("Description is required"),
+  client: yup.string().required("Client is required"),
+  amount: yup.number().required("Amount is required").nullable(),
+  sendDate: yup.date().required("Send Date is required").nullable(),
+});
 
 const EditInvoice = () => {
   const { id } = useParams();
@@ -27,14 +38,12 @@ const EditInvoice = () => {
     amount: ""
   });
 
-  const [editedDetails, setEditedDetails] = useState({ ...invoiceDetails });
+  const [clients, setClients] = useState([]);
   const navigate = useNavigate();
-
   const [isLoading, setIsLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState('success');
   const [alertMessage, setAlertMessage] = useState('');
-  const [clients, setClients] = useState([]);
 
   useEffect(() => {
     fetchClients();
@@ -79,8 +88,8 @@ const EditInvoice = () => {
         if (invoice.sendDate) {
           invoice.sendDate = new Date(invoice.sendDate).toISOString().split('T')[0];
         }
-        setInvoiceDetails(invoice);
-        setEditedDetails(invoice);
+        // Ensure client is set as client ID
+        setInvoiceDetails({ ...invoice, client: invoice.client._id });
       } else {
         console.error('Failed to fetch invoice details:', responseData.message);
       }
@@ -89,26 +98,18 @@ const EditInvoice = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedDetails(prevDetails => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateInvoice = async () => {
+  const handleUpdateInvoice = async (values) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put(environment.apiUrl + `/invoice/updatedInvoice/${id}`, editedDetails, {
+      const response = await axios.put(environment.apiUrl + `/invoice/updatedInvoice/${id}`, values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
       if (response.status === 200) {
-        setInvoiceDetails(editedDetails);
+        setInvoiceDetails(values);
         setAlertSeverity('success');
         setAlertMessage('Invoice updated successfully');
         setTimeout(() => {
@@ -131,86 +132,108 @@ const EditInvoice = () => {
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
       <Header title={`Edit Invoice ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
-        <Grid container spacing={2}>
-          {/* Invoice details fields */}
-          {Object.entries(invoiceDetails).map(([field, value]) => {
-            if (field === 'client' || field === 'createdAt' || field === 'updatedAt' || field === '_id' || field === '__v' || field === 'invoiceStatus') {
-              return null;
-            }
+        <Formik
+          initialValues={invoiceDetails}
+          validationSchema={invoiceSchema}
+          enableReinitialize={true}
+          onSubmit={handleUpdateInvoice}
+        >
+          {({ values, handleChange, handleBlur, errors, touched }) => (
+            <Form>
+              <Grid container spacing={2}>
+                {/* Render fields */}
+                {Object.entries(invoiceDetails).map(([field, value]) => {
+                  if (field === 'client' || field === 'createdAt' || field === 'updatedAt' || field === '_id' || field === '__v' || field === 'invoiceStatus') {
+                    return null;
+                  }
 
-            return (
-              <Grid item xs={12} key={field}>
-                <Typography variant="h5" component="span" fontWeight="bold">
-                  {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                </Typography>
-                {/* Render appropriate input based on field */}
-                {field === 'sendDate' ? (
-                  <TextField
+                  return (
+                    <Grid item xs={12} key={field}>
+                      <Typography variant="h5" component="span" fontWeight="bold">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+                      </Typography>
+                      {/* Render appropriate input based on field */}
+                      {field === 'sendDate' ? (
+                        <TextField
+                          fullWidth
+                          variant="filled"
+                          type="date"
+                          name="sendDate"
+                          value={values.sendDate || ''}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          error={touched.sendDate && !!errors.sendDate}
+                          helperText={touched.sendDate && errors.sendDate}
+                          sx={{ backgroundColor: 'white' }}
+                        />
+                      ) : (
+                        <TextField
+                          fullWidth
+                          variant="filled"
+                          margin="normal"
+                          name={field}
+                          value={values[field]}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          error={touched[field] && !!errors[field]}
+                          helperText={touched[field] && errors[field]}
+                          multiline={field === 'invoiceDescription'}
+                          rows={field === 'invoiceDescription' ? 3 : 1}
+                          sx={{ backgroundColor: 'white' }}
+                        />
+                      )}
+                    </Grid>
+                  );
+                })}
+                {/* Client field */}
+                <Grid item xs={12}>
+                  <Typography variant="h5" component="span" fontWeight="bold">
+                    Client:
+                  </Typography>
+                  <Select
                     fullWidth
                     variant="filled"
-                    type="date"
-                    name="sendDate"
-                    value={editedDetails.sendDate || ''}
-                    onChange={handleInputChange}
+                    value={values.client || ''}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    name="client"
                     sx={{ backgroundColor: 'white' }}
-                  />
-                ) : (
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    margin="normal"
-                    name={field}
-                    value={editedDetails[field]}
-                    onChange={handleInputChange}
-                    multiline={field === 'invoiceDescription'}
-                    rows={field === 'invoiceDescription' ? 3 : 1}
-                    sx={{ backgroundColor: 'white' }}
-                  />
-                )}
+                    error={touched.client && !!errors.client}
+                  >
+                    {clients.map((client) => (
+                      <MenuItem key={client._id} value={client._id}>
+                        {client.firstName} {client.lastName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {touched.client && errors.client && (
+                    <Typography color="error">{errors.client}</Typography>
+                  )}
+                </Grid>
+                {/* Update button */}
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={isLoading}
+                    sx={{
+                      backgroundColor: '#6870fa',
+                      color: 'white',
+                      marginRight: 2,
+                      fontSize: '16px',
+                      '&:hover': {
+                        backgroundColor: '#3e4396',
+                      },
+                    }}
+                  >
+                    {isLoading ? 'Updating...' : 'Update Invoice'}
+                  </Button>
+                </Grid>
               </Grid>
-            );
-          })}
-          {/* Client field */}
-          <Grid item xs={12}>
-            <Typography variant="h5" component="span" fontWeight="bold">
-              Client:
-            </Typography>
-            <Select
-              fullWidth
-              variant="filled"
-              value={editedDetails.client._id || ''}
-              onChange={(e) => handleInputChange({ target: { name: 'client', value: e.target.value } })}
-              name="client"
-              sx={{ backgroundColor: 'white' }}
-            >
-              {clients.map((client) => (
-                <MenuItem key={client._id} value={client._id}>
-                  {client.firstName} {client.lastName}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          {/* Update button */}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateInvoice}
-              disabled={isLoading}
-              sx={{
-                backgroundColor: '#6870fa',
-                color: 'white',
-                marginRight: 2,
-                fontSize: '16px',
-                '&:hover': {
-                  backgroundColor: '#3e4396',
-                },
-              }}
-            >
-              {isLoading ? 'Updating...' : 'Update Invoice'}
-            </Button>
-          </Grid>
-        </Grid>
+            </Form>
+          )}
+        </Formik>
       </Box>
       {/* Snackbar for alerts */}
       <Snackbar

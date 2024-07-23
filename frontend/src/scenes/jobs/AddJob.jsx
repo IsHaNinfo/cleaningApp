@@ -7,6 +7,8 @@ import {
     Snackbar,
     TextField,
     Typography,
+    FormControl,
+  FormHelperText
   } from "@mui/material";
   import AlertTitle from "@mui/material/AlertTitle";
   import useMediaQuery from "@mui/material/useMediaQuery";
@@ -201,6 +203,11 @@ import { environment } from "../../environment";
                   Client*
                 </Typography>
                 <Box mt={-2}>
+                <FormControl
+                 fullWidth
+                 variant="filled"
+                 error={!!touched.client && !!errors.client}
+                     >
                   <Select
                     fullWidth
                     variant="filled"
@@ -217,11 +224,19 @@ import { environment } from "../../environment";
                       </MenuItem>
                     ))}
                   </Select>
+                  <FormHelperText>{touched.client && errors.client}</FormHelperText>
+                  </FormControl>
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
                   Assigned Staff*
                 </Typography>
+                
                 <Box mt={-2}>
+                <FormControl
+  fullWidth
+  variant="filled"
+  error={!!touched.client && !!errors.client}
+>
                   <Select
                     fullWidth
                     variant="filled"
@@ -238,6 +253,8 @@ import { environment } from "../../environment";
                       </MenuItem>
                     ))}
                   </Select>
+                  <FormHelperText>{touched.assignedStaff && errors.assignedStaff}</FormHelperText>
+                  </FormControl>
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
                   Start Time*
