@@ -70,7 +70,7 @@ const EditStaff = () => {
 
   const fetchStaffDetails = async () => {
     try {
-      const response = await axios.get(environment.apiUrl+`/staff/getStaffById/${id}`, {
+      const response = await axios.get(environment.apiUrl + `/staff/getStaffById/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -78,7 +78,13 @@ const EditStaff = () => {
 
       const responseData = response.data;
       if (responseData.success) {
-        setStaffDetails(responseData.staff);
+        const staff = responseData.staff;
+
+        // Convert date fields to 'YYYY-MM-DD' format if they exist
+        staff.dateOfBirth = staff.dateOfBirth ? staff.dateOfBirth.split('T')[0] : new Date().toISOString().split('T')[0];
+        staff.dateOfHire = staff.dateOfHire ? staff.dateOfHire.split('T')[0] : new Date().toISOString().split('T')[0];
+
+        setStaffDetails(staff);
       } else {
         console.error('Failed to fetch staff details:', responseData.message);
       }
@@ -92,7 +98,7 @@ const EditStaff = () => {
     console.log("update")
 
     try {
-      const response = await axios.put(environment.apiUrl+`/user/updateStaff/${id}`, values, {
+      const response = await axios.put(environment.apiUrl + `/user/updateStaff/${id}`, values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -121,7 +127,11 @@ const EditStaff = () => {
       <Header title={`Edit Staff ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
         <Formik
-          initialValues={staffDetails}
+          initialValues={{
+            ...staffDetails,
+            dateOfBirth: staffDetails.dateOfBirth || new Date().toISOString().split('T')[0],
+            dateOfHire: staffDetails.dateOfHire || new Date().toISOString().split('T')[0]
+          }}
           enableReinitialize
           validationSchema={staffSchema}
           onSubmit={handleUpdateStaff}
@@ -141,6 +151,7 @@ const EditStaff = () => {
                         variant="filled"
                         margin="normal"
                         name={field}
+                        type={field === 'dateOfBirth' || field === 'dateOfHire' ? 'date' : 'text'}
                         value={values[field]}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -148,6 +159,7 @@ const EditStaff = () => {
                         rows={field === 'notes' ? 3 : 1}
                         error={touched[field] && Boolean(errors[field])}
                         helperText={touched[field] && errors[field]}
+                        InputLabelProps={{ shrink: true }}
                       />
                     </Grid>
                   )
