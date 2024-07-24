@@ -40,7 +40,7 @@ export const addInvoice = async ( req,res) =>{
 export const updatedInvoice = async (req, res) => {
     const _id  = req.params.id;
     const { 
-        invoiceTitle, 
+            invoiceTitle, 
             invoiceDescription, 
             sendDate, 
             client,

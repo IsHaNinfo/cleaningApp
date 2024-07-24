@@ -14,7 +14,6 @@ const roleAuthentication = (allowedRoles) => {
             if (!user || !allowedRoles.includes(user.role)) {
                 return res.status(403).json({ error: "Access denied" });
             }
-            console.log(user.role);
             req.userId = user._id;
             req.userRole = user.role;
             next();
