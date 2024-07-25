@@ -5,6 +5,7 @@ import Header from "../../components/Header";
 import axios from "axios";
 import { environment } from "../../environment";
 import { Link } from "react-router-dom";
+import { Email } from "@mui/icons-material";
 
 const ViewStaff = () => {
   const { id } = useParams();
@@ -12,6 +13,7 @@ const ViewStaff = () => {
     firstName: "",
     lastName: "",
     address: "",
+    email:"",
     phoneNumber: "",
     position: "",
     dateOfBirth: "",
