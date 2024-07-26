@@ -22,9 +22,10 @@ const jobSchema = yup.object().shape({
   description: yup.string().required("Description is required"),
   client: yup.string().required("Client is required"),
   assignedStaff: yup.string().required("Assigned Staff is required"),
-  startTime: yup.date().required("Start Time is required").nullable(),
-  noOfhours: yup.number().required("Number of Hours is required").nullable(),
-  hourRate: yup.number().required("Hourly Rate is required").nullable(),
+  orgNoOfhours: yup.number().required("Number of Hours is required").nullable(),
+  orgHourRate: yup.number().required("Hourly Rate is required").nullable(),
+  estNoOfhours: yup.number().required("Number of Hours is required").nullable(),
+  staffHourRate: yup.number().required("Hourly Rate is required").nullable(),
   notes: yup.string(),
 });
 
@@ -37,9 +38,10 @@ const EditJob = () => {
     description: '',
     client: '',
     assignedStaff: '',
-    startTime: '',
-    noOfhours: 0,
-    hourRate: 0,
+    orgNoOfhours: 0,
+    orgHourRate: 0,
+    estNoOfhours: 0,
+    staffHourRate: 0,
     notes: '',
   });
 
@@ -108,16 +110,18 @@ const EditJob = () => {
       const responseData = response.data;
 
       if (responseData.success) {
-        console.log("res",response)
         const job = responseData.job;
-        // Convert the startTime to the required format
-        if (job.startTime) {
-          job.startTime = new Date(job.startTime).toISOString().slice(0, 16);
-        }
-
-        job.client = job.client._id;
-        job.assignedStaff = job.assignedStaff._id
-        setJobDetails(job);
+        setJobDetails({
+          jobName: job.jobName,
+          description: job.description,
+          client: job.client._id,
+          assignedStaff: job.assignedStaff._id,
+          orgNoOfhours: job.orgNoOfhours,
+          orgHourRate: job.orgHourRate,
+          estNoOfhours: job.estNoOfhours,
+          staffHourRate: job.staffHourRate,
+          notes: job.notes,
+        });
       } else {
         console.error('Failed to fetch job details:', response.data.message);
       }
@@ -256,55 +260,73 @@ const EditJob = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="h5" component="span" fontWeight="bold">
-                    Start Time:
-                  </Typography>
-                  <Field
-                    as={TextField}
-                    fullWidth
-                    variant="filled"
-                    type="datetime-local"
-                    name="startTime"
-                    value={values.startTime}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.startTime && Boolean(errors.startTime)}
-                    helperText={touched.startTime && errors.startTime}
-                    sx={{ backgroundColor: 'white' }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h5" component="span" fontWeight="bold">
-                    Number of Hours:
+                   Original Number of Hours:
                   </Typography>
                   <Field
                     as={TextField}
                     fullWidth
                     variant="filled"
                     type="number"
-                    name="noOfhours"
-                    value={values.noOfhours}
+                    name="orgNoOfhours"
+                    value={values.orgNoOfhours}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.noOfhours && Boolean(errors.noOfhours)}
-                    helperText={touched.noOfhours && errors.noOfhours}
+                    error={touched.orgNoOfhours && Boolean(errors.orgNoOfhours)}
+                    helperText={touched.orgNoOfhours && errors.orgNoOfhours}
                     sx={{ backgroundColor: 'white' }}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="h5" component="span" fontWeight="bold">
-                    Hourly Rate:
+                   Originally Hourly Rate:
                   </Typography>
                   <Field
                     as={TextField}
                     fullWidth
                     variant="filled"
                     type="number"
-                    name="hourRate"
-                    value={values.hourRate}
+                    name="orgHourRate"
+                    value={values.orgHourRate}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.hourRate && Boolean(errors.hourRate)}
-                    helperText={touched.hourRate && errors.hourRate}
+                    error={touched.orgHourRate && Boolean(errors.orgHourRate)}
+                    helperText={touched.orgHourRate && errors.orgHourRate}
+                    sx={{ backgroundColor: 'white' }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h5" component="span" fontWeight="bold">
+                   Estimated Number of Hours:
+                  </Typography>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    name="estNoOfhours"
+                    value={values.estNoOfhours}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.estNoOfhours && Boolean(errors.estNoOfhours)}
+                    helperText={touched.estNoOfhours && errors.estNoOfhours}
+                    sx={{ backgroundColor: 'white' }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h5" component="span" fontWeight="bold">
+                   Staff Hourly Rate:
+                  </Typography>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    name="staffHourRate"
+                    value={values.staffHourRate}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.staffHourRate && Boolean(errors.staffHourRate)}
+                    helperText={touched.staffHourRate && errors.staffHourRate}
                     sx={{ backgroundColor: 'white' }}
                   />
                 </Grid>

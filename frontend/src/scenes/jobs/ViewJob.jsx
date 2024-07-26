@@ -20,10 +20,30 @@ function ViewJob() {
       lastName: "",
       phoneNumber: "",
     },
-    startTime: "",
+    orgNoOfhours: "",
+    orgHourRate: "",
+    orgTotal: "",
+    staffPayTotal: "",
+    estNoOfhours: "",
+    staffHourRate: "",
     jobStatus: "",
     notes: "",
   });
+
+  const fieldNames = {
+    jobName: "Job Name",
+    description: "Description",
+    orgNoOfhours: "Original Number of Hours",
+    orgHourRate: "Original Hour Rate",
+    orgTotal: "Original Total",
+    staffPayTotal: "Staff Pay Total",
+    estNoOfhours: "Estimated Number of Hours",
+    staffHourRate: "Staff Hour Rate",
+    jobStatus: "Job Status",
+    notes: "Notes",
+    client: "Client",
+    assignedStaff: "Assigned Staff"
+  };
 
   useEffect(() => {
     fetchJobDetails();
@@ -31,12 +51,12 @@ function ViewJob() {
 
   const fetchJobDetails = async () => {
     try {
-      const response = await axios.get( environment.apiUrl + `/job/getJobById/${id}`);
+      const response = await axios.get(environment.apiUrl + `/job/getJobById/${id}`);
       const responseData = response.data;
       console.log(responseData)
       if (responseData.success) {
         const { job, message } = responseData;
-        const { jobName, description, client, assignedStaff, startTime, jobStatus, notes } = job;
+        const { jobName, description, client, assignedStaff, orgNoOfhours, orgHourRate, estNoOfhours, staffHourRate, orgTotal, staffPayTotal, jobStatus, notes } = job;
         const formattedClient = {
           firstName: client.firstName,
           lastName: client.lastName,
@@ -52,7 +72,12 @@ function ViewJob() {
           description,
           client: formattedClient,
           assignedStaff: formattedAssignedStaff,
-          startTime,
+          orgNoOfhours,
+          orgHourRate,
+          estNoOfhours,
+          staffHourRate,
+          orgTotal,
+          staffPayTotal,
           jobStatus,
           notes,
         });
@@ -75,7 +100,7 @@ function ViewJob() {
               <React.Fragment key={field}>
                 <Grid item xs={1.8}>
                   <Typography variant="h5" component="span" fontWeight="bold">
-                    {field}
+                    {fieldNames[field]}
                   </Typography>
                 </Grid>
                 <Grid item xs={1}>
@@ -91,7 +116,7 @@ function ViewJob() {
           {/* Client Details */}
           <Grid item xs={1.8}>
             <Typography variant="h5" component="span" fontWeight="bold">
-              Client
+              {fieldNames.client}
             </Typography>
           </Grid>
           <Grid item xs={1}>
@@ -106,7 +131,7 @@ function ViewJob() {
           {/* Assigned Staff Details */}
           <Grid item xs={1.8}>
             <Typography variant="h5" component="span" fontWeight="bold">
-              Assigned Staff
+              {fieldNames.assignedStaff}
             </Typography>
           </Grid>
           <Grid item xs={1}>

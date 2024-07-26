@@ -12,9 +12,10 @@ export const addJob = async (req, res) => {
             description, 
             client, 
             assignedStaff,
-            startTime,
-            noOfhours,
-            hourRate,
+            orgNoOfhours,
+            orgHourRate,
+            estNoOfhours,
+            staffHourRate,
             notes
         } = req.body;
 
@@ -34,16 +35,21 @@ export const addJob = async (req, res) => {
             if (!staffExists) {
                 return res.status(404).json({ response_code: 404, success: false, message: "Assigned staff not found" });
             }
-
+            const OrgTotal = orgNoOfhours*orgHourRate
+            const StaffPay = estNoOfhours*staffHourRate
             const adminId = req.userId._id;
+
             const newJob = new Job({
                 jobName, 
                 description, 
                 client, 
                 assignedStaff,
-                startTime,
-                noOfhours,
-                hourRate,
+                orgNoOfhours,
+                orgHourRate,
+                orgTotal:OrgTotal,
+                estNoOfhours,
+                staffHourRate,
+                staffPayTotal:StaffPay,
                 notes,
                 adminId: adminId,
             });
@@ -66,12 +72,16 @@ export const updatedJob = async (req, res) => {
         description, 
         client, 
         assignedStaff,
-        startTime,
-        noOfhours,
-        hourRate,
+        orgNoOfhours,
+        orgHourRate,
+        estNoOfhours,
+        staffHourRate,
         notes
     } = req.body;
     try {
+        const OrgTotal = orgNoOfhours*orgHourRate
+        const StaffPay = estNoOfhours*staffHourRate
+
           const updatedJob = await Job.findByIdAndUpdate(
             _id,
             { 
@@ -79,10 +89,13 @@ export const updatedJob = async (req, res) => {
                 description, 
                 client, 
                 assignedStaff,
-                startTime,
-                noOfhours,
-                hourRate,
-                notes
+                orgNoOfhours,
+                orgHourRate,
+                orgTotal:OrgTotal,
+                estNoOfhours,
+                staffHourRate,
+                staffPayTotal:StaffPay,
+                notes,
              },
             { new: true, runValidators: true }
         );

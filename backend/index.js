@@ -26,12 +26,12 @@ app.use(
 app.use(express.json());
 mongoose.set("strictQuery", true);
 
-app.use("/admin",adminRoutes)
-app.use("/staff",staffRoutes)
-app.use("/client",clientRoutes)
-app.use("/job",jobRoutes);
-app.use("/user",userRoutes);
-app.use("/invoice",invoiceRoutes);
+app.use("/api/admin",adminRoutes)
+app.use("/api/staff",staffRoutes)
+app.use("/api/client",clientRoutes)
+app.use("/api/job",jobRoutes);
+app.use("/api/user",userRoutes);
+app.use("/api/invoice",invoiceRoutes);
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         app.listen(process.env.PORT, () => {
