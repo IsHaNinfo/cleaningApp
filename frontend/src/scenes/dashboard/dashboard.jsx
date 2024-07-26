@@ -5,6 +5,7 @@ import axios from 'axios';
 import PeopleIcon from '@mui/icons-material/People';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import WorkIcon from '@mui/icons-material/Work';
+import { environment } from "../../environment";
 
 const AdminDashboard = () => {
   const [staffCount, setStaffCount] = useState(0);
@@ -14,13 +15,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const staffResponse = await axios.get('http://localhost:4000/staff/getAllStaffCount');
+        const staffResponse = await axios.get(environment.apiUrl + "/staff/getAllStaffCount");
         setStaffCount(staffResponse.data.count);
-
-        const clientResponse = await axios.get('http://localhost:4000/client/getAllClientCount');
+                                              
+        const clientResponse = await axios.get(environment.apiUrl + "/client/getAllClientCount");
         setClientCount(clientResponse.data.count);
-
-        const jobResponse = await axios.get('http://localhost:4000/job/getCount');
+        const jobResponse = await axios.get( environment.apiUrl + "/job/getCount");
         setJobsCount(jobResponse.data.count);
       } catch (error) {
         console.error('Error fetching counts:', error);
