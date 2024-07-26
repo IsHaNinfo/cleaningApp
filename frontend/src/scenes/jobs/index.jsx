@@ -122,9 +122,6 @@ import {
         if (responseData.success) {
           const modifiedData = responseData.jobs.map((item) => ({
             ...item,
-            startTime: item.startTime.split("T")[0],
-            signInTime: formatTime(item.signInTime),
-            signOffTime: formatTime(item.signOffTime),
             id: item._id, // Set id for DataGrid row key
           }));
   
@@ -250,7 +247,7 @@ import {
   
     const columns = [
       { field: "id", headerName: "Job ID" },
-      { field: "jobName", headerName: "Job Name", flex: 1 },
+      { field: "jobName", headerName: "Job Name", flex: 0.8 },
       {
         field: "client",
         headerName: "Client",
@@ -265,15 +262,18 @@ import {
         renderCell: (params) =>
           `${params.row.assignedStaff.firstName} ${params.row.assignedStaff.lastName}`,
       },
-      { field: "startTime", headerName: "Start Time (YYYY/MM/DD)", flex: 0.6 },
       {
-        field: "signInTime",
-        headerName: "Sign In Time",
+        field: "orgNoOfhours",
+        headerName: "Original No Hours",
+        flex: 0.5,
+      },      {
+        field: "estNoOfhours",
+        headerName: "Estimate No Hours",
         flex: 0.5,
       },
       {
-        field: "signOffTime",
-        headerName: "Sign Out Time",
+        field: "orgTotal",
+        headerName: "Total Payment",
         flex: 0.5,
       },
       {

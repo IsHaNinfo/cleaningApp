@@ -257,23 +257,7 @@ import { environment } from "../../environment";
                   </FormControl>
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
-                  Start Time*
-                </Typography>
-                <Box mt={-2}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="datetime-local"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.startTime}
-                    name="startTime"
-                    error={!!touched.startTime && !!errors.startTime}
-                    helperText={touched.startTime && errors.startTime}
-                  />
-                </Box>
-                <Typography fontWeight="bold" fontSize="16px">
-                  Number of Hours*
+                  Original Number of Hours*
                 </Typography>
                 <Box mt={-2}>
                   <TextField
@@ -282,14 +266,14 @@ import { environment } from "../../environment";
                     type="number"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.noOfhours}
-                    name="noOfhours"
-                    error={!!touched.noOfhours && !!errors.noOfhours}
-                    helperText={touched.noOfhours && errors.noOfhours}
+                    value={values.orgNoOfhours}
+                    name="orgNoOfhours"
+                    error={!!touched.orgNoOfhours && !!errors.orgNoOfhours}
+                    helperText={touched.orgNoOfhours && errors.orgNoOfhours}
                   />
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
-                  Hourly Rate*
+                 Original Hourly Rate*
                 </Typography>
                 <Box mt={-2}>
                   <TextField
@@ -298,10 +282,42 @@ import { environment } from "../../environment";
                     type="number"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.hourRate}
-                    name="hourRate"
-                    error={!!touched.hourRate && !!errors.hourRate}
-                    helperText={touched.hourRate && errors.hourRate}
+                    value={values.orgHourRate}
+                    name="orgHourRate"
+                    error={!!touched.orgHourRate && !!errors.orgHourRate}
+                    helperText={touched.orgHourRate && errors.orgHourRate}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                  Estimated Number of Hours*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.estNoOfhours}
+                    name="estNoOfhours"
+                    error={!!touched.estNoOfhours && !!errors.estNoOfhours}
+                    helperText={touched.estNoOfhours && errors.estNoOfhours}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
+                 Estimated Hourly Rate*
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.staffHourRate}
+                    name="staffHourRate"
+                    error={!!touched.staffHourRate && !!errors.staffHourRate}
+                    helperText={touched.staffHourRate && errors.staffHourRate}
                   />
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
@@ -354,9 +370,10 @@ import { environment } from "../../environment";
     description: yup.string().required("Description is required"),
     client: yup.string().required("Client is required"),
     assignedStaff: yup.string().required("Assigned Staff is required"),
-    startTime: yup.date().required("Start Time is required").nullable(),
-    noOfhours: yup.number().required("Number of Hours is required").nullable(),
-    hourRate: yup.number().required("Hourly Rate is required").nullable(),
+    orgNoOfhours: yup.number().required("Number of Hours is required").nullable(),
+    orgHourRate: yup.number().required("Hourly Rate is required").nullable(),
+    estNoOfhours: yup.number().required("Number of Hours is required").nullable(),
+    staffHourRate: yup.number().required("Hourly Rate is required").nullable(),
     notes: yup.string(),
   });
   
@@ -365,9 +382,10 @@ import { environment } from "../../environment";
     description: "",
     client: "",
     assignedStaff: "",
-    startTime: "",
-    noOfhours: "",
-    hourRate: "",
+    orgNoOfhours: "",
+    orgHourRate: "",
+    estNoOfhours: "",
+    staffHourRate: "",
     notes: "",
   };
   

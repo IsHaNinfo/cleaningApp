@@ -23,28 +23,27 @@ const jobSchema = new Schema(
             ref: 'Staff',
             required: true,
         },
-        startTime: {
-            type: Date,
-            required: false,
-        },
-        signInTime: {
-            type: Date,
-            required: false,
-        },
-        signOffTime: {
-            type: Date,
-            required: false,
-        },
-        isSignOff: {
-            type: Boolean,
-            default:false,
-            required: false,
-        },
-        noOfhours: {
+        orgNoOfhours: {
             type: Number,
             required: false,
         },
-        hourRate: {
+        orgHourRate: {
+            type: Number,
+            required: false,
+        },
+        orgTotal: {
+            type: Number,
+            required: false,
+        },
+        estNoOfhours: {
+            type: Number,
+            required: false,
+        },
+        staffHourRate: {
+            type: Number,
+            required: false,
+        },
+        staffPayTotal: {
             type: Number,
             required: false,
         },
