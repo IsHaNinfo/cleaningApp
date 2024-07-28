@@ -257,6 +257,22 @@ import { environment } from "../../environment";
                   </FormControl>
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
+                  Start Time
+                </Typography>
+                <Box mt={-2}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="datetime-local"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.jobDate}
+                    name="jobDate"
+                    error={!!touched.jobDate && !!errors.jobDate}
+                    helperText={touched.jobDate && errors.jobDate}
+                  />
+                </Box>
+                <Typography fontWeight="bold" fontSize="16px">
                   Original Number of Hours*
                 </Typography>
                 <Box mt={-2}>
@@ -265,9 +281,12 @@ import { environment } from "../../environment";
                     variant="filled"
                     type="number"
                     onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.orgNoOfhours}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    value={values.orgNoOfhours || null}
                     name="orgNoOfhours"
+                    inputProps={{ min: 0, step: "0.01" }}
                     error={!!touched.orgNoOfhours && !!errors.orgNoOfhours}
                     helperText={touched.orgNoOfhours && errors.orgNoOfhours}
                   />
@@ -281,9 +300,12 @@ import { environment } from "../../environment";
                     variant="filled"
                     type="number"
                     onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.orgHourRate}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    value={values.orgHourRate || null}
                     name="orgHourRate"
+                    inputProps={{ min: 0, step: "0.01" }}
                     error={!!touched.orgHourRate && !!errors.orgHourRate}
                     helperText={touched.orgHourRate && errors.orgHourRate}
                   />
@@ -297,9 +319,12 @@ import { environment } from "../../environment";
                     variant="filled"
                     type="number"
                     onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.estNoOfhours}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    value={values.estNoOfhours || null}
                     name="estNoOfhours"
+                    inputProps={{ min: 0, step: "0.01" }}
                     error={!!touched.estNoOfhours && !!errors.estNoOfhours}
                     helperText={touched.estNoOfhours && errors.estNoOfhours}
                   />
@@ -313,9 +338,12 @@ import { environment } from "../../environment";
                     variant="filled"
                     type="number"
                     onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.staffHourRate}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    value={values.staffHourRate || null}
                     name="staffHourRate"
+                    inputProps={{ min: 0, step: "0.01" }}
                     error={!!touched.staffHourRate && !!errors.staffHourRate}
                     helperText={touched.staffHourRate && errors.staffHourRate}
                   />
@@ -370,11 +398,12 @@ import { environment } from "../../environment";
     description: yup.string().required("Description is required"),
     client: yup.string().required("Client is required"),
     assignedStaff: yup.string().required("Assigned Staff is required"),
-    orgNoOfhours: yup.number().required("Number of Hours is required").nullable(),
-    orgHourRate: yup.number().required("Hourly Rate is required").nullable(),
-    estNoOfhours: yup.number().required("Number of Hours is required").nullable(),
-    staffHourRate: yup.number().required("Hourly Rate is required").nullable(),
+    orgNoOfhours: yup.number().required("Number of Hours is required"),
+    orgHourRate: yup.number().required("Hourly Rate is required"),
+    estNoOfhours: yup.number().required("Number of Hours is required"),
+    staffHourRate: yup.number().required("Hourly Rate is required"),
     notes: yup.string(),
+    jobDate: yup.date()
   });
   
   const initialValues = {
@@ -387,6 +416,7 @@ import { environment } from "../../environment";
     estNoOfhours: "",
     staffHourRate: "",
     notes: "",
+    jobDate:""
   };
   
   export default AddJob;
