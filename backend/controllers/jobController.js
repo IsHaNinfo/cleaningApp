@@ -191,7 +191,46 @@ export const getAllJobsCount = async (req, res) => {
     }
 }
 
+export const getTotalAndProfit = async (req, res) => {
+    try {
+        const result = await Job.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalOrgTotal: { $sum: "$orgTotal" },
+                    totalStaffPayTotal: { $sum: "$staffPayTotal" },
+                    totalProfit: { $sum: { $subtract: ["$orgTotal", "$staffPayTotal"] } }
+                }
+            }
+        ]);
 
+        if (result.length > 0) {
+            const { totalOrgTotal, totalStaffPayTotal, totalProfit } = result[0];
+            res.status(200).json({
+                response_code: 200,
+                success: true,
+                message: "Totals and profit fetched successfully",
+                data: {
+                    totalOrgTotal,
+                    totalStaffPayTotal,
+                    totalProfit
+                }
+            });
+        } else {
+            res.status(404).json({
+                response_code: 404,
+                success: false,
+                message: "No jobs found"
+            });
+        }
+    } catch (error) {
+        res.status(400).json({
+            response_code: 400,
+            success: false,
+            error: error.message
+        });
+    }
+};
 
 export const getAllJobPagination = async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;

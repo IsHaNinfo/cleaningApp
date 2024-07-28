@@ -1,7 +1,7 @@
 import express from "express"
 
 const router = express.Router();
-import {addJob,updatedJob, getAllJobsCount,paymentJob,getStaffJobsbyId,getFilteredJobs,getInvoice,getJobsByStaffId,signInJob,signOffJob,getAllCompletedJobs,deleteJobById,getJobById,getAllJobs,getAllJobPagination,updateStatus} from "../controllers/jobController.js"
+import {addJob,updatedJob,getTotalAndProfit, getAllJobsCount,paymentJob,getStaffJobsbyId,getFilteredJobs,getInvoice,getJobsByStaffId,signInJob,signOffJob,getAllCompletedJobs,deleteJobById,getJobById,getAllJobs,getAllJobPagination,updateStatus} from "../controllers/jobController.js"
 import roleAuthentication from "../middleware/roleAuthentication.js";
 
 
@@ -12,6 +12,7 @@ router.get("/getJobById/:id",getJobById);
 router.get("/getAllJobPagination",getAllJobPagination);
 router.get("/getAllJobs",getAllJobs);
 router.get("/getCount",getAllJobsCount);
+router.get("/getTotalAndProfit",getTotalAndProfit);
 
 router.get("/getAllCompletedJobs",getAllCompletedJobs);
 
