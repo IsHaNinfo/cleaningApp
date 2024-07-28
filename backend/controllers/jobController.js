@@ -16,7 +16,8 @@ export const addJob = async (req, res) => {
             orgHourRate,
             estNoOfhours,
             staffHourRate,
-            notes
+            notes,
+            jobDate
         } = req.body;
 
             const existingJob = await Job.findOne( { jobName: jobName } );
@@ -52,6 +53,7 @@ export const addJob = async (req, res) => {
                 staffPayTotal:StaffPay,
                 notes,
                 adminId: adminId,
+                jobDate
             });
     
             await newJob.save();
@@ -144,7 +146,7 @@ export const getJobById = async (req, res) => {
 export const getAllJobs = async (req, res) => {
     try {
 
-const {startDate, endDate} = req.query;
+const {startDate, endDate,staffId, clientId} = req.query;
 
   let filter = {};
   if (startDate && endDate) {
@@ -154,8 +156,14 @@ const {startDate, endDate} = req.query;
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999); // Set to 23:59
 
-    filter.startTime = { $gte: start, $lte: end };
+    filter.jobDate = { $gte: start, $lte: end };
+
 }
+
+if (staffId) filter.assignedStaff = staffId;
+if (clientId) filter.client = clientId;
+
+
         const jobs = await Job.find(filter)
             .populate({
                 path: 'assignedStaff',
@@ -165,6 +173,8 @@ const {startDate, endDate} = req.query;
                 path: 'client',
                 select: 'firstName lastName'  // Adjust field name as per your Client schema
             })
+
+
 
         if (!jobs.length) {
             return res.status(404).json({ response_code: 404, success: false, message: "Jobs not found" });
@@ -340,7 +350,6 @@ export const signOffJob = async (req, res) => {
 
     try {
         const job = await Job.findById(jobId);
-        console.log("job found", job);
         if (!job) {
             return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
         }
@@ -391,7 +400,7 @@ export const getInvoice = async (req, res) => {
             description: job.description,
             client: job.client.name,
             assignedStaff: `${job.assignedStaff.firstName} ${job.assignedStaff.lastName}`,
-            startTime: job.startTime,
+            jobDate: job.jobDate,
             signInTime: job.signInTime,
             signOffTime: job.signOffTime,
             noOfhours: job.noOfhours,
@@ -407,10 +416,9 @@ export const getInvoice = async (req, res) => {
 };
 
 export const getJobsByStaffId = async (req, res) => {
-    const { staffId } = req.params;
-    console.log(staffId) // Get the staffId from the request parameters
+    const { staffId } = req.params; // Get the staffId from the request parameters
     const staffData = await Staff.find({user:staffId});
-    console.log(staffData);
+
     
     const staffObjectId = staffData[0]?._id;
 
@@ -424,13 +432,11 @@ export const getJobsByStaffId = async (req, res) => {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999); // Set to 23:59
 
-        filter.startTime = { $gte: start, $lte: end };
+        filter.jobDate = { $gte: start, $lte: end };
     }
-  console.log(filter);
     
     try {
         const jobs = await Job.find(filter).populate('assignedStaff').populate('client');
-        console.log(jobs);
 
         if (jobs.length === 0) {
             return res.status(404).json({ response_code: 404, success: false, message: "Jobs not found" });
@@ -470,14 +476,14 @@ export const getFilteredJobs = async (req, res) => {
       }*/
   
       if (month || year) {
-        query.startTime = {};
+        query.jobDate = {};
         if (year) {
-          query.startTime.$gte = new Date(year, 0, 1);
-          query.startTime.$lt = new Date(year + 1, 0, 1);
+          query.jobDate.$gte = new Date(year, 0, 1);
+          query.jobDate.$lt = new Date(year + 1, 0, 1);
         }
         if (month && year) {
-          query.startTime.$gte = new Date(year, month - 1, 1);
-          query.startTime.$lt = new Date(year, month, 1);
+          query.jobDate.$gte = new Date(year, month - 1, 1);
+          query.jobDate.$lt = new Date(year, month, 1);
         }
       }
   
@@ -488,7 +494,7 @@ export const getFilteredJobs = async (req, res) => {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999); // Set to 23:59
   
-        query.startTime = { $gte: start, $lte: end };
+        query.jobDate = { $gte: start, $lte: end };
       }
   
       const jobs = await Job.find(query)
@@ -549,7 +555,7 @@ export const getFilteredJobs = async (req, res) => {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999); // Set to 23:59
   
-        query.startTime = { $gte: start, $lte: end };
+        query.jobDate = { $gte: start, $lte: end };
       }
   
       const jobs = await Job.find(query)

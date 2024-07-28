@@ -72,6 +72,10 @@ const jobSchema = new Schema(
             default: 'InProgress',
             required: true,
         },
+        jobDate: {
+            type: Date,
+            required: false,
+        },
      
     },
     {
