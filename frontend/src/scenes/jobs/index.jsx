@@ -73,6 +73,7 @@ import {
     };
     const userRole = getUserRoleFromToken();
     const shouldShowButton = userRole !== "staff";
+    const userStaff = userRole ==='staff'
   
     const userId = getUserIdFromToken();
     const formatTime = (dateTime) => {
@@ -142,6 +143,7 @@ import {
   
         const response = await axios.get(url,{params});
         const responseData = response.data;
+        console.log(responseData)
         if (responseData.success) {
           fetchAllRef.current = false;
           const modifiedData = responseData.jobs.map((item) => ({
@@ -197,8 +199,11 @@ import {
   
     useEffect(() => {
       fetchJobs();
-      fetchStaffAndClients();
+      if(shouldShowButton){
+        fetchStaffAndClients();
 
+      }
+      
     }, []);
   
     const exportToPdf = () => {
@@ -283,8 +288,8 @@ import {
     }
     
     
-  
-    const columns = [
+  let columns =[]
+     columns = [
       { field: "id", headerName: "Job ID",hide: true },
       { field: "jobName", headerName: "Job Name", flex: 0.8 },
       {
@@ -306,21 +311,22 @@ import {
         headerName: "Job Date",
         flex: 0.7,
       },
-      {
-        field: "orgNoOfhours",
-        headerName: "Original No Hours",
-        flex: 0.5,
-      },
+      // {
+      //   field: "orgNoOfhours",
+      //   headerName: "Original No Hours",
+      //   flex: 0.5,
+      // },
       {
         field: "estNoOfhours",
         headerName: "Estimate No Hours",
         flex: 0.5,
       },
-      {
-        field: "orgTotal",
-        headerName: "Total Payment",
-        flex: 0.5,
-      },
+      // {
+      //   field: "orgTotal",
+      //   headerName: "Total Payment",
+      //   flex: 0.5,
+      // },
+      { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5,hide:true },
       {
         field: "jobStatus",
         headerName: "Status",
@@ -373,6 +379,14 @@ import {
         ),
       },
     ];
+
+    if (shouldShowButton) {
+      columns.splice(6, 0, { field: "orgNoOfhours", headerName: "Original No Hours", flex: 0.5 });
+      columns.splice(7, 0, { field: "orgTotal", headerName: "Total Payment", flex: 0.5 });
+    }
+    if (userStaff) {
+      columns.splice(5, 0, { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5 });
+    }
     
   
     return (

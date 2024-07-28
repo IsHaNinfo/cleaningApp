@@ -4,8 +4,27 @@ import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import axios from "axios";
 import { environment } from "../../environment";
+import { jwtDecode } from "jwt-decode";
 
 function ViewJob() {
+  const getUserRoleFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken.role; // Adjust according to your token structure
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+  const userRole = getUserRoleFromToken();
+  const hideField = userRole === "staff";
+  const fieldsToHide = hideField ? ["orgNoOfhours", "orgHourRate", "orgTotal"] : [];
+
+
   const { id } = useParams();
   const [jobDetails, setJobDetails] = useState({
     jobName: "",
@@ -95,7 +114,7 @@ function ViewJob() {
       <Box ml={"40px"}>
         <Grid container spacing={2}>
           {Object.entries(jobDetails)
-            .filter(([field]) => field !== "client" && field !== "assignedStaff") // Filter out nested objects
+            .filter(([field]) =>!fieldsToHide.includes(field) && field !== "client" && field !== "assignedStaff") // Filter out nested objects
             .map(([field, value]) => (
               <React.Fragment key={field}>
                 <Grid item xs={1.8}>
