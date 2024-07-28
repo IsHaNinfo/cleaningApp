@@ -17,7 +17,7 @@ import {
   import { DataGrid, GridToolbar } from "@mui/x-data-grid";
   import jsPDF from "jspdf";
   import "jspdf-autotable";
-  import React, { useEffect, useState } from "react";
+  import React, { useEffect, useRef, useState } from "react";
   import { Link } from "react-router-dom";
   import Swal from "sweetalert2";
   import axios from "axios";
@@ -32,7 +32,15 @@ import {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [staff, setStaff] = useState([]);
+    const [clients, setClients] = useState([]);
+    const [selectedStaff, setSelectedStaff] = useState("");
+    const [selectedClient, setSelectedClient] = useState("");
+    const token = localStorage.getItem("token");
+    const fetchAllRef = useRef(false);
+
+
     
     
   
@@ -70,7 +78,7 @@ import {
     const formatTime = (dateTime) => {
       if (!dateTime) return null;
       const time = new Date(dateTime);
-      return time.toLocaleTimeString("en-CA", { hour: '2-digit', minute: '2-digit', second: '2-digit',hour12: false, });
+      return time.toLocaleTimeString("en-CA", { day:'2-digit',month:'2-digit',year:'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',hour12: false, });
     };
   
     // const fetchJobs = async () => {
@@ -105,7 +113,9 @@ import {
     // };
 
     const fetchJobs = async () => {
+
       try {
+        if (fetchAllRef.current) {}
         let url;
         if (userRole === "staff") {
           url = environment.apiUrl + `/job/getJobsbyStaff/${userId}`;
@@ -113,35 +123,82 @@ import {
           url = environment.apiUrl + "/job/getAllJobs";
         }
   
-        if (startDate && endDate) {
-          url += `?startDate=${startDate}&endDate=${endDate}`;
-        }
+        // if (startDate && endDate) {
+        //   url += `?startDate=${startDate}&endDate=${endDate}`;
+        // }
+        let params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (selectedStaff) params.append("staffId", selectedStaff);
+    if (selectedClient) params.append("clientId", selectedClient);
+
+    if (fetchAllRef.current) {
+      params.delete('startDate');
+      params.delete("endDate");
+      params.delete("staffId");
+      params.delete("clientId");
+
+    }
   
-        const response = await axios.get(url);
+        const response = await axios.get(url,{params});
         const responseData = response.data;
         if (responseData.success) {
+          fetchAllRef.current = false;
           const modifiedData = responseData.jobs.map((item) => ({
             ...item,
-            id: item._id, // Set id for DataGrid row key
+            id: item._id,
+            jobDate:formatTime(item.jobDate) // Set id for DataGrid row key
           }));
   
           modifiedData.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   
           setData(modifiedData);
         } else {
+          fetchAllRef.current = false;
           console.error("Failed to fetch jobs:", responseData.message);
         }
       } catch (error) {
+        fetchAllRef.current = false;
+        console.error("Error fetching jobs:", error);
         if(error.response.data.message === 'Jobs not found'){
           setData([])
         }
-        console.error("Error fetching jobs:", error);
+       
       }
     };
+    const fetchStaffAndClients = async () => {
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`
+        };
+    
+        const [staffResponse, clientResponse] = await Promise.all([
+          axios.get(`${environment.apiUrl}/staff/getAllStaff`, { headers }),
+          axios.get(`${environment.apiUrl}/client/getAllClient`, { headers })
+        ]);
+    
+        const staffData = staffResponse.data.staffs.map((item) => ({
+          ...item,
+          id: item._id
+        }));
+        const clientData = clientResponse.data.clients.map((item) => ({
+          ...item,
+          id: item._id
+        }));
+    
+        setStaff(staffData);
+        setClients(clientData);
+      } catch (error) {
+        console.error("Error fetching staff or clients:", error);
+      }
+    };
+    
   
   
     useEffect(() => {
       fetchJobs();
+      fetchStaffAndClients();
+
     }, []);
   
     const exportToPdf = () => {
@@ -212,46 +269,28 @@ import {
   
     const handleEditClick = (id) => { };
 
-    const handleSignInSignOut = async (id,staffId, isSignedIn) => {
-      try {
-        let response;
-        if (!isSignedIn) {
-          response = await axios.put(environment.apiUrl + `/job/signInJob/${id}`,{staffId:staffId});
-        } else {
-          response = await axios.put(environment.apiUrl + `/job/signOffJob/${id}`);
-        }
-    
-        if (response.data.success) {
-          await fetchJobs();
-          const updatedJob = response.data.job;
-          setData((prevData) =>
-            prevData.map((item) =>
-              item.id === id ? { ...item, ...updatedJob } : item
-            )
-          );
-          Swal.fire("Updated!", `Job has been ${!isSignedIn ? 'signed in' : 'signed out'}.`, "success");
-        } else {
-          throw new Error(response.data.message);
-        }
-      } catch (error) {
-        console.error(`Error ${!isSignedIn ? 'signing in' : 'signing out'} job:`, error);
-        Swal.fire("Error!", `Failed to ${!isSignedIn ? 'sign in' : 'sign out'} job. Please try again later.`, "error");
-      }
-    };
-
     const handleViewJobs = () => {
       fetchJobs();
     };
+
+    const vievAlljobs = () =>{
+      fetchAllRef.current = true;
+      setEndDate('');
+      setStartDate('');
+      setSelectedClient('')
+      setSelectedStaff('');
+      fetchJobs();
+    }
     
     
   
     const columns = [
-      { field: "id", headerName: "Job ID" },
+      { field: "id", headerName: "Job ID",hide: true },
       { field: "jobName", headerName: "Job Name", flex: 0.8 },
       {
         field: "client",
         headerName: "Client",
-        flex: 0.8,
+        flex: 0.7,
         renderCell: (params) =>
           `${params.row.client.firstName} ${params.row.client.lastName}`,
       },
@@ -263,10 +302,16 @@ import {
           `${params.row.assignedStaff.firstName} ${params.row.assignedStaff.lastName}`,
       },
       {
+        field: "jobDate",
+        headerName: "Job Date",
+        flex: 0.7,
+      },
+      {
         field: "orgNoOfhours",
         headerName: "Original No Hours",
         flex: 0.5,
-      },      {
+      },
+      {
         field: "estNoOfhours",
         headerName: "Estimate No Hours",
         flex: 0.5,
@@ -290,27 +335,6 @@ import {
             <MenuItem value="Cancelled">Cancelled</MenuItem>
           </Select>
         ),
-        
-      },
-      {
-        field: "signInSignOut",
-        headerName: "Sign In/Sign Out",
-        flex: 0.6,
-        renderCell: (params) => {
-          const isSignedIn = !!params.row.signInTime && !params.row.signOutTime;
-          const isSignedOut = !!params.row.signOffTime;
-          return (
-            <Button
-              variant="contained"
-              color={isSignedIn ? "secondary" : "primary"}
-              disabled={isSignedOut}
-              onClick={() => handleSignInSignOut(params.row.id,params.row.assignedStaff._id, isSignedIn)}
-            >
-               {isSignedOut ? "Signed Out" : isSignedIn ? "Sign Out" : "Sign In"}
-            </Button>
-          );
-        },
-        hide: userRole !== "staff"
       },
       {
         field: "Actions",
@@ -349,6 +373,7 @@ import {
         ),
       },
     ];
+    
   
     return (
       <Box m="20px">
@@ -400,6 +425,7 @@ import {
             Export as PDF
           </Button>
         </Box> */}
+        
 <Box display="flex" justifyContent="flex-start" alignItems="center" marginBottom="20px" gap="10px">
   <Box>
     <Typography fontWeight="bold" fontSize="16px">From</Typography>
@@ -427,6 +453,38 @@ import {
       />
     </Box>
   </Box>
+  {shouldShowButton && (
+    <Box  display="flex" justifyContent="flex-start" alignItems="center" gap="10px">
+      <Box>
+        <Typography fontWeight="bold" fontSize="16px">Staff</Typography>
+        <Select
+          fullWidth
+          style={{minWidth:'100px'}}
+          value={selectedStaff}
+          onChange={(e) => setSelectedStaff(e.target.value)}
+          placeholder="Select Staff"
+        >
+          {staff.map((staff) => (
+            <MenuItem key={staff.id} value={staff.id}>{staff.firstName} {staff.lastName}</MenuItem>
+          ))}
+        </Select>
+      </Box>
+      <Box>
+        <Typography fontWeight="bold" fontSize="16px">Client</Typography>
+        <Select
+          fullWidth
+          style={{minWidth:'100px'}}
+          value={selectedClient}
+          onChange={(e) => setSelectedClient(e.target.value)}
+          placeholder="Select Client"
+        >
+          {clients.map((client) => (
+            <MenuItem key={client.id} value={client.id}>{client.firstName} {client.lastName}</MenuItem>
+          ))}
+        </Select>
+      </Box>
+    </Box>
+  )}
   <Button
     variant="contained"
     onClick={handleViewJobs}
@@ -440,7 +498,21 @@ import {
     }}
     disabled={(!startDate && endDate) || (startDate && !endDate)}
   >
-    View Jobs
+    filter Jobs
+  </Button>
+  <Button
+    variant="contained"
+    onClick={vievAlljobs}
+    sx={{
+      backgroundColor: "#4caf50",
+      color: "white",
+      fontSize: "10px",
+      "&:hover": {
+        backgroundColor: "#388e3c",
+      },
+    }}
+  >
+    view All
   </Button>
   <Button
     variant="contained"
