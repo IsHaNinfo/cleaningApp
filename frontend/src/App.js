@@ -13,6 +13,7 @@ import AddJob from "./scenes/jobs/AddJob.jsx";
 import ViewJob from "./scenes/jobs/ViewJob.jsx"
 import EditJob from "./scenes/jobs/EditJob.jsx";
 import CompletedJobs from "./scenes/jobs/completedJobs";
+import PaymentSummery from "./scenes/jobs/paymentSummery";
 
 import Staff from "./scenes/staff";
 import ViewStaff from "./scenes/staff/ViewStaff.jsx";
@@ -106,6 +107,14 @@ return (
                 element={
                   <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
                     <CompletedJobs />
+                  </PrivateRoute>
+                }
+              />
+               <Route
+                path="/paymentsummery"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
+                    <PaymentSummery />
                   </PrivateRoute>
                 }
               />
