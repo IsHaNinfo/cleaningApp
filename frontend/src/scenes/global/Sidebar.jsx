@@ -187,6 +187,12 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+              <Subtopic
+                title="Payment Summery"
+                to="/paymentsummery"
+                selected={selected}
+                setSelected={setSelected}
+              />
             </Item>
             {showItem &&
             <Item
