@@ -119,12 +119,9 @@ const AdminDashboard = () => {
                 Total Payments
               </Typography>
               <Typography variant="h3">
-                {totalPayment}
+              $ {totalPayment}
               </Typography>
-              <Typography variant="subtitle1">
-                {/* Update this with actual data if needed */}
-                50,000+
-              </Typography>
+              
             </Box>
             <AttachMoneyIcon  sx={{ fontSize: 60 }} />
           </CardContent>
@@ -136,12 +133,9 @@ const AdminDashboard = () => {
                 Staff Payments
               </Typography>
               <Typography variant="h3">
-                {staffPayment}
+              $ {staffPayment}
               </Typography>
-              <Typography variant="subtitle1">
-                {/* Update this with actual data if needed */}
-                4,000+
-              </Typography>
+              
             </Box>
             <PersonAddIcon  sx={{ fontSize: 60 }} />
           </CardContent>
@@ -150,15 +144,12 @@ const AdminDashboard = () => {
           <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box>
               <Typography variant="h3" component="div">
-                Profit
+               Profit
               </Typography>
               <Typography variant="h3">
-                {profit}
+              $ {profit}
               </Typography>
-              <Typography variant="subtitle1">
-                {/* Update this with actual data if needed */}
-                97+
-              </Typography>
+             
             </Box>
             <AssignmentIcon  sx={{ fontSize: 60 }} />
           </CardContent>
