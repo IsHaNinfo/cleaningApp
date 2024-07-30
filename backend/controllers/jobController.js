@@ -333,9 +333,10 @@ export const signInJob = async (req, res) => {
             return res.status(404).json({ response_code: 404, success: false, message: 'Job not found' });
         }
 
-        job.signInTime = new Date();
+    
         job.assignedStaff = staffId;
-        job.isSignOff = false
+        job.isSignOff = false;
+        job.isSignIn = true
         await job.save();
 
         res.status(200).json({ response_code: 200, success: true, message: 'Staff signed in successfully', data:job });
@@ -361,14 +362,8 @@ export const signOffJob = async (req, res) => {
         job.signOffTime = new Date();
 
         // Calculate the number of hours worked
-        const signInTime = new Date(job.signInTime);
-        const signOffTime = new Date(job.signOffTime);
-        const noOfHours = ((signOffTime - signInTime) / (1000 * 60 * 60)).toFixed(0); // Convert milliseconds to hours and format to 2 decimal places
-
-        job.noOfhours = parseFloat(noOfHours); // Convert the string to a number
+         // Convert the string to a number
         job.isSignOff = true;
-        job.payment = parseFloat((job.noOfhours * job.hourRate).toFixed(0)); // Calculate payment and format to 2 decimal places
-
         await job.save();
 
         res.status(200).json({ response_code: 200, success: true, message: 'Staff signed off successfully', data: job });

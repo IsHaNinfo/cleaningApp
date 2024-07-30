@@ -286,6 +286,69 @@ import {
       setSelectedStaff('');
       fetchJobs();
     }
+
+    const handleSignInSignOut = async (id,staffId, isSignedIn) => {
+      try {
+        let response;
+        if (!isSignedIn) {
+          response = await axios.put(environment.apiUrl + `/job/signInJob/${id}`,{staffId:staffId});
+        } else {
+          response = await axios.put(environment.apiUrl + `/job/signOffJob/${id}`);
+        }
+
+        if (response.data.success) {
+          await fetchJobs();
+          const updatedJob = response.data.job;
+          setData((prevData) =>
+            prevData.map((item) =>
+              item.id === id ? { ...item, ...updatedJob } : item
+            )
+          );
+          Swal.fire("Updated!", `Job has been ${!isSignedIn ? 'signed in' : 'signed out'}.`, "success");
+        } else {
+          throw new Error(response.data.message);
+        }
+      } catch (error) {
+        console.error(`Error ${!isSignedIn ? 'signing in' : 'signing out'} job:`, error);
+        Swal.fire("Error!", `Failed to ${!isSignedIn ? 'sign in' : 'sign out'} job. Please try again later.`, "error");
+      }
+    };
+
+    const createSignInOutColumn = () => {
+      if (userRole === 'staff') {
+        return {
+          field: "signInSignOutButton",
+          headerName: "Sign In/Sign Out",
+          flex: 0.6,
+          renderCell: (params) => {
+            const isSignedIn = !!params.row.isSignIn && !params.row.isSignOff;
+            const isSignedOut = !!params.row.isSignOff;
+            return (
+              <Button
+                variant="contained"
+                color={isSignedIn ? "secondary" : "primary"}
+                disabled={isSignedOut}
+                onClick={() => handleSignInSignOut(params.row.id, params.row.assignedStaff._id, isSignedIn)}
+              >
+                {isSignedOut ? "Signed Out" : isSignedIn ? "Sign Out" : "Sign In"}
+              </Button>
+            );
+          },
+        };
+      } else {
+        return {
+          field: "signInSignOutStatus",
+          headerName: "Sign In/Out Status",
+          flex: 0.5,
+          renderCell: (params) => {
+            const isSignedIn = !!params.row.isSignIn && !params.row.isSignOff;
+            const isSignedOut = !!params.row.isSignOff;
+            return isSignedOut ? "Signed Out" : isSignedIn ? "Signed In" : "-";
+          },
+        };
+      }
+    };
+
     
     
   let columns =[]
@@ -342,6 +405,7 @@ import {
           </Select>
         ),
       },
+      createSignInOutColumn(),
       {
         field: "Actions",
         headerName: "Actions",

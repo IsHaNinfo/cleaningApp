@@ -76,6 +76,17 @@ const jobSchema = new Schema(
             type: Date,
             required: false,
         },
+        isSignOff:{
+            type:Boolean,
+            required:false,
+            default:false
+        },
+        isSignIn:{
+            type:Boolean,
+            required:false,
+            default:false
+        }
+        
      
     },
     {
