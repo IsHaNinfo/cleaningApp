@@ -354,7 +354,7 @@ import {
   let columns =[]
      columns = [
       { field: "id", headerName: "Job ID",hide: true },
-      { field: "jobName", headerName: "Job Name", flex: 0.8 },
+      { field: "jobName", headerName: "Job Name", flex: 0.5 },
       {
         field: "client",
         headerName: "Client",
@@ -372,7 +372,7 @@ import {
       {
         field: "jobDate",
         headerName: "Job Date",
-        flex: 0.7,
+        flex: 0.5,
       },
       // {
       //   field: "orgNoOfhours",
@@ -382,14 +382,14 @@ import {
       {
         field: "estNoOfhours",
         headerName: "Estimate No Hours",
-        flex: 0.5,
+        flex: 0.3,
       },
       // {
       //   field: "orgTotal",
       //   headerName: "Total Payment",
       //   flex: 0.5,
       // },
-      { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5,hide:true },
+      { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5, },
       {
         field: "jobStatus",
         headerName: "Status",
@@ -445,13 +445,10 @@ import {
     ];
 
     if (shouldShowButton) {
-      columns.splice(6, 0, { field: "orgNoOfhours", headerName: "Original No Hours", flex: 0.5 });
-      columns.splice(7, 0, { field: "orgTotal", headerName: "Total Payment", flex: 0.5 });
+      columns.splice(6, 0, { field: "orgNoOfhours", headerName: "Original No Hours", flex: 0.4 });
+      columns.splice(7, 0, { field: "orgTotal", headerName: "Total Payment", flex: 0.4 });
     }
-    if (userStaff) {
-      columns.splice(5, 0, { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5 });
-    }
-    
+   
   
     return (
       <Box m="20px">

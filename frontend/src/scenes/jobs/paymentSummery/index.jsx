@@ -334,7 +334,7 @@ import {
       //   headerName: "Total Payment",
       //   flex: 0.5,
       // },
-      { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5,hide:true },
+      { field: "staffPayTotal", headerName: "Staff Payment", flex: 0.5 },
       {
         field: "jobStatus",
         headerName: "Status",
@@ -350,37 +350,7 @@ import {
           </Select>
         ),
       },
-      {
-        field: "Actions",
-        headerName: "Actions",
-        flex: 0.6,
-        renderCell: (params) => (
-          <Box>{shouldShowButton &&
-            <Tooltip title="Edit">
-              <Link to={`/jobs/editjob/${params.row.id}`}>
-                <IconButton>
-                  <EditIcon
-                    onClick={() =>
-                      handleEditClick(params.row.id, params.row.role)
-                    }
-                  />
-                </IconButton>
-              </Link>
-            </Tooltip>
-            }
-            
-            <Tooltip title="View">
-              <Link to={`/jobs/viewjob/${params.row.id}`}>
-                <IconButton>
-                  <VisibilityIcon />
-                </IconButton>
-              </Link>
-            </Tooltip>
-           
-            
-          </Box>
-        ),
-      },
+      
     ];
 
     if (shouldShowButton) {
