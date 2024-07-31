@@ -265,7 +265,7 @@ const [endDate, setEndDate] = useState(null);
             },
           }}
         >
-          <Button
+          {/* <Button
             variant="contained"
             onClick={exportToPdf}
             sx={{
@@ -278,7 +278,7 @@ const [endDate, setEndDate] = useState(null);
             }}
           >
             Export as PDF
-          </Button>
+          </Button> */}
           <DataGrid
             rows={data}
             columns={columns}

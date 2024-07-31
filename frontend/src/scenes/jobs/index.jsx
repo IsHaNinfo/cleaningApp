@@ -589,7 +589,7 @@ import {
   >
     view All
   </Button>
-  <Button
+  {/* <Button
     variant="contained"
     onClick={exportToPdf}
     sx={{
@@ -602,7 +602,7 @@ import {
     }}
   >
     Export as PDF
-  </Button>
+  </Button> */}
 </Box>
 
         <Box

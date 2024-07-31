@@ -105,7 +105,7 @@ return (
               <Route
                 path="/completedjobs"
                 element={
-                  <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin',]}>
                     <CompletedJobs />
                   </PrivateRoute>
                 }
@@ -113,7 +113,7 @@ return (
                <Route
                 path="/paymentsummery"
                 element={
-                  <PrivateRoute allowedRoles={['superAdmin', 'admin', 'staff']}>
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin',]}>
                     <PaymentSummery />
                   </PrivateRoute>
                 }

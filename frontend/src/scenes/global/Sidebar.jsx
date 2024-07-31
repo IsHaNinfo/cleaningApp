@@ -181,18 +181,22 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             >
-              <Subtopic
-                title="Completed Jobs"
-                to="/completedjobs"
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Subtopic
-                title="Payment Summery"
-                to="/paymentsummery"
-                selected={selected}
-                setSelected={setSelected}
-              />
+               {showItem && userRole !== 'staff' && (
+                <>
+                  <Subtopic
+                    title="Completed Jobs"
+                    to="/completedjobs"
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                  <Subtopic
+                    title="Payment Summery"
+                    to="/paymentsummery"
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                </>
+              )}
             </Item>
             {showItem &&
             <Item
