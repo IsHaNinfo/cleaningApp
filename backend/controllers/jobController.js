@@ -335,6 +335,7 @@ export const signInJob = async (req, res) => {
 
     
         job.assignedStaff = staffId;
+        job.signInTime = new Date();
         job.isSignOff = false;
         job.isSignIn = true
         await job.save();

@@ -108,7 +108,7 @@ const CompletedJobs = () => {
       >
         <Header title="Completed Jobs" subtitle="List of all completed jobs" />
       </Box>
-      <Box display="flex" justifyContent="flex-start">
+      {/* <Box display="flex" justifyContent="flex-start">
         <Button
           variant="contained"
           onClick={exportToPdf}
@@ -123,7 +123,7 @@ const CompletedJobs = () => {
         >
           Export as PDF
         </Button>
-      </Box>
+      </Box> */}
       <Box
         m="10px 0 0 0"
         height="55vh"
