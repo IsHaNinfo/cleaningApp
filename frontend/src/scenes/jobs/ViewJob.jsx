@@ -33,6 +33,7 @@ function ViewJob() {
       firstName: "",
       lastName: "",
       phoneNumber: "",
+      address :""
     },
     assignedStaff: {
       firstName: "",
@@ -87,6 +88,7 @@ function ViewJob() {
           firstName: client.firstName,
           lastName: client.lastName,
           phoneNumber: client.phoneNumber,
+          address:client.address
         };
         const formattedAssignedStaff = {
           firstName: assignedStaff.firstName,
@@ -161,6 +163,8 @@ function ViewJob() {
         <Grid item xs={9.2}>
           <Typography>{`${jobDetails.client.firstName} ${jobDetails.client.lastName}`}</Typography>
           <Typography>{`Phone Number: ${jobDetails.client.phoneNumber}`}</Typography>
+          <Typography>{`Address: ${jobDetails.client.address}`}</Typography>
+
         </Grid>
         {/* Assigned Staff Details */}
         <Grid item xs={1.8}>
