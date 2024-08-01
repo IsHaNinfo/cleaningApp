@@ -20,11 +20,7 @@ export const addJob = async (req, res) => {
             jobDate
         } = req.body;
 
-            const existingJob = await Job.findOne( { jobName: jobName } );
-        
-            if (existingJob) {
-                return  res.status(404).json({ response_code: 404, success: false,message :"Job already exists" });
-            } 
+           
 
             const clientExists = await Client.findById(client);
             if (!clientExists) {
