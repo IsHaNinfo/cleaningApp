@@ -45,23 +45,14 @@ const staffSchema = new Schema(
             type: String,
             required: false,
         },
-        bankAcNo: {
-            type: Number,
-            required: false,
-        },
-        bankName: {
+        bankAcName: {
             type: String,
             required: false,
         },
-        bankAcBranch: {
+        BSB: {
             type: String,
             required: false,
         },
-        bankAcBranch: {
-            type: String,
-            required: false,
-        },
-
         adminId: {
             type: Schema.Types.ObjectId,
             ref: 'Admin',

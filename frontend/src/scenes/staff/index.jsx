@@ -30,6 +30,7 @@ import {
   
         const response = await axios.get(`${environment.apiUrl}/staff/getAllStaff`, { headers });
         const responseData = response.data;
+        console.log(responseData)
         if (responseData.success) {
           const modifiedData = responseData.staffs.map((item) => ({
             ...item,

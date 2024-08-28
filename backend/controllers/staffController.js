@@ -23,9 +23,8 @@ export const addStaffMember = async (req, res) => {
             dateOfHire,
             empContactName,
             empPhoneNumber,
-            bankAcNo,
-            bankName,
-            bankAcBranch,
+            bankAcName,
+            BSB,
             notes} = req.body;
 
             const existingStaff = await Staff.findOne( { email: email } );
@@ -49,9 +48,8 @@ export const addStaffMember = async (req, res) => {
                 dateOfHire,
                 empContactName,
                 empPhoneNumber,
-                bankAcNo,
-                bankName,
-                bankAcBranch,
+                bankAcName,
+                BSB,
                 notes,
                 adminId: adminId,
             });
@@ -79,9 +77,8 @@ export const updateStaffById = async (req, res) => {
         dateOfHire,
         empContactName,
         empPhoneNumber,
-        bankAcNo,
-        bankName,
-        bankAcBranch,
+        bankAcName,
+        BSB,
         notes } = req.body;
     try {
           const updatedStaff = await Staff.findByIdAndUpdate(
@@ -96,9 +93,8 @@ export const updateStaffById = async (req, res) => {
                 dateOfHire,
                 empContactName,
                 empPhoneNumber,
-                bankAcNo,
-                bankName,
-                bankAcBranch,
+                bankAcName,
+                BSB,
                 notes },
             { new: true, runValidators: true }
         );

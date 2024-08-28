@@ -70,9 +70,8 @@ export const addUser = async (req, res) => {
                 dateOfHire: staffDetails.dateOfHire,
                 empContactName: staffDetails.empContactName,
                 empPhoneNumber: staffDetails.empPhoneNumber,
-                bankAcNo: staffDetails.bankAcNo,
-                bankName: staffDetails.bankName,
-                bankAcBranch: staffDetails.bankAcBranch,
+                bankAcName: staffDetails.bankAcName,
+                BSB: staffDetails.BSB,
                 notes: staffDetails.notes,
                 workStatus: staffDetails.workStatus
             });
@@ -288,7 +287,7 @@ export const updateUserPassword = async (req, res) => {
 
 export const updateStaff = async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, address, phoneNumber, position, dateOfBirth, dateOfHire, empContactName, empPhoneNumber, bankAcNo, bankName, bankAcBranch, notes, workStatus, email, userName } = req.body;
+    const { firstName, lastName, address, phoneNumber, position, dateOfBirth, dateOfHire, empContactName, empPhoneNumber, bankAcName, BSB, notes, workStatus, email, userName } = req.body;
 
     try {
         // Find the staff member by ID
@@ -307,9 +306,8 @@ export const updateStaff = async (req, res) => {
         staff.dateOfHire = dateOfHire || staff.dateOfHire;
         staff.empContactName = empContactName || staff.empContactName;
         staff.empPhoneNumber = empPhoneNumber || staff.empPhoneNumber;
-        staff.bankAcNo = bankAcNo || staff.bankAcNo;
-        staff.bankName = bankName || staff.bankName;
-        staff.bankAcBranch = bankAcBranch || staff.bankAcBranch;
+        staff.bankAcName = bankAcName || staff.bankAcName;
+        staff.BSB = BSB || staff.BSB;
         staff.notes = notes || staff.notes;
         staff.workStatus = workStatus || staff.workStatus;
 

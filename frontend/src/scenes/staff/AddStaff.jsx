@@ -37,7 +37,8 @@ import {
         const headers = {
           Authorization: `Bearer ${token}`,
         };
-  
+        console.log(values)
+
         const response = await axios.post(
           environment.apiUrl+ `/user/adduser`,
           {
@@ -65,6 +66,7 @@ import {
           setAlertMessage(response.data.message);
         }
       } catch (error) {
+        console.log(error)
         console.error("Error creating staff:", error);
         setAlertSeverity("error");
         setAlertMessage("Failed to add staff");
@@ -333,7 +335,7 @@ import {
                   />
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
-                  Bank Account Number
+                   Account Name
                 </Typography>
                 <Box mt={-2}>
                   <TextField
@@ -342,44 +344,28 @@ import {
                     type="text"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.bankAcNo}
-                    name="bankAcNo"
-                    error={!!touched.bankAcNo && !!errors.bankAcNo}
-                    helperText={touched.bankAcNo && errors.bankAcNo}
+                    value={values.bankAcName}
+                    name="bankAcName"
+                    error={!!touched.bankAcName && !!errors.bankAcName}
+                    helperText={touched.bankAcName && errors.bankAcName}
                   />
                 </Box>
                 <Typography fontWeight="bold" fontSize="16px">
-                  Bank Name
-                </Typography>
-                <Box mt={-2}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.bankName}
-                    name="bankName"
-                    error={!!touched.bankName && !!errors.bankName}
-                    helperText={touched.bankName && errors.bankName}
-                  />
-                </Box>
-                <Typography fontWeight="bold" fontSize="16px">
-                  Bank Branch
-                </Typography>
-                <Box mt={-2}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.bankAcBranch}
-                    name="bankAcBranch"
-                    error={!!touched.bankAcBranch && !!errors.bankAcBranch}
-                    helperText={touched.bankAcBranch && errors.bankAcBranch}
-                  />
-                </Box>
+  BSB
+</Typography>
+<Box mt={-2}>
+  <TextField
+    fullWidth
+    variant="filled"
+    type="text"
+    onBlur={handleBlur}
+    onChange={(e) => handleChange({ target: { name: 'BSB', value: e.target.value.replace(/^BSB -\s*/, '') } })}
+    value={`BSB - ${values.BSB}`}
+    name="BSB"
+    error={!!touched.BSB && !!errors.BSB}
+    helperText={touched.BSB && errors.BSB}
+  />
+</Box>
                 <Typography fontWeight="bold" fontSize="16px">
                   Notes
                 </Typography>
@@ -441,9 +427,8 @@ import {
     dateOfHire: yup.string().required("Date of Hire is required"),
     empContactName: yup.string(),
     empPhoneNumber: yup.string().matches(phoneNumberRegex, "Invalid phone number format"),
-    bankAcNo: yup.string().matches(bankAcNoRegex, "Invalid bank account number format"),
-    bankName: yup.string(),
-    bankAcBranch: yup.string(),
+    bankAcName: yup.string(),
+    BSB: yup.string(),
     notes: yup.string(),
   });
   
@@ -461,9 +446,8 @@ import {
     dateOfHire: "",
     empContactName: "",
     empPhoneNumber: "",
-    bankAcNo: "",
-    bankName: "",
-    bankAcBranch: "",
+    bankAcName: "",
+    BSB: "",
     notes: "",
   };
   
