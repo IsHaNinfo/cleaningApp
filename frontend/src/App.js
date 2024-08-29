@@ -37,10 +37,16 @@ import CreateAdmin from "./scenes/admins/CreateAdmin.jsx";
 import ViewAdmin from "./scenes/admins/ViewAdmin.jsx";
 import EditAdmin from "./scenes/admins/EditAdmin.jsx";
 
-import Invoices from "./scenes/invoices/index.jsx";
-import AddInvoice from "./scenes/invoices/AddInvoices.jsx";
-import EditInvoice from "./scenes/invoices/EditInvoices.jsx";
-import ViewInvoice from "./scenes/invoices/ViewInvoice.jsx";
+import Invoices from "./scenes/clientInvoices/index.jsx";
+import AddInvoice from "./scenes/clientInvoices/AddInvoices.jsx";
+import EditInvoice from "./scenes/clientInvoices/EditInvoices.jsx";
+import ViewInvoice from "./scenes/clientInvoices/ViewInvoice.jsx";
+
+
+import StaffInvoices from "./scenes/staffInvoices/index.jsx";
+import StaffAddInvoice from "./scenes/staffInvoices/AddInvoices.jsx";
+import StaffEditInvoice from "./scenes/staffInvoices/EditInvoices.jsx";
+import StaffViewInvoice from "./scenes/staffInvoices/ViewInvoice.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -233,6 +239,41 @@ return (
                 element={
                   <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
                     <ViewInvoice />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/staffinvoices"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <StaffInvoices />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/staffinvoices/newInvoice"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <StaffAddInvoice />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/staffinvoices/editInvoice/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <StaffEditInvoice />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/staffinvoices/viewInvoice/:id"
+                element={
+                  <PrivateRoute allowedRoles={['superAdmin', 'admin']}>
+                    <StaffViewInvoice />
                   </PrivateRoute>
                 }
               />

@@ -2,7 +2,7 @@ import express from "express"
 
 const router = express.Router();
 
-import {addInvoice,updatedInvoice ,getAllInvoices,getInvoiceById,deleteInvoiceById,updateStatus} from "../controllers/invoiceController.js"
+import {addInvoice,updatedInvoice ,getAllInvoices,getInvoiceById,deleteInvoiceById,updateStatus} from "../controllers/clientInvoiceController.js"
 import roleAuthentication from "../middleware/roleAuthentication.js";
 
 

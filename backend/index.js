@@ -7,7 +7,9 @@ import staffRoutes from "./routes/staffRoute.js"
 import clientRoutes from "./routes/clientRoute.js"
 import jobRoutes from "./routes/jobRoute.js"
 import userRoutes from "./routes/userRoute.js"
-import invoiceRoutes from "./routes/invoiceRoute.js"
+import clientinvoiceRoutes from "./routes/cientInvoiceRoute.js"
+import staffinvoiceRoutes from "./routes/staffInvoiceRoute.js"
+
 import dotenv from 'dotenv';
 const app = express();
 
@@ -31,7 +33,10 @@ app.use("/api/staff",staffRoutes)
 app.use("/api/client",clientRoutes)
 app.use("/api/job",jobRoutes);
 app.use("/api/user",userRoutes);
-app.use("/api/invoice",invoiceRoutes);
+app.use("/api/invoice",clientinvoiceRoutes);
+app.use("/api/staffinvoice",staffinvoiceRoutes);
+
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         app.listen(process.env.PORT, () => {

@@ -26,17 +26,18 @@ import {
     const fetchInvoices = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        let url = `${environment.apiUrl}/invoice/getAllInvoices`
+        let url = `${environment.apiUrl}/staffinvoice/getAllStaffInvoices`
         if (startDate && endDate) {
           url += `?startDate=${startDate}&endDate=${endDate}`;
         }
         const response = await axios.get(url, { headers });
         const responseData = response.data;
+        console.log(responseData)
         if (responseData.success) {
           const modifiedData = responseData.invoices.map((item) => ({
             ...item,
             id: item._id,
-            clientName: `${item.client.firstName} ${item.client.lastName}`,
+            staffName: `${item.staff.firstName} ${item.staff.lastName}`,
           }));
           modifiedData.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
           setData(modifiedData);
@@ -55,18 +56,18 @@ import {
     const exportToPdf = () => {
       const doc = new jsPDF();
       doc.autoTable({
-        head: [["Invoice ID", "Title", "Description", "Send Date", "Client Name", "Amount", "Status"]],
-        body: data.map(({ _id, invoiceTitle, invoiceDescription, sendDate, clientName, amount, invoiceStatus }) => [
+        head: [["Invoice ID", "Title", "Description", "Send Date", "Staff Name", "Amount", "Status"]],
+        body: data.map(({ _id, invoiceTitle, invoiceDescription, sendDate, staffName, amount, invoiceStatus }) => [
           _id,
           invoiceTitle,
           invoiceDescription,
           new Date(sendDate).toLocaleDateString(),
-          clientName,
+          staffName,
           amount,
           invoiceStatus,
         ]),
       });
-      doc.save("invoices_data.pdf");
+      doc.save("staff_invoices_data.pdf");
     };
   
     const handleDeleteClick = (id) => {
@@ -82,7 +83,7 @@ import {
         if (result.isConfirmed) {
           const headers = { Authorization: `Bearer ${token}` };
           axios
-            .delete(`${environment.apiUrl}/invoice/deleteInvoiceById/${id}`, { headers })
+            .delete(`${environment.apiUrl}/staffinvoice/deleteStaffInvoiceById/${id}`, { headers })
             .then((response) => {
               if (response.status !== 200) throw new Error("Failed to delete invoice");
               setData(data.filter((item) => item.id !== id));
@@ -117,7 +118,7 @@ import {
               };
           
             axios
-              .patch(environment.apiUrl + `/invoice/updateStatus/${id}`, { invoiceStatus: newStatus },{headers})
+              .patch(environment.apiUrl + `/staffinvoice/updateStatus/${id}`, { invoiceStatus: newStatus },{headers})
               .then((response) => {
                   console.log(response);
                 if (response.status !== 200) {
@@ -153,7 +154,7 @@ import {
       { field: "invoiceTitle", headerName: "Title", flex: 0.6 },
       { field: "invoiceDescription", headerName: "Description", flex: 0.8 },
       { field: "sendDate", headerName: "Send Date", flex: 0.6, renderCell: (params) => new Date(params.value).toLocaleDateString() },
-      { field: "clientName", headerName: "Client Name", flex: 0.8 },
+      { field: "staffName", headerName: "Staff Name", flex: 0.8 },
       { field: "amount", headerName: "Amount", flex: 0.6 },
       {
         field: "invoiceStatus",
@@ -173,14 +174,14 @@ import {
         renderCell: (params) => (
           <Box>
             <Tooltip title="Edit">
-              <Link to={`/invoices/editInvoice/${params.row.id}`}>
+              <Link to={`/staffinvoices/editInvoice/${params.row.id}`}>
                 <IconButton onClick={() => handleEditClick(params.row.id)}>
                   <EditIcon />
                 </IconButton>
               </Link>
             </Tooltip>
             <Tooltip title="View">
-              <Link to={`/invoices/viewInvoice/${params.row.id}`}>
+              <Link to={`/staffinvoices/viewInvoice/${params.row.id}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
@@ -199,9 +200,9 @@ import {
     return (
       <Box m="20px">
         <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="-10px">
-          <Header title="Invoices Management" subtitle="Managing the invoices" />
+          <Header title="Staff Invoices Management" subtitle="Managing the staff invoices" />
           <Box>
-            <Link to={"/invoices/newInvoice"} style={{ marginRight: "10px" }}>
+            <Link to={"/staffinvoices/newInvoice"} style={{ marginRight: "10px" }}>
               <Button
                 variant="contained"
                 sx={{
@@ -213,7 +214,7 @@ import {
                   },
                 }}
               >
-                Add an Invoice
+                Add an Staff Invoice
               </Button>
             </Link>
           </Box>

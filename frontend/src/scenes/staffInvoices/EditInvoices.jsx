@@ -21,7 +21,7 @@ import { environment } from "../../environment";
 const invoiceSchema = yup.object().shape({
   invoiceTitle: yup.string().required("Invoice Title is required"),
   invoiceDescription: yup.string().required("Description is required"),
-  client: yup.string().required("Client is required"),
+  staff: yup.string().required("Staff is required"),
   amount: yup.number().required("Amount is required").nullable(),
   sendDate: yup.date().required("Send Date is required").nullable(),
 });
@@ -34,11 +34,11 @@ const EditInvoice = () => {
     invoiceTitle: "",
     invoiceDescription: "",
     sendDate: "",
-    client: "",
+    staff: "",
     amount: ""
   });
 
-  const [clients, setClients] = useState([]);
+  const [staffs, setStaffs] = useState([]);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -46,50 +46,51 @@ const EditInvoice = () => {
   const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
-    fetchClients();
+    fetchStaffs();
     fetchInvoiceDetails();
   }, [id]);
 
-  const fetchClients = async () => {
+  const fetchStaffs = async () => {
     try {
-      const response = await axios.get(environment.apiUrl + "/client/getAllActiveClient", {
+      const response = await axios.get(environment.apiUrl + "/staff/getAllActiveStaff", {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
       if (response.data.success) {
-        setClients(response.data.clients);
+        setStaffs(response.data.staffs);
       } else {
         setAlertSeverity("error");
-        setAlertMessage("Failed to fetch clients");
+        setAlertMessage("Failed to fetch staffs");
         setOpenSnackbar(true);
       }
     } catch (error) {
-      console.error("Error fetching clients:", error);
+      console.error("Error fetching staffs:", error);
       setAlertSeverity("error");
-      setAlertMessage("Failed to fetch clients");
+      setAlertMessage("Failed to fetch staffs");
       setOpenSnackbar(true);
     }
   };
 
   const fetchInvoiceDetails = async () => {
     try {
-      const response = await axios.get(environment.apiUrl + `/invoice/getInvoiceById/${id}`, {
+      const response = await axios.get(environment.apiUrl + `/staffinvoice/getStaffInvoiceById/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
       const responseData = response.data;
+      console.log(responseData)
+
       if (responseData.success) {
         const invoice = responseData.invoice;
         // Format the sendDate to YYYY-MM-DD for the input field
         if (invoice.sendDate) {
           invoice.sendDate = new Date(invoice.sendDate).toISOString().split('T')[0];
         }
-        // Ensure client is set as client ID
-        setInvoiceDetails({ ...invoice, client: invoice.client._id });
+        // Ensure client is set as staff ID
+        setInvoiceDetails({ ...invoice, staff: invoice.staff._id });
       } else {
         console.error('Failed to fetch invoice details:', responseData.message);
       }
@@ -102,7 +103,7 @@ const EditInvoice = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put(environment.apiUrl + `/invoice/updatedInvoice/${id}`, values, {
+      const response = await axios.put(environment.apiUrl + `/invoice/updatedStaffInvoice/${id}`, values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -113,7 +114,7 @@ const EditInvoice = () => {
         setAlertSeverity('success');
         setAlertMessage('Invoice updated successfully');
         setTimeout(() => {
-          navigate('/invoices');
+          navigate('/getAllStaffInvoices');
         }, 2000);
       } else {
         setAlertSeverity('error');
@@ -130,7 +131,7 @@ const EditInvoice = () => {
 
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
-      <Header title={`Edit Invoice ID: ${id}`} subtitle="" />
+      <Header title={`Edit Staff  Invoice ID: ${id}`} subtitle="" />
       <Box ml={'40px'}>
         <Formik
           initialValues={invoiceDetails}
@@ -143,7 +144,7 @@ const EditInvoice = () => {
               <Grid container spacing={2}>
                 {/* Render fields */}
                 {Object.entries(invoiceDetails).map(([field, value]) => {
-                  if (field === 'client' || field === 'createdAt' || field === 'updatedAt' || field === '_id' || field === '__v' || field === 'invoiceStatus') {
+                  if (field === 'staff' || field === 'createdAt' || field === 'updatedAt' || field === '_id' || field === '__v' || field === 'invoiceStatus') {
                     return null;
                   }
 
@@ -188,26 +189,26 @@ const EditInvoice = () => {
                 {/* Client field */}
                 <Grid item xs={12}>
                   <Typography variant="h5" component="span" fontWeight="bold">
-                    Client:
+                    Staff:
                   </Typography>
                   <Select
                     fullWidth
                     variant="filled"
-                    value={values.client || ''}
+                    value={values.staff || ''}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     name="client"
                     sx={{ backgroundColor: 'white' }}
-                    error={touched.client && !!errors.client}
+                    error={touched.staff && !!errors.staff}
                   >
-                    {clients.map((client) => (
-                      <MenuItem key={client._id} value={client._id}>
-                        {client.firstName} {client.lastName}
+                    {staffs.map((staff) => (
+                      <MenuItem key={staff._id} value={staff._id}>
+                        {staff.firstName} {staff.lastName}
                       </MenuItem>
                     ))}
                   </Select>
-                  {touched.client && errors.client && (
-                    <Typography color="error">{errors.client}</Typography>
+                  {touched.staff && errors.staff && (
+                    <Typography color="error">{errors.staff}</Typography>
                   )}
                 </Grid>
                 {/* Update button */}

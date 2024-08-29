@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-const invoiceSchema = new Schema(
+const ClientInvoiceSchema = new Schema(
     {
 
         invoiceTitle: {
@@ -38,6 +38,6 @@ const invoiceSchema = new Schema(
     }
 )
 
-const Invoice = mongoose.model('Invoice', invoiceSchema);
+const ClientInvoice= mongoose.model('ClientInvoice', ClientInvoiceSchema);
 
-export default Invoice;
+export default ClientInvoice;

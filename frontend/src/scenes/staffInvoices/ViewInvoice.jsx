@@ -11,7 +11,7 @@ const ViewInvoice = () => {
     invoiceTitle: "",
     invoiceDescription: "",
     sendDate: "",
-    client: {
+    staff: {
       firstName: "",
       lastName: "",
       email: "",
@@ -29,25 +29,27 @@ const ViewInvoice = () => {
     try {
 
        
-      const response = await axios.get(environment.apiUrl + `/invoice/getInvoiceById/${id}`,{
+      const response = await axios.get(environment.apiUrl + `/staffinvoice/getStaffInvoiceById/${id}`,{
         headers: {
             Authorization: `Bearer ${token}`
           }
       });
+
       const responseData = response.data;
+
       if (responseData.success) {
         const { invoice } = responseData;
-        const { invoiceTitle, invoiceDescription, sendDate, client, amount, invoiceStatus } = invoice;
-        const formattedClient = {
-          firstName: client.firstName,
-          lastName: client.lastName,
-          email: client.email,
+        const { invoiceTitle, invoiceDescription, sendDate, staff, amount, invoiceStatus } = invoice;
+        const formattedStaff = {
+          firstName: staff.firstName,
+          lastName: staff.lastName,
         };
+        console.log(formattedStaff)
         setInvoiceDetails({
           invoiceTitle,
           invoiceDescription,
           sendDate,
-          client: formattedClient,
+          staff: formattedStaff,
           amount,
           invoiceStatus,
         });
@@ -61,11 +63,11 @@ const ViewInvoice = () => {
 
   return (
     <Box m="20px" height="70vh" overflow="auto" paddingRight="20px">
-      <Header title={`View Invoice ID: ${id}`} subtitle="" />
+      <Header title={`View Staff Invoice ID: ${id}`} subtitle="" />
       <Box ml={"40px"}>
         <Grid container spacing={2}>
           {Object.entries(invoiceDetails)
-            .filter(([field]) => field !== "client") // Filter out nested objects
+            .filter(([field]) => field !== "staff") // Filter out nested objects
             .map(([field, value]) => (
               <React.Fragment key={field}>
                 <Grid item xs={2}>
@@ -86,7 +88,7 @@ const ViewInvoice = () => {
           {/* Client Details */}
           <Grid item xs={2}>
             <Typography variant="h5" component="span" fontWeight="bold">
-              Client
+              Staff
             </Typography>
           </Grid>
           <Grid item xs={1}>
@@ -95,8 +97,7 @@ const ViewInvoice = () => {
             </Typography>
           </Grid>
           <Grid item xs={9}>
-            <Typography>{`${invoiceDetails.client.firstName} ${invoiceDetails.client.lastName}`}</Typography>
-            <Typography>{`Email: ${invoiceDetails.client.email}`}</Typography>
+            <Typography>{`${invoiceDetails.staff.firstName} ${invoiceDetails.staff.lastName}`}</Typography>
           </Grid>
         </Grid>
       </Box>

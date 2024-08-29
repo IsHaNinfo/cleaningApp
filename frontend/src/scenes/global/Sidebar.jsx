@@ -210,7 +210,7 @@ const Sidebar = () => {
           }
            {showItem &&
             <Item
-            title="Invoices"
+            title="Client Invoices"
             to="/invoices"
             icon={<ReceiptIcon />}
             selected={selected}
@@ -218,7 +218,16 @@ const Sidebar = () => {
           />
           
           }
-            
+             {showItem &&
+            <Item
+            title="Staff Invoices"
+            to="/staffinvoices"
+            icon={<ReceiptIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          
+          }
             {showItem && (
               <Item
                 title="Staff"

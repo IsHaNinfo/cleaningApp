@@ -1,4 +1,4 @@
-import Invoice from "../models/invoiceModel.js";
+import ClientInvoice from "../models/clientInvoiceModel.js";
 import Client from "../models/clientModel.js"
 
 export const addInvoice = async ( req,res) =>{
@@ -20,7 +20,7 @@ export const addInvoice = async ( req,res) =>{
     
            
 
-            const newInvoice = new Invoice({
+            const newInvoice = new ClientInvoice({
             invoiceTitle, 
             invoiceDescription, 
             sendDate, 
@@ -47,7 +47,7 @@ export const updatedInvoice = async (req, res) => {
             amount,
     } = req.body;
     try {
-          const updatedInvoice = await Invoice.findByIdAndUpdate(
+          const updatedInvoice = await ClientInvoice.findByIdAndUpdate(
             _id,
             { 
                 invoiceTitle, 
@@ -74,7 +74,7 @@ export const updatedInvoice = async (req, res) => {
 export const getInvoiceById = async (req, res) => {
     const { id } = req.params;
     try {
-        const invoice = await Invoice.findById(id).populate('client');
+        const invoice = await ClientInvoice.findById(id).populate('client');
 
         if (!invoice) {
             return  res.status(404).json({ response_code: 404, success: false,message :"Invoice not found" });
@@ -101,7 +101,7 @@ export const getAllInvoices = async (req, res) => {
     }
 
     try {
-        const invoices = await Invoice.find(filter)
+        const invoices = await ClientInvoice.find(filter)
             .populate({
                 path: 'client',
                 select: 'firstName lastName'  // Adjust field name as per your Client schema
@@ -122,7 +122,7 @@ export const updateStatus = async (req, res) => {
 
     
     try {
-        const job = await Invoice.findByIdAndUpdate(
+        const job = await ClientInvoice.findByIdAndUpdate(
             id,
             { invoiceStatus },
             { new: true }
@@ -141,7 +141,7 @@ export const updateStatus = async (req, res) => {
 export const deleteInvoiceById = async (req, res) => {
     const _id  = req.params.id;
     try {
-        const deletedInvoice = await Invoice.findByIdAndDelete(_id);
+        const deletedInvoice = await ClientInvoice.findByIdAndDelete(_id);
 
         if (!deletedInvoice) {
             return  res.status(404).json({ response_code: 404, success: false,message :"Invoice not found" });

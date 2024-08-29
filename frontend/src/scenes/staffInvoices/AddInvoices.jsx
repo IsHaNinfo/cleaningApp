@@ -24,29 +24,29 @@ import {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [alertSeverity, setAlertSeverity] = useState("success");
-    const [clients, setClients] = useState([]);
+    const [staffs, setStaffs] = useState([]);
     const navigate = useNavigate();
   
     useEffect(() => {
-      fetchClients();
+      fetchStaffs();
     }, []);
     const token = localStorage.getItem("token");
   
-    const fetchClients = async () => {
+    const fetchStaffs = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(environment.apiUrl + "/client/getAllActiveClient", { headers });
+        const response = await axios.get(environment.apiUrl + "/staff/getAllActiveStaff", { headers });
         if (response.data.success) {
-          setClients(response.data.clients);
+          setStaffs(response.data.staffs);
         } else {
           setAlertSeverity("error");
-          setAlertMessage("Failed to fetch clients");
+          setAlertMessage("Failed to fetch staffs");
           setOpenSnackbar(true);
         }
       } catch (error) {
-        console.error("Error fetching clients:", error);
+        console.error("Error fetching staffs:", error);
         setAlertSeverity("error");
-        setAlertMessage("Failed to fetch clients");
+        setAlertMessage("Failed to fetch staffs");
         setOpenSnackbar(true);
       }
     };
@@ -55,12 +55,13 @@ import {
       setLoading(true);
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.post(environment.apiUrl + "/invoice/addInvoice", values, { headers });
+        const response = await axios.post(environment.apiUrl + "/staffinvoice/addStaffInvoice", values, { headers });
+        console.log(response)
         if (response.data.success) {
           setAlertSeverity("success");
           setAlertMessage("Invoice Added Successfully");
           setTimeout(() => {
-            navigate("/invoices");
+            navigate("/getAllStaffInvoices");
           }, 2000);
           resetForm();
         } else {
@@ -79,7 +80,7 @@ import {
   
     return (
       <Box m="20px" height="70vh" width="90%" overflow="auto" paddingRight="20px" position="relative">
-        <Header title="Add Invoice" subtitle="" />
+        <Header title="Add Staff Invoice" subtitle="" />
         <Snackbar
           open={openSnackbar}
           autoHideDuration={5000}
@@ -143,21 +144,21 @@ import {
                     helperText={touched.invoiceDescription && errors.invoiceDescription}
                   />
                 </Box>
-                <Typography fontWeight="bold" fontSize="16px">Client*</Typography>
+                <Typography fontWeight="bold" fontSize="16px">Staff*</Typography>
                 <Box mt={-2}>
                   <Select
                     fullWidth
                     variant="filled"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.client}
-                    name="client"
-                    error={!!touched.client && !!errors.client}
-                    helperText={touched.client && errors.client}
+                    value={values.staff}
+                    name="staff"
+                    error={!!touched.staff && !!errors.staff}
+                    helperText={touched.staff && errors.staff}
                   >
-                    {clients.map((client) => (
-                      <MenuItem key={client._id} value={client._id}>
-                        {client.firstName} {client.lastName}
+                    {staffs.map((staff) => (
+                      <MenuItem key={staff._id} value={staff._id}>
+                        {staff.firstName} {staff.lastName}
                       </MenuItem>
                     ))}
                   </Select>
@@ -236,7 +237,7 @@ import {
   const invoiceSchema = yup.object().shape({
     invoiceTitle: yup.string().required("Invoice Title is required"),
     invoiceDescription: yup.string().required("Description is required"),
-    client: yup.string().required("Client is required"),
+    staff: yup.string().required("Staff is required"),
     amount: yup.number().required("Amount is required").nullable(),
     sendDate: yup.date().required("Send Date is required").nullable(),
     notes: yup.string(),
@@ -245,7 +246,7 @@ import {
   const initialValues = {
     invoiceTitle: "",
     invoiceDescription: "",
-    client: "",
+    staff: "",
     amount: "",
     sendDate: "",
     notes: "",
